@@ -11,18 +11,9 @@
     <packaging>jar</packaging>
 
     <name>template-modules-pagination</name>
-    <url>http://maven.apache.org</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-pagination</url>
+    <description>多种表格组件（可扩展）的分页模型处理</description>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
