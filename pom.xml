@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.wuwenbin</groupId>
+    <artifactId>template-boot-modules</artifactId>
+    <version>1.0.0.RELEASE</version>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>template-modules-pagination</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    </properties>
+
+    <name>template-boot-modules</name>
+    <url>https://wuwenbin.me</url>
+    <description>template框架模块部分架构工程</description>
+
+    <developers>
+        <developer>
+            <name>伍文彬</name>
+            <email>765934806@qq.com</email>
+            <url>https://wuwenbin.me</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/miyakowork/template-boot-tools</url>
+        <connection>git@github.com:miyakowork/template-boot-tools.git</connection>
+        <developerConnection>https://wuwenbin.me</developerConnection>
+    </scm>
+
+
+</project>
