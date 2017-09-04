@@ -1,3 +1,13 @@
+## 更新日志
+> 1.0.0.RELEASE
+>>·初始版本发布，支持BootstrapTable和LayTable，同时支持第三方dataTable扩展
+>
+> 1.1.0.RELEASE
+>>·配合官方layui2.1.0的升级，laytable支持表格排序监听
+>>
+>>·官方更新支持自定义返回格式和请求参数名的自定义，此处我们还是使用默认的。不适用自定义。
+
+## 基本使用文档
 > 基本使用方法步骤如下：
 - 0、继承 `TableQuery` 类（如果使用`BootstrapTableQuery` 或 `LayTableQuery` 则不需要此步骤，直接下一步）
 - 1、新建你的表格查询字段对应的BO类，继承对应的 `TableQuery`,例如
