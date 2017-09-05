@@ -296,7 +296,7 @@ public interface AncestorDao {
      * @param <T>             refer to second param
      * @return {@link T} the result of execution
      */
-    <T extends Number> T queryNumberByArray(final String sql, Class<? extends Number> numberClass, Object... arrayParameters);
+    <T extends Number> T queryNumberByArray(final String sql, Class<T> numberClass, Object... arrayParameters);
 
     /**
      * get math value by sql statement
@@ -320,7 +320,7 @@ public interface AncestorDao {
      * @param <T>          refer to second param
      * @return {@link T} the result of execution
      */
-    <T extends Number> T queryNumberByMap(final String sql, Class<? extends Number> numberClass, Map<String, Object> mapParameter);
+    <T extends Number> T queryNumberByMap(final String sql, Class<T> numberClass, Map<String, Object> mapParameter);
 
     /**
      * get math value by sql statement
@@ -344,7 +344,7 @@ public interface AncestorDao {
      * @param <T>           refer to second param
      * @return {@link T} the result of execution
      */
-    <T extends Number> T queryNumberByBean(final String sql, Class<? extends Number> numberClass, Object beanParameter);
+    <T extends Number> T queryNumberByBean(final String sql, Class<T> numberClass, Object beanParameter);
 
     /**
      * get a series of key-value objects

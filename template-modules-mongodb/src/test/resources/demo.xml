@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+    <bean id="mongoDataSource" class="org.templateproject.mongodb.support.core.SimpleMongoDataSource">
+        <property name="hosts" value="127.0.0.1"/>
+        <property name="ports" value="27017"/>
+        <property name="userNames" value="admin;idea"/>
+        <property name="passwords" value="admin;idea"/>
+        <property name="authDatabases" value="admin;idea"/>
+        <property name="defaultDatabase" value="idea"/>
+    </bean>
+
+    <bean id="mongoDataSource2" class="org.templateproject.mongodb.support.core.SimpleMongoDataSource">
+        <property name="hosts" value="192.168.1.101"/>
+        <property name="ports" value="27017"/>
+        <property name="userNames" value="admin;idea"/>
+        <property name="passwords" value="admin;idea"/>
+        <property name="authDatabases" value="admin;idea"/>
+        <property name="defaultDatabase" value="admin"/>
+    </bean>
+
+    <bean id="mongoFactory" class="org.templateproject.mongodb.factory.MongoFactory">
+        <property name="mongoDataSources">
+            <map key-type="java.lang.String">
+                <entry key="localMongo" value-ref="mongoDataSource"/>
+                <entry key="localMongo2" value-ref="mongoDataSource2"/>
+            </map>
+        </property>
+        <property name="defaultMongoDao" ref="mongoDataSource"/>
+    </bean>
+
+    <context:annotation-config/>
+    <context:component-scan base-package="org.templateproject"/>
+
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+</beans>

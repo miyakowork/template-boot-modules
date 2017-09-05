@@ -7,24 +7,23 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>template-modules-jdbc</artifactId>
+    <artifactId>template-modules-mongodb</artifactId>
     <packaging>jar</packaging>
 
-    <name>template-modules-jdbc</name>
-    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-jdbc</url>
-    <description>对jdbcTemplate数据访问层的高级封装</description>
+    <name>template-modules-mongodb</name>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-mongodb</url>
+    <description>提供对mongo数据源的高级操作，针对多数据源mongo和集群mongo</description>
 
     <properties>
+        <springdatamongo.version>1.10.6.RELEASE</springdatamongo.version>
         <spring.version>4.3.10.RELEASE</spring.version>
         <slf4j.version>1.7.21</slf4j.version>
-        <druid.version>1.0.18</druid.version>
-        <mysql.version>5.1.37</mysql.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
             <exclusions>
                 <exclusion>
@@ -38,21 +37,25 @@
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>${springdatamongo.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -61,26 +64,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.8.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.8.6</version>
+            <version>1.8.9</version>
         </dependency>
         <dependency>
             <groupId>cglib</groupId>
@@ -88,16 +74,11 @@
             <version>3.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
 
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>6.0</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
 </project>

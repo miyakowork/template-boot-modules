@@ -337,7 +337,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T extends Number> T queryNumberByArray(String sql, Class<? extends Number> numberClass, Object... arrayParameters) {
+    public <T extends Number> T queryNumberByArray(String sql, Class<T> numberClass, Object... arrayParameters) {
         try {
             Assert.hasText(sql, "sql语句不正确!");
             logger.info("SQL:" + sql);
@@ -380,7 +380,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T extends Number> T queryNumberByMap(String sql, Class<? extends Number> numberClass, Map<String, Object> mapParameter) {
+    public <T extends Number> T queryNumberByMap(String sql, Class<T> numberClass, Map<String, Object> mapParameter) {
         try {
             Assert.hasText(sql, "sql语句不正确!");
             logger.info("SQL:" + sql);
@@ -423,7 +423,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T extends Number> T queryNumberByBean(String sql, Class<? extends Number> numberClass, Object beanParameter) {
+    public <T extends Number> T queryNumberByBean(String sql, Class<T> numberClass, Object beanParameter) {
         try {
             Assert.hasText(sql, "sql语句不正确!");
             logger.info("SQL:" + sql);

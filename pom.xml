@@ -12,6 +12,7 @@
     <modules>
         <module>template-modules-pagination</module>
         <module>template-modules-jdbc</module>
+        <module>template-modules-mongodb</module>
     </modules>
 
     <properties>

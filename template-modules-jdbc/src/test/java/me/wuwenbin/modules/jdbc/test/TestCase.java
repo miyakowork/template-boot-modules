@@ -22,7 +22,7 @@ public class TestCase {
     @Test
     public void testJDBC() {
         String sql = "SELECT count(0) FROM t_oauth_user";
-        long a = daoFactory.defaultDao.queryNumberByArray(sql, Long.class);
+        int a = daoFactory.defaultDao.queryNumberByArray(sql, Integer.class);
         System.out.println("====:" + a);
     }
 }
