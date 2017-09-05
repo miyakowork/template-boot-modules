@@ -11,5 +11,5 @@ template框架中的模块工程集合
 >>>1.1.0
 >>>>配合layui2.1.0UI组件的的升级（主要增加layTable支持排序等功能），具体见模块的 `README.md` 文件
 >
->`template-modules-jdbc`
+>`template-modules-jdbc`：
 >> 对jdbc数据库访问层基于jdbcTemplate的高级封装，详情见具体项目的README文件
