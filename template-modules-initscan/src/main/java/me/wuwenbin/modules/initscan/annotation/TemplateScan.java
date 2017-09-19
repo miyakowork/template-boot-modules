@@ -1,5 +1,7 @@
 package me.wuwenbin.modules.initscan.annotation;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,4 +12,37 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TemplateScan {
+
+    @AliasFor("name")
+    String value();
+
+    /**
+     * 资源名称
+     *
+     * @return
+     */
+    @AliasFor("value")
+    String name();
+
+    /**
+     * 是否可用，默认可用
+     *
+     * @return
+     */
+    boolean enabled() default true;
+
+    /**
+     * 排序字段
+     *
+     * @return
+     */
+    int orderIndex() default 0;
+
+    /**
+     * 资源备注说明
+     *
+     * @return
+     */
+    String remark() default "";
+
 }
