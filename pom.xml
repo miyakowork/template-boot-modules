@@ -13,6 +13,7 @@
         <module>template-modules-pagination</module>
         <module>template-modules-jdbc</module>
         <module>template-modules-mongodb</module>
+        <module>template-modules-initscan</module>
     </modules>
 
     <properties>
