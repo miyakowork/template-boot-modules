@@ -11,11 +11,8 @@
     <packaging>jar</packaging>
 
     <name>template-modules-initscan</name>
-    <url>http://maven.apache.org</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-jdbc</url>
+    <description>web应用启动时，需要扫描资源的模块包</description>
 
     <dependencies>
 
