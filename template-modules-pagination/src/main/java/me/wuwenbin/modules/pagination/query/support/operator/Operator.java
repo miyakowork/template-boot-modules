@@ -23,7 +23,6 @@ public enum Operator {
 
     private String operation;
     private String subOperation;
-    private String split;
 
     Operator(String operation) {
         this.operation = operation;

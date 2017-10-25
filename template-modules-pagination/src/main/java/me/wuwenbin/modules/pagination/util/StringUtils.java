@@ -112,11 +112,11 @@ public class StringUtils {
         if (obj instanceof String) {
             return (String) obj;
         } else if (obj instanceof byte[]) {
-            return str((byte[]) obj, charset);
+            return str(obj, charset);
         } else if (obj instanceof Byte[]) {
-            return str((Byte[]) obj, charset);
+            return str(obj, charset);
         } else if (obj instanceof ByteBuffer) {
-            return str((ByteBuffer) obj, charset);
+            return str(obj, charset);
         } else if (obj.getClass().isArray()) {
             try {
                 return Arrays.deepToString((Object[]) obj);
