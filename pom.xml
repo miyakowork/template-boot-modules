@@ -14,6 +14,7 @@
         <module>template-modules-jdbc</module>
         <module>template-modules-mongodb</module>
         <module>template-modules-initscan</module>
+        <module>template-modules-repodata</module>
     </modules>
 
     <properties>

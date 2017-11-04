@@ -41,7 +41,7 @@ public class DataSourceAspect {
      * define point aspect,if a method has {@link DynamicDataSource} annotation,it starts aop method to filter it
      */
     @Pointcut("@annotation(me.wuwenbin.modules.jdbc.annotation.DynamicDataSource)")
-    public void DynamicDataSourceAspect() {
+    public void dynamicDataSourceAspect() {
     }
 
     /**
@@ -51,7 +51,7 @@ public class DataSourceAspect {
      * @throws NoSuchMethodException
      * @throws DataSourceKeyNotExistException
      */
-    @Before("DynamicDataSourceAspect()")
+    @Before("dynamicDataSourceAspect()")
     public void switchDataSource(JoinPoint joinPoint) throws NoSuchMethodException, DataSourceKeyNotExistException {
         Class clazz = joinPoint.getTarget().getClass();
         String methodName = joinPoint.getSignature().getName();
@@ -71,7 +71,7 @@ public class DataSourceAspect {
      * @param #joinPoint
      * @throws NoSuchMethodException
      */
-    @After("DynamicDataSourceAspect()")
+    @After("dynamicDataSourceAspect()")
     public void rollbackDataSource2Default(JoinPoint joinPoint) throws NoSuchMethodException {
         Class clazz = joinPoint.getTarget().getClass();
         String methodName = joinPoint.getSignature().getName();

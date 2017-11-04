@@ -96,10 +96,11 @@ public class DaoFactory implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (dataSourceMap != null && dataSourceMap.size() > 0 && !dataSourceMap.isEmpty()) {
+        if (dataSourceMap != null && dataSourceMap.size() > 0) {
             for (String key : dataSourceMap.keySet()) {
-                if (daoMap == null || !daoMap.containsKey(key))
+                if (daoMap == null || !daoMap.containsKey(key)) {
                     daoMap.put(key, getAncestorDaoByKey(key));
+                }
             }
         }
     }
@@ -128,7 +129,9 @@ public class DaoFactory implements InitializingBean {
             } else {
                 return new MysqlTemplate(dataSourceX.getDataSource());
             }
-        } else throw new DataSourceKeyNotExistException();
+        } else {
+            throw new DataSourceKeyNotExistException();
+        }
     }
 
 

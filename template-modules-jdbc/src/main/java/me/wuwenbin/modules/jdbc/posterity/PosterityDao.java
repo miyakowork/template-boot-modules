@@ -169,7 +169,7 @@ public abstract class PosterityDao implements AncestorDao {
     @Override
     public int insertMapAutoGenKey(String sql, Map<String, Object> mapParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
-        Assert.notNull(mapParameter, "对象map不能为空");
+        Assert.notNull(mapParameter, "对象mapParameter不能为空");
         logger.info("SQL:" + sql);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         return namedParameterJdbcTemplate.update(sql, generateMapSqlParamSource(mapParameter), keyHolder);
@@ -178,7 +178,7 @@ public abstract class PosterityDao implements AncestorDao {
     @Override
     public <T> int insertBeanAutoGenKey(String sql, T beanParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
-        Assert.notNull(beanParameter, "对象bean不能为空");
+        Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         return namedParameterJdbcTemplate.update(sql, generateBeanSqlParamSource(beanParameter), keyHolder);
@@ -187,7 +187,7 @@ public abstract class PosterityDao implements AncestorDao {
     @Override
     public long insertMapAutoGenKeyOut(String sql, Map<String, Object> mapParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
-        Assert.notNull(mapParameter, "对象bean不能为空");
+        Assert.notNull(mapParameter, "对象mapParameter不能为空");
         logger.info("SQL:" + sql);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, generateMapSqlParamSource(mapParameter), keyHolder);
@@ -197,7 +197,7 @@ public abstract class PosterityDao implements AncestorDao {
     @Override
     public <T> long insertBeanAutoGenKeyOut(String sql, T beanParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
-        Assert.notNull(beanParameter, "对象bean不能为空");
+        Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, generateBeanSqlParamSource(beanParameter), keyHolder);
@@ -205,10 +205,17 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public Map<String, Object> insertMapAutoGenKeyOutBean(String insertSQL, Map<String, Object> mapParameter, String tableName) throws Exception {
+    public Map<String, Object> insertMapAutoGenKeyOutMap(String insertSQL, Map<String, Object> mapParameter, String tableName) throws Exception {
         long key = insertMapAutoGenKeyOut(insertSQL, mapParameter);
         String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
         return findMapByArray(sql, key);
+    }
+
+    @Override
+    public <T> T insertMapAutoGenKeyOutBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName) throws Exception {
+        long key = insertMapAutoGenKey(insertSQL, mapParameter);
+        String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
+        return findBeanByArray(sql, clazz, key);
     }
 
     @Override

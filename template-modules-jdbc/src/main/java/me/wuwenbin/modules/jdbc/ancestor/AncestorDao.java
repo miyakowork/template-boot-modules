@@ -185,14 +185,27 @@ public interface AncestorDao {
      * @return 所有字段组装成的map对象
      * @throws Exception 插入时发生的异常
      */
-    Map<String, Object> insertMapAutoGenKeyOutBean(String insertSQL, Map<String, Object> mapParameter, String tableName) throws Exception;
+    Map<String, Object> insertMapAutoGenKeyOutMap(String insertSQL, Map<String, Object> mapParameter, String tableName) throws Exception;
+
+    /**
+     * 插入一条记录，参数为Map返回一个对应的实体类
+     *
+     * @param insertSQL
+     * @param mapParameter
+     * @param clazz
+     * @param tableName
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T> T insertMapAutoGenKeyOutBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName) throws Exception;
 
     /**
      * 插入一条bean记录，返回插入记录（含主键）
      * 注：此方法要求主键列名必须为[id]
      *
      * @param insertSQL    插入语句
-     * @param beaParameter bena类型参数
+     * @param beaParameter bean类型参数
      * @param clazz        对象匹配的class类型
      * @param tableName    表名
      * @param <T>          对象匹配的泛型类型

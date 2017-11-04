@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>template-boot-modules</artifactId>
+        <groupId>me.wuwenbin</groupId>
+        <version>1.1.0.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>template-modules-repodata</artifactId>
+    <version>1.1.0.RELEASE</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <packaging>jar</packaging>
+
+    <name>template-modules-repodata</name>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-repodata</url>
+    <description>实现数据持久化的轻松实现模块</description>
+
+    <properties>
+        <util.version>1.0.3.RELEASE</util.version>
+        <sqlGen.version>1.1.2.RELEASE</sqlGen.version>
+        <modules.jdbc.version>1.2.0.RELEASE</modules.jdbc.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-tools-util</artifactId>
+            <version>${util.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-tools-sqlgen</artifactId>
+            <version>${sqlGen.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-jdbc</artifactId>
+            <version>${modules.jdbc.version}</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>org.mybatis</groupId>-->
+        <!--<artifactId>mybatis</artifactId>-->
+        <!--<version>3.2.8</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.mybatis</groupId>-->
+        <!--<artifactId>mybatis-spring</artifactId>-->
+        <!--<version>1.3.0</version>-->
+        <!--</dependency>-->
+
+    </dependencies>
+</project>
