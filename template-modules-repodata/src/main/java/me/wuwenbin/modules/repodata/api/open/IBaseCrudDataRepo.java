@@ -67,7 +67,28 @@ public interface IBaseCrudDataRepo<T, PK> {
     //==============================增加/插入操作  结束==============================//
     //==============================删除操作  开始==============================//
 
-    int delete(PK id) throws Exception;
+    /**
+     * 根据主键删除一条记录
+     *
+     * @param pk
+     * @throws Exception
+     */
+    void delete(PK pk) throws Exception;
 
-    boolean delete() throws Exception;
+    /**
+     * 根据多个主键删除多条记录
+     *
+     * @param pks
+     * @throws Exception
+     */
+    void delete(PK... pks) throws Exception;
+
+    /**
+     * 根据主键集合删除多条记录
+     *
+     * @param pks
+     * @throws Exception
+     */
+    void delete(Collection<PK> pks) throws Exception;
+
 }
