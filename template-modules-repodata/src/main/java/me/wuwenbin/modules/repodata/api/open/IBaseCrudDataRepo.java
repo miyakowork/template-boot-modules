@@ -2,6 +2,7 @@ package me.wuwenbin.modules.repodata.api.open;
 
 
 import me.wuwenbin.modules.repodata.annotation.type.DataRepo;
+import me.wuwenbin.modules.repodata.api.base.IDataRepo;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Map;
  * @author Wuwenbin
  */
 @DataRepo
-public interface IBaseCrudDataRepo<T, PK> {
+public interface IBaseCrudDataRepo<T, PK> extends IDataRepo<T, PK> {
 
     //==============================增加/插入操作  开始==============================//
 
@@ -91,4 +92,38 @@ public interface IBaseCrudDataRepo<T, PK> {
      */
     void delete(Collection<PK> pks) throws Exception;
 
+
+    //==============================删除操作  结束==============================//
+    //==============================查询操作  开始==============================//
+
+    /**
+     * 查询
+     *
+     * @return
+     */
+    int count();
+
+    /**
+     * 查询是否存在此条记录
+     *
+     * @return
+     */
+    boolean exist();
+
+    /**
+     * 根据主键查找一条记录
+     *
+     * @param pk
+     * @return
+     */
+    T findOne(PK pk);
+
+    /**
+     * 查找所有记录
+     *
+     * @return
+     */
+    List<T> findAll();
+
+    //==============================查询操作  结束==============================//
 }

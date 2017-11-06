@@ -7,7 +7,6 @@ import me.wuwenbin.modules.repodata.exception.MethodParamException;
 import me.wuwenbin.modules.repodata.exception.MethodTypeMissMatch;
 import me.wuwenbin.modules.repodata.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repodata.util.MethodUtils;
-import me.wuwenbin.tools.sqlgen.constant.Router;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,11 +39,11 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             return executeByParamType(args, returnType, sql);
         } else {
             String saveBySql = "save$BySql";
-            if (saveBySql.equals(methodName)) {
+            if (methodName.startsWith(saveBySql)) {
                 if (getMethod().isAnnotationPresent(SaveSQL.class)) {
                     String sql = getMethod().getAnnotation(SaveSQL.class).value();
                     if (args.length > 1) {
-                        throw new MethodParamException("「save$BySql」方法的参数个数有且仅能有一种类型且仅能有一个");
+                        throw new MethodParamException("「save$BySql...」方法的参数个数有且仅能有一种类型且仅能有一个");
                     } else {
                         return executeByParamType(args, returnType, sql);
                     }
@@ -56,7 +55,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
                 //如果是指定Router则只能使用预定义的Router(从A~Z)
                 String saveRouter = "save$Router";
                 if (methodName.startsWith(saveRouter)) {
-                    int[] routers = getRouters(methodName);
+                    int[] routers = MethodUtils.getRouters(methodName, 11);
                     String sql = super.isPkInsert ? super.sbb.insertRoutersWithPk(routers) : super.sbb.insertRoutersWithoutPk(routers);
                     return executeByParamType(args, returnType, sql);
                 } else {
@@ -81,13 +80,13 @@ public class SaveProvider<T> extends AbstractProvider<T> {
         if (MethodUtils.paramTypeMapOrSub(args[0])) {
             return execSaveMethodWithParamMapOrJavaBean(returnType,
                     () -> getJdbcTemplate().insertMapAutoGenKeyOutBean(sql, (Map<String, Object>) args[0], super.getClazz(), super.tableName));
-        } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClass())) {
+        } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
             return execSaveMethodWithParamMapOrJavaBean(returnType,
                     () -> getJdbcTemplate().insertBeanAutoGenKeyOutBean(sql, (T) args[0], super.getClazz(), super.tableName));
         } else if (MethodUtils.paramTypeCollectionOrSub(args[0])) {
             return execSaveMethodWithParamCollection(returnType, () -> {
                 Collection<T> paramCollection = (Collection<T>) args[0];
-                List<T> result = new ArrayList<>();
+                List<T> result = new ArrayList<>(paramCollection.size());
                 paramCollection.forEach(p -> {
                     try {
                         result.add(getJdbcTemplate().insertBeanAutoGenKeyOutBean(sql, p, super.getClazz(), super.tableName));
@@ -106,29 +105,6 @@ public class SaveProvider<T> extends AbstractProvider<T> {
     }
 
 
-    //==============================内部工具方法=========================
-
-    /**
-     * 根据方法名获取routers数组
-     *
-     * @param methodName
-     * @return
-     * @throws Exception
-     */
-    private int[] getRouters(String methodName) throws Exception {
-        String routerText = methodName.substring(11);
-        routerText = routerText.toLowerCase();
-        char[] routerChars = routerText.toCharArray();
-        if (routerText.split("").length != routerChars.length) {
-            throw new Exception("方法命名中的Router部分有误，请修正！");
-        } else {
-            int[] routers = new int[routerChars.length];
-            for (int i = 0; i < routerChars.length; i++) {
-                routers[i] = Router.DEFAULT + routerChars[i];
-            }
-            return routers;
-        }
-    }
     //==============================生成sql语句方法=============================
 
     /**
@@ -140,7 +116,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
      */
     private String produceAllFieldSql(Object[] args) throws MethodParamException {
         //判断该参数的返回类型是否为Map或者为T或T的子类
-        boolean correctReturn = MethodUtils.paramTypeMapOrSub(args[0]) || MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClass());
+        boolean correctReturn = MethodUtils.paramTypeMapOrSub(args[0]) || MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz());
         if (args.length == 1 && correctReturn) {
             return super.isPkInsert ? super.sbb.insertAllWithPk() : super.sbb.insertAllWithoutPk();
         } else {

@@ -8,6 +8,7 @@ import me.wuwenbin.modules.repodata.provider.delete.DeleteProvider;
 import me.wuwenbin.modules.repodata.provider.find.FindProvider;
 import me.wuwenbin.modules.repodata.provider.save.SaveProvider;
 import me.wuwenbin.modules.repodata.provider.update.UpdateProvider;
+import me.wuwenbin.tools.sqlgen.constant.Router;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
@@ -36,14 +37,37 @@ public class MethodUtils {
             if (methodName.startsWith(MethodType.SAVE.toString())) {
                 return new SaveProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.DELETE.toString())) {
-                return new DeleteProvider();
+                return new DeleteProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.FIND.toString())) {
-                return new FindProvider();
+                return new FindProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.UPDATE.toString())) {
                 return new UpdateProvider();
             } else {
                 throw new MethodTypeMissMatch();
             }
+        }
+    }
+
+
+    /**
+     * 根据方法名获取routers数组
+     *
+     * @param methodName
+     * @return
+     * @throws Exception
+     */
+    public static int[] getRouters(String methodName, int startIndex) throws Exception {
+        String routerText = methodName.substring(startIndex);
+        routerText = routerText.toLowerCase();
+        char[] routerChars = routerText.toCharArray();
+        if (routerText.split("").length != routerChars.length) {
+            throw new Exception("方法命名中的Router部分有误，请修正！");
+        } else {
+            int[] routers = new int[routerChars.length];
+            for (int i = 0; i < routerChars.length; i++) {
+                routers[i] = Router.DEFAULT + routerChars[i];
+            }
+            return routers;
         }
     }
 
