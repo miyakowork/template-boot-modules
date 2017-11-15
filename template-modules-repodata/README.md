@@ -37,7 +37,7 @@
 ---
 ## update语句/update方法命名规则
 1. 所有方法均为「update...」开头。
-2. 非指定的sql的「update」方法包含三种，其中一种已经预定义好，为「update」表示依据id根据所有字段，条件为id。其余两种为开发者自定义，分别为「updateRouterABC」（依据主键字段来）和「updateRouterADByRouterC」。
+2. 非指定的sql的「update」方法包含三种，其中两种为开发者自定义，分别为「updateRouterABC」（依据主键字段来）和「updateRouterADByRouterC」。
 3. 返回值有「T」、「boolean」、「void」三种，其中「T」为返回更新后的实体，失败则返回null。
 4. 方法参数只能为「Map」或「T」。
-5. 指定sql的update方法「updateBySqlXXX」可自定义更新的sql语句，参数类型和返回值参考以上的几条规则。
+5. 额外的一种方法为指定sql的update方法「updateBySqlXXX」可自定义更新的sql语句，参数类型和返回值参考以上的几条规则。
