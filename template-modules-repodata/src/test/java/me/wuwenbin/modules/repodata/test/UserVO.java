@@ -1,43 +1,32 @@
 package me.wuwenbin.modules.repodata.test;
 
-import me.wuwenbin.modules.repodata.annotation.field.SQLPkRefer;
-import me.wuwenbin.modules.repodata.annotation.field.SQLRefer;
-
-import java.util.List;
+import me.wuwenbin.modules.repodata.annotation.sql.SQLPkRefer;
+import me.wuwenbin.modules.repodata.annotation.sql.SQLRefer;
 
 /**
  * created by Wuwenbin on 2017/10/27 at 11:49
  */
 public class UserVO extends User {
 
-    @SQLRefer(target = Role.class, column = "id")
-    private Long roleName;
-    @SQLPkRefer(target = Department.class)
-    private Long deptName;
+    @SQLRefer(targetClass = Role.class, targetColumn = "name", column = "role_id", referColumn = "id")
+    private String defaultRoleName;
+    @SQLPkRefer(targetClass = Department.class, targetColumn = "name", column = "dept_id")
+    private String deptName;
 
-    private List<Role> roles;
-
-    public Long getRoleName() {
-        return roleName;
+    public String getDefaultRoleName() {
+        return defaultRoleName;
     }
 
-    public void setRoleName(Long roleName) {
-        this.roleName = roleName;
+    public void setDefaultRoleName(String defaultRoleName) {
+        this.defaultRoleName = defaultRoleName;
     }
 
-    public Long getDeptName() {
+    public String getDeptName() {
         return deptName;
     }
 
-    public void setDeptName(Long deptName) {
+    public void setDeptName(String deptName) {
         this.deptName = deptName;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
 }

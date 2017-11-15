@@ -41,3 +41,6 @@
 3. 返回值有「T」、「boolean」、「void」三种，其中「T」为返回更新后的实体，失败则返回null。
 4. 方法参数只能为「Map」或「T」。
 5. 额外的一种方法为指定sql的update方法「updateBySqlXXX」可自定义更新的sql语句，参数类型和返回值参考以上的几条规则。
+---
+##分页方法
+1. 包含两个方法，定义在「IPageAndSortDataRepo」中。

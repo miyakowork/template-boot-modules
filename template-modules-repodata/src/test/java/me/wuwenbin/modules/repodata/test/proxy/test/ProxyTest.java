@@ -28,7 +28,7 @@ public class ProxyTest {
     @Test
     public void proxyTest2() throws Exception {
         UserService userService = new ServiceProxyFactory<>(UserService.class).newInstance();
-        userService.name();
+//        userService.name();
         Person p1 = new Person();
         Person p2 = new Person();
         Person p3 = new Person();
@@ -38,6 +38,7 @@ public class ProxyTest {
         sp.put("p1", p1);
         sp.put("p2", p2);
         sp.put("p4", p3);
+        userService.findPage();
 //        userService.empty();
 //        userService.save("b", p1, p2, p3);
 //        userService.save1(sp);
@@ -50,7 +51,7 @@ public class ProxyTest {
 
     @Test
     public void test3() throws IOException, ClassNotFoundException {
-//        HashSet s = new HashSet();
-//        System.out.println(s instanceof Set);
+//        HashSet targetClass = new HashSet();
+//        System.out.println(targetClass instanceof Set);
     }
 }

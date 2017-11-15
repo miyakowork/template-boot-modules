@@ -6,6 +6,7 @@ import me.wuwenbin.modules.repodata.exception.MethodTypeMissMatch;
 import me.wuwenbin.modules.repodata.provider.crud.ICrudProvider;
 import me.wuwenbin.modules.repodata.provider.delete.DeleteProvider;
 import me.wuwenbin.modules.repodata.provider.find.FindProvider;
+import me.wuwenbin.modules.repodata.provider.page.PageProvider;
 import me.wuwenbin.modules.repodata.provider.save.SaveProvider;
 import me.wuwenbin.modules.repodata.provider.update.UpdateProvider;
 import me.wuwenbin.tools.sqlgen.constant.Router;
@@ -34,7 +35,10 @@ public class MethodUtils {
         if (StringUtils.isEmpty(methodName)) {
             throw new RuntimeException("方法名为空！？");
         } else {
-            if (methodName.startsWith(MethodType.SAVE.toString())) {
+            String pagination = "findPagination";
+            if (methodName.equals(pagination)) {
+                return new PageProvider<>(method, jdbcTemplate, clazz);
+            } else if (methodName.startsWith(MethodType.SAVE.toString())) {
                 return new SaveProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.DELETE.toString())) {
                 return new DeleteProvider<>(method, jdbcTemplate, clazz);

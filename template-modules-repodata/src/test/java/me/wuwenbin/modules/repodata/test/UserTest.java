@@ -10,7 +10,7 @@ public class UserTest {
 
     @Test
     public void main() {
-
+        System.out.println(UserVO.class.getSuperclass().getSuperclass());
     }
 
 }

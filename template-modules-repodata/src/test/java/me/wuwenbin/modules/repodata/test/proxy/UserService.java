@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repodata.test.proxy;
 
 import me.wuwenbin.modules.repodata.test.Person;
+import me.wuwenbin.modules.repodata.test.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,4 +28,6 @@ public interface UserService<S extends Person> extends PublicService<S> {
     List<S> save4(Set<S> ss);
 
     List<S> save5(List<S> ss);
+
+    <Model extends Person, Te extends User> Map<Model, Te> findPage();
 }
