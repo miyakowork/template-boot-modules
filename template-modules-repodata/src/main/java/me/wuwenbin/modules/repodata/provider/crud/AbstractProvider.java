@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
+ * 此处准备好一些需要用的值，提供给实现类用
  * created by Wuwenbin on 2017/11/1 at 20:02
  *
  * @author Wuwenbin

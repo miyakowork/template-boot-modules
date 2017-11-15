@@ -28,9 +28,10 @@
     <description>实现数据持久化的轻松实现模块</description>
 
     <properties>
-        <util.version>1.0.3.RELEASE</util.version>
-        <sqlGen.version>1.1.2.RELEASE</sqlGen.version>
+        <tools.util.version>1.0.3.RELEASE</tools.util.version>
+        <tools.sql.version>1.1.2.RELEASE</tools.sql.version>
         <modules.jdbc.version>1.2.0.RELEASE</modules.jdbc.version>
+        <modules.pagination.version>1.1.1.RELEASE</modules.pagination.version>
     </properties>
 
     <dependencies>
@@ -38,19 +39,25 @@
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-tools-util</artifactId>
-            <version>${util.version}</version>
+            <version>${tools.util.version}</version>
         </dependency>
 
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-tools-sqlgen</artifactId>
-            <version>${sqlGen.version}</version>
+            <version>${tools.sql.version}</version>
         </dependency>
 
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jdbc</artifactId>
             <version>${modules.jdbc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-pagination</artifactId>
+            <version>${modules.pagination.version}</version>
         </dependency>
 
         <!--<dependency>-->

@@ -33,6 +33,7 @@ public class ServiceProxyFactory<T> implements InvocationHandler {
         System.out.println("返回类型:" + method.getReturnType().getSimpleName());
         System.out.println(method.getReturnType().equals(List.class));
         System.out.println("返回类型是否为基本类型:" + method.getReturnType().isPrimitive());
+        System.out.println("参数:" + args);
         System.out.println("参数类型:" + (args != null ? args.getClass() : "无参数"));
         if (args != null) {
             System.out.println("参数个数L:" + args.length);

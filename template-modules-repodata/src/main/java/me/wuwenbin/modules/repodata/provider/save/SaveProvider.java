@@ -6,6 +6,7 @@ import me.wuwenbin.modules.repodata.exception.MethodExecuteException;
 import me.wuwenbin.modules.repodata.exception.MethodParamException;
 import me.wuwenbin.modules.repodata.exception.MethodTypeMissMatch;
 import me.wuwenbin.modules.repodata.provider.crud.AbstractProvider;
+import me.wuwenbin.modules.repodata.provider.save.support.ExecuteResult;
 import me.wuwenbin.modules.repodata.util.MethodUtils;
 
 import java.lang.reflect.Method;

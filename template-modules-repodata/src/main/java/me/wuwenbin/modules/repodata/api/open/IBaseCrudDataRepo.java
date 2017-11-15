@@ -3,6 +3,7 @@ package me.wuwenbin.modules.repodata.api.open;
 
 import me.wuwenbin.modules.repodata.annotation.type.DataRepo;
 import me.wuwenbin.modules.repodata.api.base.IDataRepo;
+import me.wuwenbin.modules.repodata.provider.find.param.SelectQuery;
 
 import java.util.Collection;
 import java.util.List;
@@ -101,14 +102,31 @@ public interface IBaseCrudDataRepo<T, PK> extends IDataRepo<T, PK> {
      *
      * @return
      */
-    int count();
+    long count();
 
     /**
-     * 查询是否存在此条记录
+     * 根据条件统计
      *
+     * @param selectQuery
      * @return
      */
-    boolean exist();
+    long count(SelectQuery selectQuery);
+
+    /**
+     * 是否存在
+     *
+     * @param pk
+     * @return
+     */
+    boolean exists(PK pk);
+
+    /**
+     * 根据条件判断是否存在该条记录
+     *
+     * @param selectQuery
+     * @return
+     */
+    boolean exists(SelectQuery selectQuery);
 
     /**
      * 根据主键查找一条记录
@@ -119,11 +137,38 @@ public interface IBaseCrudDataRepo<T, PK> extends IDataRepo<T, PK> {
     T findOne(PK pk);
 
     /**
+     * 根据条件查询出这条记录
+     *
+     * @param selectQuery
+     * @return
+     */
+    T findOne(SelectQuery selectQuery);
+
+    /**
      * 查找所有记录
      *
      * @return
      */
     List<T> findAll();
 
+    /**
+     * 查询所有，根据条件来
+     *
+     * @param selectQuery
+     * @return
+     */
+    List<T> findAll(SelectQuery selectQuery);
+
+
     //==============================查询操作  结束==============================//
+    //==============================修改操作  开始==============================//
+
+    /**
+     * 根据id更新所有字段，更新成功返回新的实体，否则返回null
+     *
+     * @param t
+     * @return
+     */
+    T update(T t) throws Exception;
+    //==============================修改操作  结束==============================//
 }

@@ -5,6 +5,8 @@ import me.wuwenbin.modules.pagination.sort.direction.Direction;
 /**
  * 排序的对象
  * created by Wuwenbin on 2017/8/29 at 21:53
+ *
+ * @author Wuwenbin
  */
 public class Sorting {
 
@@ -26,4 +28,19 @@ public class Sorting {
     public void setSortDirection(Direction sortDirection) {
         this.sortDirection = sortDirection;
     }
+
+    public static Sorting asc(String sortName) {
+        Sorting sorting = new Sorting();
+        sorting.setSortName(sortName);
+        sorting.setSortDirection(Direction.ASC);
+        return sorting;
+    }
+
+    public static Sorting desc(String sortName) {
+        Sorting sorting = new Sorting();
+        sorting.setSortName(sortName);
+        sorting.setSortDirection(Direction.DESC);
+        return sorting;
+    }
+
 }

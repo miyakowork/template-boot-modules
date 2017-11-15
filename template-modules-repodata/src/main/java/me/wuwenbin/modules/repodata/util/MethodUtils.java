@@ -41,7 +41,7 @@ public class MethodUtils {
             } else if (methodName.startsWith(MethodType.FIND.toString())) {
                 return new FindProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.UPDATE.toString())) {
-                return new UpdateProvider();
+                return new UpdateProvider<>(method, jdbcTemplate, clazz);
             } else {
                 throw new MethodTypeMissMatch();
             }
@@ -89,7 +89,7 @@ public class MethodUtils {
      * @return
      */
     public static boolean paramTypeJavaBeanOrSub(Object param, Class<?> javaBeanClass) {
-        return param.getClass().equals(javaBeanClass) || param.getClass().isAssignableFrom(javaBeanClass);
+        return param.getClass().equals(javaBeanClass) || javaBeanClass.isAssignableFrom(param.getClass());
     }
 
     /**

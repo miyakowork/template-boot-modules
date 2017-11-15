@@ -3,10 +3,20 @@ package me.wuwenbin.modules.pagination.sort.direction;
 /**
  * 排序的方向
  * created by Wuwenbin on 2017/8/29 at 21:54
+ *
+ * @author Wuwenbin
  */
 public enum Direction {
 
-    ASC("asc"), DESC("desc");
+    /**
+     * 顺序
+     */
+    ASC("asc"),
+
+    /**
+     * 倒序
+     */
+    DESC("desc");
 
     private String direction;
 

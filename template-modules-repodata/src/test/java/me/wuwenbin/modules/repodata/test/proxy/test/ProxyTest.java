@@ -6,7 +6,11 @@ import me.wuwenbin.modules.repodata.test.proxy.ServiceProxyFactory;
 import me.wuwenbin.modules.repodata.test.proxy.UserService;
 import org.junit.Test;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,7 +28,7 @@ public class ProxyTest {
     @Test
     public void proxyTest2() throws Exception {
         UserService userService = new ServiceProxyFactory<>(UserService.class).newInstance();
-//        userService.name();
+        userService.name();
         Person p1 = new Person();
         Person p2 = new Person();
         Person p3 = new Person();
@@ -34,7 +38,7 @@ public class ProxyTest {
         sp.put("p1", p1);
         sp.put("p2", p2);
         sp.put("p4", p3);
-        userService.empty();
+//        userService.empty();
 //        userService.save("b", p1, p2, p3);
 //        userService.save1(sp);
 //        userService.save2(new Person[]{p1, p2, p3}, "2");
@@ -45,8 +49,8 @@ public class ProxyTest {
     }
 
     @Test
-    public void test3() {
-        HashSet s = new HashSet();
-        System.out.println(s instanceof Set);
+    public void test3() throws IOException, ClassNotFoundException {
+//        HashSet s = new HashSet();
+//        System.out.println(s instanceof Set);
     }
 }
