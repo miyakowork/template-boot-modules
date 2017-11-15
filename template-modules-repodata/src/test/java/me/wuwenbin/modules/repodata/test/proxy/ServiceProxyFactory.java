@@ -2,7 +2,6 @@ package me.wuwenbin.modules.repodata.test.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
@@ -33,9 +32,6 @@ public class ServiceProxyFactory<T> implements InvocationHandler {
         System.out.println("注解:" + Arrays.toString(method.getDeclaredAnnotations()));
         System.out.println("返回类型:" + method.getReturnType().getSimpleName());
         System.out.println(method.getReturnType().equals(List.class));
-        ParameterizedType t = (ParameterizedType) method.getReturnType().getClass().getGenericSuperclass();
-        Class clazz = (Class) t.getActualTypeArguments()[0];
-        System.out.println(clazz);
         System.out.println("返回类型是否为基本类型:" + method.getReturnType().isPrimitive());
         System.out.println("参数:" + args);
         System.out.println("参数类型:" + (args != null ? args.getClass() : "无参数"));
