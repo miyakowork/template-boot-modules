@@ -1,15 +1,17 @@
 template框架中的模块工程集合
 ----
->`template-modules-pagination`：
->> 提供两种（BootstrapTable、LayUITable）不同前端框架数据表格（dataTable）的分页模型处理对象，可自行扩展其他第三方的表格插件（已留好接口）
->>入口类：`me.wuwenbin.modules.pagination.Pagination`
->
->>更新日志：
->>> 1.0.0
->>>>初始版本发布
->>>
->>>1.1.0
->>>>配合layui2.1.0UI组件的的升级（主要增加layTable支持排序等功能），具体见模块的 `README.md` 文件
->
->`template-modules-jdbc`：
->> 对jdbc数据库访问层基于jdbcTemplate的高级封装，详情见具体项目的README文件
+## `template-modules-initscan`
+> 提供项目权限资源信息的收集扫描至数据库的自动操作，省去手动添加的麻烦
+---
+##`template-modules-jdbc`
+> 对jdbc数据库访问层基于jdbcTemplate的高级封装，详情见具体项目的README文件
+---
+##`template-modules-mongodb`
+> 对jdbc数据库访问层基于mongoTemplate的高级封装，详情见具体项目的README文件
+---
+##`template-modules-pagination`
+> 提供两种（BootstrapTable、LayUITable）不同前端框架数据表格（dataTable）的分页模型处理对象，可自行扩展其他第三方的表格插件（已留好接口）
+> 入口类：`me.wuwenbin.modules.pagination.Pagination`
+---
+## `template-modules-repodata`
+> 提供类似 `spring-data-jpa`项目接口访问式的快速数据访问层的封装
