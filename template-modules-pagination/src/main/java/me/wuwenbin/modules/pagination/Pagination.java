@@ -106,8 +106,9 @@ public class Pagination {
      */
     public static String getSql(String mainSql, TableQuery tableQuery) {
         StringBuilder sql = new StringBuilder(mainSql);
-        if (!mainSql.contains("WHERE") && !mainSql.contains("where"))
+        if (!mainSql.contains("WHERE") && !mainSql.contains("where")) {
             sql = sql.append(" WHERE 1=1");
+        }
         String tableName = "";
         if (tableQuery.getClass().isAnnotationPresent(QueryTable.class)) {
             String tableNameInClass = tableQuery.getClass().getAnnotation(QueryTable.class).name();

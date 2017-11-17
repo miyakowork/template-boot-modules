@@ -188,8 +188,9 @@ public class Page<T> extends PageOrder implements Serializable {
      * @return 计算页面数量，总共多少页
      */
     public int getTotalPages() {
-        if (totalCount == -1)
+        if (totalCount == -1) {
             return -1;
+        }
         int count = totalCount / pageSize;
         if (totalCount % pageSize > 0) {
             count++;

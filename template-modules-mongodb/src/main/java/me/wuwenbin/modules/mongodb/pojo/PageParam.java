@@ -47,17 +47,22 @@ public class PageParam {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         PageParam other = (PageParam) obj;
-        if (limit != other.limit)
+        if (limit != other.limit) {
             return false;
-        if (skip != other.skip)
+        }
+        if (skip != other.skip) {
             return false;
+        }
         return true;
     }
 

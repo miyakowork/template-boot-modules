@@ -21,8 +21,9 @@ public class MongoDbTemplate extends MongoAccessor {
 
     @Override
     protected PageParam getPageParam(Page page) {
-        if (page.isFirstSetted() && page.isPageSizeSetted())
+        if (page.isFirstSetted() && page.isPageSizeSetted()) {
             return new PageParam(page.getFirst(), page.getPageSize());
+        }
         return new PageParam(0, 1);
     }
 

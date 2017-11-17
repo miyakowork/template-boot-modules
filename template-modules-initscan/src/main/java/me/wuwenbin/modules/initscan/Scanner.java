@@ -59,13 +59,15 @@ public final class Scanner {
                                 lasts = lasts.length == 0 ? new String[]{""} : lasts;
                                 for (String last : lasts) {
                                     last = last.startsWith("/") ? last : "/".concat(last);
-                                    String url = (prefix.startsWith("/") ? prefix : "/".concat(prefix)).concat(last.equals("/") ? "" : last);
+                                    String url = (prefix.startsWith("/") ? prefix : "/".concat(prefix)).concat("/".equals(last) ? "" : last);
                                     if (method.isAnnotationPresent(TemplateScan.class)) {
                                         String name = method.getAnnotation(TemplateScan.class).name();
                                         boolean enabled = method.getAnnotation(TemplateScan.class).enabled();
                                         int orderIndex = method.getAnnotation(TemplateScan.class).orderIndex();
                                         String systemCode = config.getSysModuleCode();
-                                        if (isEmpty(systemCode)) throw new Exception("系统模块代码为空！");
+                                        if (isEmpty(systemCode)) {
+                                            throw new Exception("系统模块代码为空！");
+                                        }
                                         String remark = method.getAnnotation(TemplateScan.class).remark();
 
                                         if (method.isAnnotationPresent(RequiresPermissions.class)) {
@@ -92,7 +94,7 @@ public final class Scanner {
 
 
     private static boolean isEmpty(Object str) {
-        return str != null && !str.equals("");
+        return str != null && !"".equals(str);
     }
 
 }

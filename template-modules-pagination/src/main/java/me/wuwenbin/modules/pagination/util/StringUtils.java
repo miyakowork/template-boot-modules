@@ -24,9 +24,11 @@ public class StringUtils {
             StringBuilder sb = new StringBuilder(len);
             for (int i = 0; i < len; i++) {
                 char c = param.charAt(i);
-                if (Character.isUpperCase(c))
+                if (Character.isUpperCase(c)) {
                     sb.append('_').append(Character.toLowerCase(c));
-                else sb.append(c);
+                } else {
+                    sb.append(c);
+                }
             }
             return sb.toString();
         }
@@ -42,10 +44,14 @@ public class StringUtils {
     public static String java2SQL(String charName, String fieldName) {
         if (charName == null || "".equals(charName)) {
             String newName = camelToUnderline(fieldName);
-            if (newName.substring(0, 1).equals("_"))
+            if ("_".equals(newName.substring(0, 1))) {
                 return newName.substring(1, newName.length());
-            else return newName;
-        } else return charName;
+            } else {
+                return newName;
+            }
+        } else {
+            return charName;
+        }
     }
 
     /**
@@ -59,8 +65,9 @@ public class StringUtils {
      */
     private static boolean isBlank(CharSequence str) {
         int length;
-        if ((str == null) || ((length = str.length()) == 0))
+        if ((str == null) || ((length = str.length()) == 0)) {
             return true;
+        }
         for (int i = 0; i < length; i++) {
             // 只要有一个非空字符即为非空字符串
             if (!Character.isWhitespace(str.charAt(i))) {
@@ -107,8 +114,9 @@ public class StringUtils {
      * @return 字符串
      */
     private static String str(Object obj, Charset charset) {
-        if (null == obj)
+        if (null == obj) {
             return null;
+        }
         if (obj instanceof String) {
             return (String) obj;
         } else if (obj instanceof byte[]) {

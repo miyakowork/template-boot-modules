@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>template-boot-modules</artifactId>
+        <groupId>me.wuwenbin</groupId>
+        <version>1.1.0.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>template-modules-repository</artifactId>
+    <version>1.2.15.RELEASE</version>
+    <packaging>jar</packaging>
+
+    <name>template-modules-repodata</name>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-repository</url>
+    <description>轻松实现数据持久化的模块</description>
+
+    <properties>
+        <tool.version>1.2.0.RELEASE</tool.version>
+        <modules.jpa.version>1.2.0.RELEASE</modules.jpa.version>
+        <modules.pagination.version>1.1.1.RELEASE</modules.pagination.version>
+        <spring.version>4.3.12.RELEASE</spring.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-tools-util</artifactId>
+            <version>${tool.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-tools-sqlgen</artifactId>
+            <version>${tool.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-jpa</artifactId>
+            <version>${modules.jpa.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-pagination</artifactId>
+            <version>${modules.pagination.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

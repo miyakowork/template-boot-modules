@@ -62,9 +62,9 @@ public class SimpleMongoDataSource implements MongoDataSource, MongoConst {
     public List<ServerAddress> getSeeds() {
         String[] hosts = getHosts().split(SPLIT);
         String[] ports = getPorts().split(SPLIT);
-        if (ports.length > 1 && (hosts.length != ports.length))
+        if (ports.length > 1 && (hosts.length != ports.length)) {
             throw new PortNotMatchHostException("端口号与主机IP地址不匹配");
-        else if ((hosts.length == ports.length) && ports.length > 1) {
+        } else if ((hosts.length == ports.length) && ports.length > 1) {
             List<ServerAddress> seeds = new Vector<>();
             for (int i = 0; i < hosts.length; i++) {
                 String host = hosts[i];
@@ -89,7 +89,9 @@ public class SimpleMongoDataSource implements MongoDataSource, MongoConst {
                 }
             }
             return seeds;
-        } else throw new RuntimeException("获取serverAddress地址异常");
+        } else {
+            throw new RuntimeException("获取serverAddress地址异常");
+        }
     }
 
     @Override
@@ -107,7 +109,9 @@ public class SimpleMongoDataSource implements MongoDataSource, MongoConst {
                 credentials.add(mongoCredential);
             }
             return credentials;
-        } else throw new RuntimeException("MongoCredential参数获取异常");
+        } else {
+            throw new RuntimeException("MongoCredential参数获取异常");
+        }
     }
 
     @Override

@@ -11,10 +11,10 @@
 
     <modules>
         <module>template-modules-pagination</module>
-        <module>template-modules-jdbc</module>
+        <module>template-modules-jpa</module>
         <module>template-modules-mongodb</module>
         <module>template-modules-initscan</module>
-        <module>template-modules-repodata</module>
+        <module>template-modules-repository</module>
     </modules>
 
     <properties>

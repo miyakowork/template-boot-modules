@@ -84,16 +84,18 @@ public class MongoFactory implements InitializingBean {
     public synchronized void determineDynamicMongoDao() {
         String currentThreadKey = MongoContextHolder.getHolder().getKey();
         String currentThreadDatabase = MongoContextHolder.getHolder().getDatabase();
-        if (!mongoDataSources.containsKey(currentThreadKey))
+        if (!mongoDataSources.containsKey(currentThreadKey)) {
             throw new DataSourceKeyNotExistException();
+        }
         this.dynamicMongoDataSource = mongoDataSources.get(currentThreadKey);
         this.dynamicMongoDao = getMongoDbDaoByKeyAndDataBase(currentThreadKey, currentThreadDatabase);
     }
 
     public synchronized void determineDynamicMongoDaoByKey() {
         String currentThreadKey = MongoContextHolder.getHolder().getKey();
-        if (!mongoDataSources.containsKey(currentThreadKey))
+        if (!mongoDataSources.containsKey(currentThreadKey)) {
             throw new DataSourceKeyNotExistException();
+        }
         this.dynamicMongoDataSource = mongoDataSources.get(currentThreadKey);
         this.dynamicMongoDao = getMongoDbDaoByKey(currentThreadKey);
     }
@@ -131,7 +133,9 @@ public class MongoFactory implements InitializingBean {
             MongoClient mongoClient = new MongoClient(seeds, credentials, options);
             MongoDbFactory dbFactory = new SimpleMongoDbFactory(mongoClient, defaultDatabase);
             return new MongoDbTemplate(new MongoTemplate(dbFactory, dataSource.getMongoConverter()));
-        } else throw new DataSourceKeyNotExistException();
+        } else {
+            throw new DataSourceKeyNotExistException();
+        }
 
     }
 
@@ -151,7 +155,9 @@ public class MongoFactory implements InitializingBean {
             MongoClient mongoClient = new MongoClient(seeds, credentials, options);
             MongoDbFactory dbFactory = new SimpleMongoDbFactory(mongoClient, dataSource.getDefaultDatabase());
             return new MongoDbTemplate(new MongoTemplate(dbFactory, dataSource.getMongoConverter()));
-        } else throw new DataSourceKeyNotExistException();
+        } else {
+            throw new DataSourceKeyNotExistException();
+        }
 
     }
 
