@@ -29,7 +29,10 @@ import java.util.Set;
 
 /**
  * created by Wuwenbin on 2017/10/30 at 12:03
+ *
+ * @author Wuwenbin
  */
+@Configuration
 public class DataRepoRegistry implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(DataRepoRegistry.class);
