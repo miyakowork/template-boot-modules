@@ -11,7 +11,7 @@
     <version>1.5.1.RELEASE</version>
     <packaging>jar</packaging>
 
-    <name>template-modules-repodata</name>
+    <name>template-modules-repository</name>
     <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-repository</url>
     <description>轻松实现数据持久化的模块</description>
 
