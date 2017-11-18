@@ -1,13 +1,17 @@
-> 以下所有的实体类都需要有@SQLTable以及字段有需要的都需要@SQLColumn注解支撑
+## 总括
+1. 以下所有的实体类都需要有相关注解支持（详细请参考文档）。
+2. 本模块中的所有sql语句（除使用@XxxxSQL注解指定sql的之外）参数形式全部为 「param = :paramKey」形式，即冒号形式。
+3. 「Repository」模块可以使应用程序访问数据库变得异常简单。简单一两步操作即可。
 ---
 ## insert语句/save方法命名规则
 1. 方法名必须以「save」打头。
 2. 方法的返回值必须为「T」或者为「List\<T\>」。
-3. 方法的参数有且只能有一种类型。
+3. 方法的参数类型可以有两种情况。其一：有且只能有一种类型，个数不限；其二：可以有多种类、多个参数，要求与sql语句的参数名相同。
 4. 方法的参数种类必须为「Map<String,Object>」、「T」、「Collection<T>（或其子接口）」、「T\[](也可为不定参数形式T...)」、「Map<String,Object>\[](同T[],也可为不定参数形式Map<String,Object>...)」其中之一的类型。
-5. 插入所有字段已经预定在「IBaseCrudDataRepo」接口中，请直接使用。
-6. 需要插入非全部字段请使用「save$Router+router」的标识来命名，如：save$RouterABC()，参数和返回类型请参考第2、3、4准则。
-7. 如果需要自定义插入语句请使用「save$BySql...」，并且在此方法上使用@SaveSQL指定相关sql语句。eg：「save$BySqlXXX」(xxx一般为唯一标识)。
+5. 插入所有字段已经预定在「IBaseCrudRepository」接口中，请直接使用你的「Repository」接口继承此接口使用「save」方法即可。
+6. 需要插入非全部字段请使用「@SaveSQL」指定 sql 或「@Routers」指定插入的字段，参数和返回类型请参考第2、3、4准则。
+7. 如果参数为多种类型（即使用@SaveSQL指定sql，并且参数为多个，依照sql语句的参数来），那么方法的返回值只能为int（返回插入的个数，不能返回一个对象）。
+8. 其他以上未满足条件的，请使用原生「DaoFactory」的「AncestorDao」接口执行sql。
 ---
 ## delete语句/delete方法命名规则
 1. 方法名必须以「delete」打头。

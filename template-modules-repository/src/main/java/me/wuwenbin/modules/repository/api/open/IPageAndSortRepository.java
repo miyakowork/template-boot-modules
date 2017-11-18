@@ -3,7 +3,7 @@ package me.wuwenbin.modules.repository.api.open;
 
 import me.wuwenbin.modules.jpa.support.Page;
 import me.wuwenbin.modules.pagination.query.TableQuery;
-import me.wuwenbin.modules.repository.annotation.type.DataRepo;
+import me.wuwenbin.modules.repository.annotation.type.Repository;
 
 /**
  * 分页信息获取接口
@@ -11,8 +11,8 @@ import me.wuwenbin.modules.repository.annotation.type.DataRepo;
  *
  * @author Wuwenbin
  */
-@DataRepo
-public interface IPageAndSortDataRepo<T, PK> extends IBaseCrudDataRepo<T, PK> {
+@Repository
+public interface IPageAndSortRepository<T, PK> extends IBaseCrudRepository<T, PK> {
 
     /**
      * 根据PageModel中的字段属性上的注解来自动生成查询的sql

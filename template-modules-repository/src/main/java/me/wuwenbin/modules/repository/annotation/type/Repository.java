@@ -9,5 +9,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface DataRepo {
+public @interface Repository {
+
+    /**
+     * 注入时候的beanName，不指定则默认为类名首字母小写
+     *
+     * @return
+     */
+    String value() default "";
 }

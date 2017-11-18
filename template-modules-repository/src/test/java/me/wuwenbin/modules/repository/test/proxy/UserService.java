@@ -11,8 +11,9 @@ import java.util.Set;
 /**
  * created by Wuwenbin on 2017/10/28 at 11:20
  */
-public interface UserService<S extends Person> extends PublicService<S> {
+public interface UserService<S> extends PublicService<S> {
 
+    int age();
     S name();
 
     void empty();
@@ -34,4 +35,6 @@ public interface UserService<S extends Person> extends PublicService<S> {
     <Model extends Person> List<Model> findList();
 
     List<Person> findList2();
+
+    S name(String username, String password, int age);
 }

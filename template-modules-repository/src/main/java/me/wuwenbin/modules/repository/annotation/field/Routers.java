@@ -1,5 +1,7 @@
 package me.wuwenbin.modules.repository.annotation.field;
 
+import me.wuwenbin.tools.sqlgen.constant.Router;
+
 import java.lang.annotation.*;
 
 /**
@@ -8,13 +10,12 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Inherited
-public @interface SaveSQL {
+public @interface Routers {
 
     /**
      * 根据此处指定的SQL语句来操作
      *
      * @return
      */
-    String value();
+    int[] value() default Router.DEFAULT;
 }

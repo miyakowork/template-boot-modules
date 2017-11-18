@@ -263,9 +263,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
         for (int i = 0; i < fields.length; i++) {
             String fieldPart = fields[i];
             Constraint constraint = Constraint.getFromEndsWith(fieldPart);
-            String field = fieldPart.substring(0, fieldPart.length() - constraint.toString().length());
+            String field = fieldPart.endsWith(constraint.name()) ? fieldPart : fieldPart.concat(constraint.name());
+            field = fieldPart.substring(0, fieldPart.length() - constraint.toString().length());
             String column = SQLDefineUtils.java2SQL("", field);
             if (i == 0) {
+                //首字母小写
+                field = field.substring(0, 1).toLowerCase().concat(field.substring(1, field.length()));
                 sqlBuilder.append(constraint.getPart(column, field));
             } else {
                 String tempAnd = fields[i - 1].concat("And").concat(fieldPart);

@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>template-modules-repository</artifactId>
-    <version>1.2.15.RELEASE</version>
+    <version>1.5.1.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>template-modules-repodata</name>

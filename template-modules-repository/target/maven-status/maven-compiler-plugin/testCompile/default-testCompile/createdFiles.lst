@@ -1,0 +1,10 @@
+me\wuwenbin\modules\repository\test\UserTest.class
+me\wuwenbin\modules\repository\test\UserVO.class
+me\wuwenbin\modules\repository\test\proxy\test\ProxyTest.class
+me\wuwenbin\modules\repository\test\proxy\UserService.class
+me\wuwenbin\modules\repository\test\proxy\ServiceProxyFactory.class
+me\wuwenbin\modules\repository\test\Role.class
+me\wuwenbin\modules\repository\test\User.class
+me\wuwenbin\modules\repository\test\Department.class
+me\wuwenbin\modules\repository\test\Person.class
+me\wuwenbin\modules\repository\test\proxy\PublicService.class

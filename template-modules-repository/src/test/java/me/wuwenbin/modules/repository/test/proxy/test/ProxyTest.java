@@ -38,7 +38,9 @@ public class ProxyTest {
         sp.put("p1", p1);
         sp.put("p2", p2);
         sp.put("p4", p3);
-        userService.findList2();
+        userService.age();
+//        userService.name("wwb","123",1);
+//        userService.findList2();
 //        userService.empty();
 //        userService.save("b", p1, p2, p3);
 //        userService.save1(sp);

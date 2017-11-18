@@ -12,12 +12,18 @@ public enum Constraint {
      * 约束的条件
      */
     Equal("="),
+    Eq("="),
     NotEqual("<>"),
+    Ne("<>"),
     Between,
     LessThan("<"),
+    Lt("<"),
     LessThanEqual("<="),
+    Lte("<="),
     GreaterThan(">"),
+    Gt(">"),
     GreaterThanEqual(">="),
+    Gte(">="),
     Like("like"),
     NotLike("not like"),
     In("in"),
@@ -95,18 +101,30 @@ public enum Constraint {
     public Constraint getFromName(String name) {
         if (StringUtils.isEmpty(name) || name.equals(Equal.toString())) {
             return Equal;
+        } else if (name.equals(Eq.toString())) {
+            return Eq;
         } else if (name.equals(NotEqual.toString())) {
             return NotEqual;
+        } else if (name.equals(Ne.toString())) {
+            return Ne;
         } else if (name.equals(Between.toString())) {
             return Between;
         } else if (name.equals(LessThan.toString())) {
             return LessThan;
+        } else if (name.equals(Lt.toString())) {
+            return Lt;
         } else if (name.equals(LessThanEqual.toString())) {
             return LessThanEqual;
+        } else if (name.equals(Lte.toString())) {
+            return Lte;
         } else if (name.equals(GreaterThan.toString())) {
             return GreaterThan;
+        } else if (name.equals(Gt.toString())) {
+            return Gt;
         } else if (name.equals(GreaterThanEqual.toString())) {
             return GreaterThanEqual;
+        } else if (name.equals(Gte.toString())) {
+            return Gte;
         } else if (name.equals(Like.toString())) {
             return Like;
         } else if (name.equals(NotLike.toString())) {
@@ -135,18 +153,30 @@ public enum Constraint {
     public static Constraint getFromEndsWith(String filedPart) {
         if (filedPart.endsWith(Equal.toString())) {
             return Equal;
+        } else if (filedPart.endsWith(Eq.toString())) {
+            return Eq;
         } else if (filedPart.endsWith(NotEqual.toString())) {
             return NotEqual;
+        } else if (filedPart.endsWith(Ne.toString())) {
+            return Ne;
         } else if (filedPart.endsWith(Between.toString())) {
             return Between;
         } else if (filedPart.endsWith(LessThan.toString())) {
             return LessThan;
+        } else if (filedPart.endsWith(Lt.toString())) {
+            return Lt;
         } else if (filedPart.endsWith(LessThanEqual.toString())) {
             return LessThanEqual;
+        } else if (filedPart.endsWith(Lte.toString())) {
+            return Lte;
         } else if (filedPart.endsWith(GreaterThan.toString())) {
             return GreaterThan;
+        } else if (filedPart.endsWith(Gt.toString())) {
+            return Gt;
         } else if (filedPart.endsWith(GreaterThanEqual.toString())) {
             return GreaterThanEqual;
+        } else if (filedPart.endsWith(Gte.toString())) {
+            return Gte;
         } else if (filedPart.endsWith(Like.toString())) {
             return Like;
         } else if (filedPart.endsWith(NotLike.toString())) {

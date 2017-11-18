@@ -30,21 +30,20 @@ public class MethodUtils {
      * @return
      * @throws MethodTypeMissMatch
      */
-    public static <T> ICrudProvider getProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) throws MethodTypeMissMatch {
+    public static ICrudProvider getProvider(Method method, AncestorDao jdbcTemplate, Class<?> clazz) throws MethodTypeMissMatch {
         String methodName = method.getName();
         if (StringUtils.isEmpty(methodName)) {
             throw new RuntimeException("方法名为空！？");
         } else {
-            String pagination = "findPagination";
-            if (methodName.equals(pagination)) {
+            if (methodName.equalsIgnoreCase(MethodType.PAGE.getName())) {
                 return new PageProvider<>(method, jdbcTemplate, clazz);
-            } else if (methodName.startsWith(MethodType.SAVE.toString())) {
+            } else if (methodName.startsWith(MethodType.SAVE.getName())) {
                 return new SaveProvider<>(method, jdbcTemplate, clazz);
-            } else if (methodName.startsWith(MethodType.DELETE.toString())) {
+            } else if (methodName.startsWith(MethodType.DELETE.getName())) {
                 return new DeleteProvider<>(method, jdbcTemplate, clazz);
-            } else if (methodName.startsWith(MethodType.COUNT.toString()) || methodName.startsWith(MethodType.FIND.toString())) {
+            } else if (methodName.startsWith(MethodType.COUNT.getName()) || methodName.startsWith(MethodType.FIND.getName())) {
                 return new FindProvider<>(method, jdbcTemplate, clazz);
-            } else if (methodName.startsWith(MethodType.UPDATE.toString())) {
+            } else if (methodName.startsWith(MethodType.UPDATE.getName())) {
                 return new UpdateProvider<>(method, jdbcTemplate, clazz);
             } else {
                 throw new MethodTypeMissMatch();

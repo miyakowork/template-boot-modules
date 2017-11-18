@@ -10,31 +10,40 @@ public enum MethodType {
     /**
      * insert方法
      */
-    SAVE,
+    SAVE("save"),
 
     /**
      * 删除方法
      */
-    DELETE,
+    DELETE("delete"),
 
     /**
      * 查找方法
      */
-    FIND,
+    FIND("find"),
 
     /**
      * 计数
      */
-    COUNT,
+    COUNT("count"),
+
+    /**
+     * 分页方法
+     */
+    PAGE("findPagination"),
 
     /**
      * update方法
      */
-    UPDATE;
+    UPDATE("update");
 
-    @Override
-    public String toString() {
-        return this.name().toLowerCase();
+    private String name;
+
+    MethodType(String name) {
+        this.name = name;
     }
 
+    public String getName() {
+        return this.name;
+    }
 }

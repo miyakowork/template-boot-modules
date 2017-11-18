@@ -1,8 +1,8 @@
 package me.wuwenbin.modules.repository.api.open;
 
 
-import me.wuwenbin.modules.repository.annotation.type.DataRepo;
-import me.wuwenbin.modules.repository.api.base.IDataRepo;
+import me.wuwenbin.modules.repository.annotation.type.Repository;
+import me.wuwenbin.modules.repository.api.base.IRepository;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
 
 import java.util.Collection;
@@ -14,8 +14,8 @@ import java.util.Map;
  *
  * @author Wuwenbin
  */
-@DataRepo
-public interface IBaseCrudDataRepo<T, PK> extends IDataRepo<T, PK> {
+@Repository
+public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
 
     //==============================增加/插入操作  开始==============================//
 

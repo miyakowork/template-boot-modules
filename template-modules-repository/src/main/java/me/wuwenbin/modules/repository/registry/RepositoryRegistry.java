@@ -1,7 +1,7 @@
 package me.wuwenbin.modules.repository.registry;
 
-import me.wuwenbin.modules.repository.annotation.type.DataRepo;
-import me.wuwenbin.modules.repository.proxy.DataRepoProxyFactory;
+import me.wuwenbin.modules.repository.annotation.type.Repository;
+import me.wuwenbin.modules.repository.proxy.RepositoryProxyFactory;
 import me.wuwenbin.modules.repository.util.ClassScanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,22 +22,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 注册Repository代理类至Spring容器中
  * created by Wuwenbin on 2017/10/30 at 12:03
  *
  * @author Wuwenbin
  */
-//@Configuration
-public class DataRepoRegistry implements BeanDefinitionRegistryPostProcessor {
+public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataRepoRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(RepositoryRegistry.class);
 
     private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
     private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
 
-    private DataRepoProxyFactory dataRepoProxyFactory;
+    private RepositoryProxyFactory repositoryProxyFactory;
 
-    public DataRepoRegistry(DataRepoProxyFactory dataRepoProxyFactory) {
-        this.dataRepoProxyFactory = dataRepoProxyFactory;
+    public RepositoryRegistry(RepositoryProxyFactory repositoryProxyFactory) {
+        this.repositoryProxyFactory = repositoryProxyFactory;
     }
 
     /**
@@ -48,27 +48,40 @@ public class DataRepoRegistry implements BeanDefinitionRegistryPostProcessor {
      */
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
-        logger.info("注册BootService开始");
+        int cnt = 0;
         try {
-            Set<Class<?>> scannedClass = scanBootServiceInterfaces();
-            for (Class bootService : scannedClass) {
-                String simpleBeanName = bootService.getSimpleName().substring(0, 1).toLowerCase().concat(bootService.getSimpleName().substring(1));
+            logger.info("========== 开始扫描含有 [@Repository] 的 Bean ==========");
+            Set<Class<?>> repositories = scanBootServiceInterfaces();
+            logger.info("========== 扫描结束，以供扫描到含有 [@Repository] 的 Bean {} 个 ==========", repositories.size());
+
+
+            logger.info("========== 开始注册扫描到的 [Repositories] 至 Spring 容器中 ==========");
+
+            for (Class repository : repositories) {
+                Repository repositoryClass = (Repository) repository.getAnnotation(Repository.class);
+                String beanName = repositoryClass.value();
+                String simpleBeanName = StringUtils.isEmpty(beanName) ? repository.getSimpleName().substring(0, 1).toLowerCase().concat(repository.getSimpleName().substring(1)) : beanName;
                 //noinspection unchecked
-                Class clazz = dataRepoProxyFactory.newInstance(bootService).getClass();
+                Class clazz = repositoryProxyFactory.newInstance(repository).getClass();
+
+                logger.info("---------- 开始注册 [Repository，BeanClass : {} ，BeanName：{}] ----------", repository, simpleBeanName);
                 registerBean(beanDefinitionRegistry, simpleBeanName, clazz);
+                logger.info("---------- 注册结束 [Repository，BeanClass : {} ，BeanName：{}] ----------", repository, simpleBeanName);
+
+                cnt++;
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            logger.error("扫描BootService类失败", e);
+            logger.error("！！！扫描Repository类失败！！！", e);
         }
-        logger.info("注册BootService完毕");
+
+        logger.info("========== 注册结束，总计注册成功的 [Repositories] 个数为 {} 个 ==========", cnt);
     }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
         //没有什么后置处理
     }
-
 
 
     /**
@@ -98,7 +111,7 @@ public class DataRepoRegistry implements BeanDefinitionRegistryPostProcessor {
      */
     private Set<Class<?>> scanBootServiceInterfaces() throws IOException, ClassNotFoundException {
         Set<Class<? extends Annotation>> classSet = new HashSet<>();
-        classSet.add(DataRepo.class);
+        classSet.add(Repository.class);
         return ClassScanUtils.scan("", classSet, null);
     }
 
