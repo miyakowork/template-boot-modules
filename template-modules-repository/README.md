@@ -14,7 +14,7 @@
 + 如果参数为多种类型（即使用@SaveSQL指定sql，并且参数为多个，依照sql语句的参数来），那么方法的返回值只能为int（返回插入的个数，不能返回一个对象）。
 + 其他以上未满足条件的，请使用原生「DaoFactory」的「AncestorDao」接口执行sql。
 ### 支持方法简例
-+ 请查看测试项目代码：[「码云／GitOSC」](https://gitee.com/wuwenbn/RepositoryTester/blob/master/src/main/java/me/wuwenbin/modules/repodata/repository/UserRepository.java)
++ 请查看测试项目代码：<a href="https://gitee.com/wuwenbn/RepositoryTester/blob/master/src/main/java/me/wuwenbin/modules/repodata/repository/UserRepository.java" target="_blank">[「码云／GitOSC」]</a>
 ---
 ## delete语句/delete方法命名规则
 1. 方法名必须以「delete」打头。
