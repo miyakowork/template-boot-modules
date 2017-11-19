@@ -1,4 +1,4 @@
-# 「Repository」 - An fast and convenient api for data in 「template」
+#  An fast and convenient api for data-operation
 + 以下所有的实体类都需要有相关注解支持（详细请参考文档）。
 + 本模块中的所有sql语句（除使用@XxxxSQL注解指定sql的之外）参数形式全部为 「param = :paramKey」形式，即冒号形式。
 + 「Repository」模块可以使应用程序访问数据库变得异常简单。简单一两步操作即可。
