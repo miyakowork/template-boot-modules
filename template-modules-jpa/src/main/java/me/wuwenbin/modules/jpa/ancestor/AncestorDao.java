@@ -108,21 +108,21 @@ public interface AncestorDao {
 
     /**
      * <tt>INSERT</tt> values with returned <tt>PK</tt> value
-     * use {@link #insertBeanAutoGenKeyOut(String, Object)} to instead of this
+     * use {@link #insertBeanAutoGenKeyReturnKey(String, Object)} to instead of this
      *
      * @param tableName     the name of table
      * @param keyName       the name of column increase automatically
      * @param beanParameter the object of bean(eg:the property:<tt>userName</tt> should correspond to <tt>user_name</tt>, for we are not suggest to use upper case)
      * @return {@link Long} the column which increase automatically
      * @throws Exception the message of insert exception
-     * @see #insertBeanAutoGenKeyOut(String, Object)
+     * @see #insertBeanAutoGenKeyReturnKey(String, Object)
      */
     @Deprecated
     long insertBeanGetGeneratedKey(String tableName, String keyName, Object beanParameter) throws Exception;
 
     /**
      * <tt>INSERT</tt> values with returned <tt>PK</tt> value
-     * use {@link #insertBeanAutoGenKeyOut(String, Object)} to instead
+     * use {@link #insertBeanAutoGenKeyReturnKey(String, Object)} to instead
      *
      * @param tableName    the name of table
      * @param keyName      the name of column increase automatically
@@ -141,7 +141,7 @@ public interface AncestorDao {
      * @return 插入影响的条数
      * @throws Exception 插入的异常信息
      */
-    int insertMapAutoGenKey(String sql, Map<String, Object> mapParameter) throws Exception;
+    int insertMapAutoGenKeyReturnAffect(String sql, Map<String, Object> mapParameter) throws Exception;
 
     /**
      * 插入bean返回插入的影响条数，自动生成key
@@ -152,7 +152,7 @@ public interface AncestorDao {
      * @return 插入影响的条数
      * @throws Exception 插入之中发生的异常
      */
-    <T> int insertBeanAutoGenKey(String sql, T beanParameter) throws Exception;
+    <T> int insertBeanAutoGenKeyReturnAffect(String sql, T beanParameter) throws Exception;
 
     /**
      * 插入Map返回插入的主键
@@ -162,7 +162,7 @@ public interface AncestorDao {
      * @return 自动生成的主键
      * @throws Exception 插入时发生的异常
      */
-    long insertMapAutoGenKeyOut(String sql, Map<String, Object> mapParameter) throws Exception;
+    long insertMapAutoGenKeyReturnKey(String sql, Map<String, Object> mapParameter) throws Exception;
 
     /**
      * 插入bean返回插入的主键
@@ -173,7 +173,7 @@ public interface AncestorDao {
      * @return 自动生成的主键
      * @throws Exception 插入时发生的异常
      */
-    <T> long insertBeanAutoGenKeyOut(String sql, T beanParameter) throws Exception;
+    <T> long insertBeanAutoGenKeyReturnKey(String sql, T beanParameter) throws Exception;
 
     /**
      * 插入一条Map记录，返回插入的记录（含主键）
@@ -182,10 +182,11 @@ public interface AncestorDao {
      * @param insertSQL    插入语句
      * @param mapParameter map参数
      * @param tableName    表名
+     * @param pkName       主键列明
      * @return 所有字段组装成的map对象
      * @throws Exception 插入时发生的异常
      */
-    Map<String, Object> insertMapAutoGenKeyOutMap(String insertSQL, Map<String, Object> mapParameter, String tableName) throws Exception;
+    Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) throws Exception;
 
     /**
      * 插入一条记录，参数为Map返回一个对应的实体类
@@ -194,11 +195,12 @@ public interface AncestorDao {
      * @param mapParameter
      * @param clazz
      * @param tableName
+     * @param pkName       主键列明
      * @param <T>
      * @return
      * @throws Exception
      */
-    <T> T insertMapAutoGenKeyOutBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName) throws Exception;
+    <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
 
     /**
      * 插入一条bean记录，返回插入记录（含主键）
@@ -208,11 +210,12 @@ public interface AncestorDao {
      * @param beaParameter bean类型参数
      * @param clazz        对象匹配的class类型
      * @param tableName    表名
+     * @param pkName       主键列明
      * @param <T>          对象匹配的泛型类型
      * @return 插入的对象
      * @throws Exception 插入时发生的异常
      */
-    <T> T insertBeanAutoGenKeyOutBean(String insertSQL, T beaParameter, Class<T> clazz, String tableName) throws Exception;
+    <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, T beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
 
     /**
      * execute method which is <tt>INSERT</tt> or <tt>UPDATE</tt> or <tt>DELETE</tt>
