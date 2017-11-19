@@ -14,9 +14,10 @@
 + 如果参数为多种类型（即使用@SaveSQL指定sql，并且参数为多个，依照sql语句的参数来），那么方法的返回值只能为int（返回插入的个数，不能返回一个对象）。
 + 其他以上未满足条件的，请使用原生「DaoFactory」的「AncestorDao」接口执行sql。
 ### 支持方法简例
-|          方法名          |      方法所在接口      |         方法功能         |     备注     |
-|:------------------------:|:-----------------:|:---------------------:|:-----------:|
-|          `save(T entity)`           |      `IBaseCrudRepository`   |    保存所有实体中所有字段属性   |   id是否插入根据`@GeneralType`判断
+|          方法名          |   实例  |     所在接口      |         功能         |     备注     |
+|:------------------------:|:-----------------:||:-----------------:|:---------------------:|:-----------:|
+|          `save(T)`           |  -  |      IBaseCrudRepository |    保存所有实体中所有字段属性   |   id插入情况视@GeneralTpe种类而定
+|     `@Routers save[Customize]([Object...])`   | `@Routers saveSimpleBean(String filed1,int filed2)`   |  用户定义的继承IBaseCrudRepository或者IPageAndSortRepository的自定义接口中   |    保存指定的router字段   |   id插入情况视@GeneralTpe种类而定
 
 ---
 ## delete语句/delete方法命名规则
