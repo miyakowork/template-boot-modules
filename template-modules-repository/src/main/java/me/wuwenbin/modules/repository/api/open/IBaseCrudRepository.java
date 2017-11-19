@@ -86,6 +86,14 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
     void delete(PK... pks) throws Exception;
 
     /**
+     * 删除数据，参数为map形式
+     *
+     * @param deleteParam
+     * @throws Exception
+     */
+    void delete(Map<String, Object> deleteParam) throws Exception;
+
+    /**
      * 根据主键集合删除多条记录
      *
      * @param pks

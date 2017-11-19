@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
 
 /**
+ * 可以以工厂方式获取所有已注册的Repository，配置此Bean即可
  * created by Wuwenbin on 2017/11/18 at 22:29
  */
 public final class RepositoryFactory implements ApplicationContextAware {
@@ -19,6 +20,13 @@ public final class RepositoryFactory implements ApplicationContextAware {
         RepositoryFactory.applicationContext = applicationContext;
     }
 
+    /**
+     * 获取定义的Repository接口
+     *
+     * @param repository
+     * @param <T>
+     * @return
+     */
     public static <T extends IRepository> T get(Class<T> repository) {
         Repository repo = repository.getAnnotation(Repository.class);
         String name = repo.value();

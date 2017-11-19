@@ -12,7 +12,6 @@ import me.wuwenbin.modules.repository.util.MethodUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * insert/save方法的执行提供者
@@ -35,8 +34,9 @@ public class SaveProvider<T> extends AbstractProvider<T> {
         //插入全部实体字段
         String save = "save";
         if (save.equals(methodName)) {
-            boolean paramIsCorrect = args.length == 1 && (MethodUtils.paramTypeMapOrSub(args[0]) || MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz()));
-            if (paramIsCorrect) {
+            boolean paramSituation1 = args.length == 1 && (MethodUtils.paramTypeCollectionOrSub(args[0]) || MethodUtils.paramTypeMapOrSub(args[0]) || MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz()));
+            boolean paramSituation2 = !paramSituation1 && (((Object[]) args[0]).length > 1 && MethodUtils.paramTypeArray(args[0]));
+            if (paramSituation1 || paramSituation2) {
                 String sql = super.isPkInsert ? super.sbb.insertAllWithPk() : super.sbb.insertAllWithoutPk();
                 return executeByParamType(args, returnType, sql);
             } else {
@@ -44,7 +44,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             }
         }
 
-        //指定自定义insert SQL语句，方法参数视sql语句而定（可以为多个，每个依次对应sql语句中的参数）
+        //指定自定义insert SQL语句，方法参数视sql语句而定（可以为多个，每个依次对应sql语句中的参数）,且返回值一定为int
         else if (methodName.startsWith(save) && super.getMethod().isAnnotationPresent(SaveSQL.class)) {
             String saveSql = super.getMethod().getAnnotation(SaveSQL.class).value();
             return executeByParamType(args, returnType, saveSql);
@@ -92,30 +92,24 @@ public class SaveProvider<T> extends AbstractProvider<T> {
                 throw new MethodParamException("方法「" + super.getMethod().getName() + "」返回类型不正确，请参考命名规则！");
             }
         } else if (MethodUtils.paramTypeMapOrSub(args[0])) {
-            return getJdbcTemplate().insertMapAutoGenKeyOutBean(sql, (Map<String, Object>) args[0], super.getClazz(), super.tableName);
+            return getJdbcTemplate().insertMapAutoGenKeyReturnBean(sql, (Map<String, Object>) args[0], super.getClazz(), super.tableName, super.pkDbName);
         } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
-            return getJdbcTemplate().insertBeanAutoGenKeyOutBean(sql, (T) args[0], super.getClazz(), super.tableName);
+            return getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, (T) args[0], super.getClazz(), super.tableName, super.pkDbName);
         } else if (MethodUtils.paramTypeCollectionOrSub(args[0])) {
             Collection<T> paramCollection = (Collection<T>) args[0];
             List<T> result = new ArrayList<>(paramCollection.size());
-            paramCollection.forEach(p -> {
-                try {
-                    result.add(getJdbcTemplate().insertBeanAutoGenKeyOutBean(sql, p, super.getClazz(), super.tableName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            for (T p : paramCollection) {
+                result.add(getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, p, super.getClazz(), super.tableName, super.pkDbName));
+            }
             return result;
         } else if (MethodUtils.paramTypeArray(args[0])) {
             Object[] objects = (Object[]) args[0];
-            return execSaveMethodWithParamArray(sql, objects);
+            return execWithParamArray(sql, objects);
         } else {
             throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合要求，请参考命名规则！");
         }
     }
 
-
-    //===================内部execute方法============================
 
 
     /**
@@ -127,26 +121,18 @@ public class SaveProvider<T> extends AbstractProvider<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    private Object execSaveMethodWithParamArray(String sql, Object[] objects) throws Exception {
+    private Object execWithParamArray(String sql, Object[] objects) throws Exception {
         List<T> result = new ArrayList<>();
         if (objects[0] instanceof Map) {
             Map<String, Object>[] paramMap = (Map<String, Object>[]) objects;
-            Stream.of(paramMap).forEach(p -> {
-                try {
-                    result.add(getJdbcTemplate().insertMapAutoGenKeyOutBean(sql, p, getClazz(), tableName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            for (Map<String, Object> p : paramMap) {
+                result.add(getJdbcTemplate().insertMapAutoGenKeyReturnBean(sql, p, getClazz(), tableName, super.pkDbName));
+            }
             return result;
         } else if (objects[0].getClass().equals(super.getClazz())) {
-            Stream.of(objects).forEach(p -> {
-                try {
-                    result.add(getJdbcTemplate().insertBeanAutoGenKeyOutBean(sql, (T) p, getClazz(), tableName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            for (Object p : objects) {
+                result.add(getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, (T) p, getClazz(), tableName, super.pkDbName));
+            }
             return result;
         } else {
             throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");

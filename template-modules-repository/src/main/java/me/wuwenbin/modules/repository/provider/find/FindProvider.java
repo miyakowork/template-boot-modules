@@ -9,9 +9,7 @@ import me.wuwenbin.modules.repository.exception.MethodTypeMissMatch;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
 import me.wuwenbin.modules.repository.provider.find.support.Condition;
-import me.wuwenbin.modules.repository.provider.find.support.Constraint;
 import me.wuwenbin.modules.repository.util.MethodUtils;
-import me.wuwenbin.tools.sqlgen.util.SQLDefineUtils;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -260,28 +258,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
         String fieldStr = methodName.substring(6);
         String[] fields = fieldStr.split(joinStr);
         StringBuilder sqlBuilder = new StringBuilder("select * from ".concat(super.tableName).concat(" where "));
-        for (int i = 0; i < fields.length; i++) {
-            String fieldPart = fields[i];
-            Constraint constraint = Constraint.getFromEndsWith(fieldPart);
-            String field = fieldPart.endsWith(constraint.name()) ? fieldPart : fieldPart.concat(constraint.name());
-            field = fieldPart.substring(0, fieldPart.length() - constraint.toString().length());
-            String column = SQLDefineUtils.java2SQL("", field);
-            if (i == 0) {
-                //首字母小写
-                field = field.substring(0, 1).toLowerCase().concat(field.substring(1, field.length()));
-                sqlBuilder.append(constraint.getPart(column, field));
-            } else {
-                String tempAnd = fields[i - 1].concat("And").concat(fieldPart);
-                String tempOr = fields[i - 1].concat("Or").concat(fieldPart);
-                if (fieldStr.contains(tempAnd)) {
-                    sqlBuilder.append(" and ").append(constraint.getPart(column, field));
-                } else if (fieldStr.contains(tempOr)) {
-                    sqlBuilder.append(" or ").append(constraint.getPart(column, field));
-                } else {
-                    throw new MethodExecuteException("方法:「" + methodName + "」命名有误，请参考命名规则！");
-                }
-            }
-        }
+        MethodUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, true);
         String sql = sqlBuilder.toString();
         return executeFindCustomByParamAndReturn(args, methodName, super.getMethod().getReturnType(), sql);
     }
