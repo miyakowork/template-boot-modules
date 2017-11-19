@@ -16,8 +16,8 @@
 ### 支持方法简例
 |          方法名          |   实例  |     所在接口      |         功能         |     备注     |
 |:------------------------:|:-----------------:||:-----------------:|:---------------------:|:-----------:|
-|          `save(T)`           |  -  |      IBaseCrudRepository |    保存所有实体中所有字段属性   |   id插入情况视@GeneralTpe种类而定
-|     `@Routers save[Customize]([Object...])`   | `@Routers saveSimpleBean(String filed1,int filed2)`   |  用户定义的继承IBaseCrudRepository或者IPageAndSortRepository的自定义接口中   |    保存指定的router字段   |   id插入情况视@GeneralTpe种类而定
+|          `save(T)`           |  -  |      IBaseCrudRepository |    保存所有实体中所有字段属性   |   id插入情况视@GeneralTpe种类而定  |
+|     `@Routers save[Customize]([Object...])`   | `@Routers saveSimpleBean(String filed1,int filed2)`   |  用户定义的继承IBaseCrudRepository或者IPageAndSortRepository的自定义接口中   |    保存指定的router字段   |   id插入情况视@GeneralTpe种类而定|
 
 ---
 ## delete语句/delete方法命名规则
