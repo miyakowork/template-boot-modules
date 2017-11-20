@@ -13,25 +13,11 @@ public class Condition {
 
     private PreJoin preJoin = PreJoin.AND;
     private String field;
-    private Object value;
     private Constraint constraint = Constraint.Equal;
+    private Object value;
 
-    public Condition() {
-    }
-
-    public Condition(PreJoin preJoin, String field, Object value, Constraint constraint) {
+    private Condition(PreJoin preJoin, String field, Constraint constraint, Object value) {
         this.preJoin = preJoin;
-        this.field = field;
-        this.value = value;
-        this.constraint = constraint;
-    }
-
-    public Condition(String field, Object value) {
-        this.field = field;
-        this.value = value;
-    }
-
-    public Condition(String field, Object value, Constraint constraint) {
         this.field = field;
         this.value = value;
         this.constraint = constraint;
@@ -69,28 +55,29 @@ public class Condition {
         this.constraint = constraint;
     }
 
-    public static Condition builder(PreJoin preJoin, String field, Object value, Constraint constraint) {
-        return new Condition(preJoin, field, value, constraint);
+
+    public static Condition build(PreJoin preJoin, String field, Object value, Constraint constraint) {
+        return new Condition(preJoin, field, constraint, value);
     }
 
-    public static Condition builderDefault(String field, Object value) {
-        return new Condition(field, value);
+    public static Condition build(String field, Object value) {
+        return new Condition(PreJoin.AND, field, Constraint.Equal, value);
     }
 
-    public static Condition builderSimple(String field, Constraint constraint) {
-        return new Condition(field, constraint);
+    public static Condition build(String field, Constraint constraint) {
+        return new Condition(PreJoin.AND, field, constraint, null);
     }
 
-    public static List<Condition> defaultList(Param... params) {
-        List<Condition> conditions = new ArrayList<>(params.length);
-        for (Param param : params) {
-            Condition condition = Condition.builderDefault(param.getField(), param.getValue());
+    public static List<Condition> buildList(FiledValue... filedValues) {
+        List<Condition> conditions = new ArrayList<>(filedValues.length);
+        for (FiledValue filedValue : filedValues) {
+            Condition condition = Condition.build(filedValue.getField(), filedValue.getValue());
             conditions.add(condition);
         }
         return conditions;
     }
 
-    public static List<Condition> list(Condition... conditions) {
+    public static List<Condition> buildList(Condition... conditions) {
         List<Condition> conditionList = new ArrayList<>(conditions.length);
         conditionList.addAll(Arrays.asList(conditions));
         return conditionList;

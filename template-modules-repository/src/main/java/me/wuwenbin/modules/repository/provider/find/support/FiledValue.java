@@ -5,16 +5,18 @@ package me.wuwenbin.modules.repository.provider.find.support;
  *
  * @author Wuwenbin
  */
-public class Param {
+public class FiledValue {
 
     private String field;
     private Object value;
 
-    public static Param builder(String field, Object value) {
-        Param param = new Param();
-        param.setField(field);
-        param.setValue(value);
-        return param;
+    private FiledValue(String field, Object value) {
+        this.field = field;
+        this.value = value;
+    }
+
+    public static FiledValue build(String field, Object value) {
+        return new FiledValue(field, value);
     }
 
     public String getField() {

@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.repository.annotation.field;
+package me.wuwenbin.modules.repository.provider.find.annotation;
 
 import java.lang.annotation.*;
 

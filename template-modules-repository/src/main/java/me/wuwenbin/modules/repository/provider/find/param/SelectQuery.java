@@ -3,7 +3,7 @@ package me.wuwenbin.modules.repository.provider.find.param;
 import me.wuwenbin.modules.pagination.sort.Sorting;
 import me.wuwenbin.modules.pagination.sort.direction.Direction;
 import me.wuwenbin.modules.repository.provider.find.support.Condition;
-import me.wuwenbin.modules.repository.provider.find.support.Param;
+import me.wuwenbin.modules.repository.provider.find.support.FiledValue;
 
 import java.util.*;
 
@@ -17,6 +17,12 @@ public class SelectQuery {
     private List<String> selectTargets;
     private List<Condition> conditions;
     private List<Sorting> sorts;
+
+    private SelectQuery(List<String> selectTargets, List<Condition> conditions, List<Sorting> sorts) {
+        this.selectTargets = selectTargets;
+        this.conditions = conditions;
+        this.sorts = sorts;
+    }
 
     public List<String> getSelectTargets() {
         return selectTargets;
@@ -43,28 +49,40 @@ public class SelectQuery {
     }
 
 
-    public static SelectQuery defaultQuery(Param... params) {
-        SelectQuery query = new SelectQuery();
-        query.setSelectTargets(null);
-        query.setConditions(Condition.defaultList(params));
-        query.setSorts(null);
-        return query;
+    public static SelectQuery build(List<String> selectTargets, List<Condition> conditions, List<Sorting> sorts) {
+        return new SelectQuery(selectTargets, conditions, sorts);
     }
 
-    public static SelectQuery simpleQuery(Condition... conditions) {
-        SelectQuery query = new SelectQuery();
-        query.setSelectTargets(null);
-        query.setConditions(Condition.list(conditions));
-        query.setSorts(null);
-        return query;
+    public static SelectQuery build(List<Condition> conditions) {
+        return build(null, conditions, null);
     }
 
-    public static SelectQuery query(List<String> routers, Condition... conditions) {
-        SelectQuery selectQuery = new SelectQuery();
-        selectQuery.setSelectTargets(routers);
-        selectQuery.setConditions(Arrays.asList(conditions));
-        selectQuery.setSorts(null);
-        return selectQuery;
+    public static SelectQuery build(List<String> selectTargets, List<Condition> conditions) {
+        return build(selectTargets, conditions, null);
+    }
+
+    public static SelectQuery build(FiledValue... filedValues) {
+        return build(Condition.buildList(filedValues));
+    }
+
+    public static SelectQuery build(Condition... conditions) {
+        return build(Condition.buildList(conditions));
+    }
+
+    public static SelectQuery build(List<String> selectTargets, Condition... conditions) {
+        return build(selectTargets, Arrays.asList(conditions));
+    }
+
+    /**
+     * 获取where部分的sql语句
+     */
+    public String getWhereSqlPart() {
+        List<Condition> conditions = this.getConditions();
+        String sql = " where 1=1";
+        for (Condition condition : conditions) {
+            sql = sql.concat(condition.getPreJoin().name()).concat(condition.getConstraint().getPart(condition.getField(), condition.getField()));
+        }
+        return sql;
     }
 
     /**

@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.repository.annotation.field;
+package me.wuwenbin.modules.repository.provider.find.annotation;
 
 import java.lang.annotation.*;
 
@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface FindSQL {
+public @interface ExistSQL {
 
     /**
      * 根据此处指定的SQL语句来操作

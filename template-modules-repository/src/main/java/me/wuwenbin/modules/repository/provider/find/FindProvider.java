@@ -1,14 +1,15 @@
 package me.wuwenbin.modules.repository.provider.find;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
-import me.wuwenbin.modules.repository.annotation.field.CountSQL;
-import me.wuwenbin.modules.repository.annotation.field.FindSQL;
+import me.wuwenbin.modules.repository.annotation.field.Routers;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMissMatch;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
+import me.wuwenbin.modules.repository.provider.find.annotation.CountSQL;
+import me.wuwenbin.modules.repository.provider.find.annotation.ExistSQL;
+import me.wuwenbin.modules.repository.provider.find.annotation.FindSQL;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
-import me.wuwenbin.modules.repository.provider.find.support.Condition;
 import me.wuwenbin.modules.repository.util.MethodUtils;
 
 import java.lang.reflect.Method;
@@ -31,305 +32,301 @@ public class FindProvider<T> extends AbstractProvider<T> {
     public Object execute(Object[] args) throws Exception {
         String methodName = super.getMethod().getName();
         Class returnType = super.getMethod().getReturnType();
-        String count = "count";
-        if (count.equals(methodName)) {
-            return executeCount(returnType, args);
-        } else {
-            String countByRouter = "countBy$Router";
-            if (methodName.startsWith(countByRouter)) {
-                return executeCountByRouter(methodName, countByRouter.length(), args);
+        int argsLength = args.length;
+        String count = "count", exist = "exists", find = "find", findOne = "findOne", findAll = "findAll";
+        String countBy = "countBy", existsBy = "existsBy", findBy = "findBy";
+
+        //无参数的情况
+        //支持count()统计所有数据、findAll()查询数据库中所有数据， 其他情况暂时不支持
+        if (argsLength == 0) {
+            if (methodName.equals(count)) {
+                String sql = super.sbb.countAll();
+                return getJdbcTemplate().queryNumberByArray(sql, Long.class);
+            } else if (methodName.equals(findAll)) {
+                String sql = super.sbb.selectAll();
+                return getJdbcTemplate().findListBeanByArray(sql, super.getClazz());
             } else {
-                String countBySql = "count$BySql";
-                if (methodName.startsWith(countBySql)) {
-                    return executeCountBySql(args);
-                } else {
-                    String exists = "exists";
-                    if (methodName.equals(exists)) {
-                        return executeExists(args);
-                    } else {
-                        String findOne = "findOne";
-                        if (methodName.equals(findOne)) {
-                            return executeFindOne(args);
-                        } else {
-                            String findAll = "findAll";
-                            if (methodName.equals(findAll)) {
-                                return executeFindAll(args);
-                            } else {
-                                String findByRouter = "findBy$Router";
-                                if (methodName.startsWith(findByRouter)) {
-                                    int[] routers = MethodUtils.getRouters(findByRouter, 13);
-                                    String sql = super.sbb.selectAllByRoutersAnd(routers);
-                                    return executeFindCustomByParamAndReturn(args, methodName, returnType, sql);
-                                } else {
-                                    String findBy = "findBy";
-                                    if (methodName.startsWith(findBy)) {
-                                        return executeFindBy(methodName, args);
-                                    } else {
-                                        String findBySql = "find$BySql";
-                                        if (methodName.startsWith(findBySql)) {
-                                            if (super.getMethod().isAnnotationPresent(FindSQL.class)) {
-                                                String sql = super.getMethod().getAnnotation(FindSQL.class).value();
-                                                return executeFindCustomByParamAndReturn(args, methodName, returnType, sql);
-                                            } else {
-                                                throw new MethodExecuteException("方法:「" + methodName + "」之上必须有@FindSQL注解指定相关sql");
-                                            }
-                                        } else {
-                                            throw new MethodExecuteException("方法:「" + methodName + "」命名有误，请参考命名规则重新命名！");
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                throw new MethodExecuteException("方法「" + methodName + "」为不支持的类型，请参考命名规则");
             }
         }
+
+
+        //参数为一种类型的情况
+        //返回非多个结果的情况，参数有Map、T、Map[]/T[]、List<T>/List<Map>、SelectQuery这么几种情况
+        else if (argsLength == 1) {
+            //注解优先，存在注解的情况下方法名是无意义的，随意命名都可，符合规范
+            //@CountSQL注解的情况
+            if (super.getMethod().isAnnotationPresent(CountSQL.class)) {
+                CountSQL countSQL = super.getMethod().getAnnotation(CountSQL.class);
+                String sql = countSQL.value();
+                return executeWithSingleParam(sql, args, returnType);
+            }
+            //@ExistSQL:注解情况
+            else if (super.getMethod().isAnnotationPresent(ExistSQL.class)) {
+                ExistSQL existSQL = super.getMethod().getAnnotation(ExistSQL.class);
+                String sql = existSQL.value();
+                //方法名需规范，且唯一的参数只能为基本类型
+                return executeWithSingleParam(sql, args, returnType);
+            }
+            //@FindSQL注解情况
+            else if (super.getMethod().isAnnotationPresent(FindSQL.class)) {
+                FindSQL findSQL = super.getMethod().getAnnotation(FindSQL.class);
+                String sql = findSQL.value();
+                //方法名规范，且唯一的参数只能为基本类型即可
+                return executeWithSingleParam(sql, args, returnType);
+            }
+            //@Routers注解情况
+            else if (super.getMethod().isAnnotationPresent(Routers.class)) {
+                Routers routerAnnotation = super.getMethod().getAnnotation(Routers.class);
+                int[] routers = routerAnnotation.value();
+                if (routers.length == 1) {
+                    //count语句
+                    if (methodName.startsWith(count)) {
+                        String sql = super.sbb.countAndByRouters(routers);
+                        return executeWithSingleParam(sql, args, returnType);
+                    }
+                    //find
+                    else if (methodName.startsWith(find)) {
+                        String sql = super.sbb.selectAllByRoutersAnd(routers);
+                        return executeWithSingleParam(sql, args, returnType);
+                    } else {
+                        throw new MethodExecuteException("方法「" + methodName + "」不支持，请参考命名规则！");
+                    }
+                } else {
+                    throw new MethodExecuteException("方法「" + methodName + "」有误。检测到一个参数，但有多个router条件，请参考命名规则！");
+                }
+            }
+            //以下是无注解的情况，为预定义方法名的情形
+            //执行预定义的exists或者count方法
+            else if (methodName.equals(exist) || methodName.equals(count)) {
+                if (args[0].getClass().equals(SelectQuery.class)) {
+                    SelectQuery selectQuery = (SelectQuery) args[0];
+                    String sql = "select count(0) from ".concat(super.tableName).concat(selectQuery.getWhereSqlPart());
+                    return executeWithSingleParam(sql, args, returnType);
+                } else {
+                    String sql = super.stb.countAndByColumns(super.tableName, super.pkDbName);
+                    return executeWithSingleParam(sql, args, returnType);
+                }
+            }
+            //预定义的findOne方法
+            else if (methodName.equals(findOne)) {
+                if (args[0].getClass().equals(SelectQuery.class)) {
+                    SelectQuery selectQuery = (SelectQuery) args[0];
+                    String sql = "select * from ".concat(super.tableName).concat(selectQuery.getWhereSqlPart());
+                    return executeWithSingleParam(sql, args, returnType);
+                } else {
+                    String sql = super.stb.selectAllByColumns(super.tableName, super.pkDbName);
+                    return executeWithSingleParam(sql, args, returnType);
+                }
+            }
+            //预定义的findAll方法
+            else if (methodName.equals(findAll)) {
+                if (args[0].getClass().equals(SelectQuery.class)) {
+                    SelectQuery selectQuery = (SelectQuery) args[0];
+                    String sql = "select * from ".concat(super.tableName).concat(selectQuery.getWhereSqlPart());
+                    return executeWithSingleParam(sql, args, returnType);
+                } else {
+                    throw new MethodParamException("方法「」参数类型不支持，请参考命名规则！");
+                }
+            }
+            //以下也是无注解的情况，为自定义的方法名的情形
+            //自定义countBy语句
+            else if (methodName.startsWith(countBy)) {
+                String preSql = "select count(0) from ".concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, 7, preSql, true);
+                return executeWithSingleParam(sql, args, returnType);
+            }
+            //自定义findBy语句
+            else if (methodName.startsWith(findBy)) {
+                String preSql = "select * from ".concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, 6, preSql, true);
+                return executeWithSingleParam(sql, args, returnType);
+            }
+            //自定义findXxxBy语句
+            else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^find.*By$")) {
+                String preSql = "select ".concat(methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"))).concat(" from ").concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, true);
+                return executeWithSingleParam(sql, args, returnType);
+            }
+            //不支持的方法
+            else {
+                throw new MethodExecuteException("方法「" + methodName + "」不支持，请参考命名规则！");
+            }
+        }
+
+        //其他情况为多种参数的情况
+        else {
+            //注解@CountSQL，参数形式为问号
+            if (super.getMethod().isAnnotationPresent(CountSQL.class)) {
+                CountSQL countSQL = super.getMethod().getAnnotation(CountSQL.class);
+                String sql = countSQL.value();
+                return executeWithMultiParam(sql, returnType, args);
+            }
+            //注解@ExistSQL
+            else if (super.getMethod().isAnnotationPresent(ExistSQL.class)) {
+                ExistSQL existSQL = super.getMethod().getAnnotation(ExistSQL.class);
+                String sql = existSQL.value();
+                return executeWithMultiParam(sql, returnType, args);
+            }
+            //注解@FindSQL
+            else if (super.getMethod().isAnnotationPresent(FindSQL.class)) {
+                FindSQL findSQL = super.getMethod().getAnnotation(FindSQL.class);
+                String sql = findSQL.value();
+                return executeWithMultiParam(sql, returnType, args);
+            }
+            //自定义countBy语句
+            else if (methodName.startsWith(countBy)) {
+                String preSql = "select count(0) from ".concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, 7, preSql, false);
+                return executeWithMultiParam(sql, returnType, args);
+            }
+            //自定义findBy语句
+            else if (methodName.startsWith(findBy)) {
+                String preSql = "select * from ".concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, 6, preSql, false);
+                return executeWithMultiParam(sql, returnType, args);
+            }
+            //自定义findXxxBy语句
+            else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^find.*By$")) {
+                String preSql = "select ".concat(methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"))).concat(" from ").concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, false);
+                return executeWithMultiParam(sql, returnType, args);
+            }
+            //不支持的方法
+            else {
+                throw new MethodExecuteException("方法「" + methodName + "」不支持，请参考命名规则！");
+            }
+        }
+
     }
 
 
     /**
-     * 执行「count」方法
+     * 执行单个参数的方法
      *
-     * @param returnType
+     * @param sql
      * @param args
+     * @param returnType
      * @return
      * @throws MethodTypeMissMatch
      * @throws MethodParamException
      */
-    private long executeCount(Class<?> returnType, Object[] args) throws MethodTypeMissMatch, MethodParamException {
-        if (args == null) {
-            String sql = super.sbb.countAll();
-            return getJdbcTemplate().queryNumberByArray(sql, Long.class);
-        } else if (args[0].getClass().equals(SelectQuery.class)) {
-            String longStr = "long";
-            if (returnType.getSimpleName().equals(longStr)) {
-                return executeCountBySelectQuery(args);
-            } else {
-                throw new MethodTypeMissMatch("「count」方法返回类型必须为「long」");
-            }
-        } else {
-            throw new MethodParamException("方法:「" + super.getMethod().getName() + "」参数类型有误，请参考命名方法规则重新命名！");
-        }
-    }
-
-    /**
-     * 执行「countByRouter」方法
-     *
-     * @param methodName
-     * @param prefix
-     * @param args
-     * @return
-     * @throws Exception
-     */
-    private long executeCountByRouter(String methodName, int prefix, Object[] args) throws Exception {
-        int[] routers = MethodUtils.getRouters(methodName, 14);
-        String and = "And", or = "Or";
-        String newMethodName = methodName.substring(prefix);
-        if (newMethodName.startsWith(and)) {
-            String sql = super.sbb.countAndByRouters(routers);
-            return executeByParamType(args, sql);
-        } else if (newMethodName.startsWith(or)) {
-            String sql = super.sbb.countOrByRouters(routers);
-            return executeByParamType(args, sql);
-        } else {
-            throw new MethodTypeMissMatch("方法:「" + methodName + "」命名出错，请参考命名规则！");
-        }
-    }
-
-    /**
-     * 执行「count$BySql」方法
-     *
-     * @param args
-     * @return
-     * @throws MethodExecuteException
-     * @throws MethodParamException
-     */
-    private long executeCountBySql(Object[] args) throws MethodExecuteException, MethodParamException {
-        if (getMethod().isAnnotationPresent(CountSQL.class)) {
-            String sql = super.getMethod().getAnnotation(CountSQL.class).value();
-            return executeByParamType(args, sql);
-        } else {
-            throw new MethodExecuteException("方法:「" + super.getMethod().getName() + "」上必须含有@CountSQL注解指定相关sql");
-        }
-    }
-
-    /**
-     * 执行「exists」方法
-     *
-     * @param args
-     * @return
-     */
-    private boolean executeExists(Object[] args) {
-        if (args[0].getClass().equals(SelectQuery.class)) {
-            return executeCountBySelectQuery(args) > 0;
-        } else {
-            String sql = "select count(0) from ".concat(super.tableName).concat(" where ").concat(super.pkDbName).concat(" = ?");
-            return getJdbcTemplate().queryNumberByArray(sql, Long.class, args[0]) > 0;
-        }
-    }
-
-    /**
-     * 执行「findOne」方法
-     *
-     * @param args
-     * @return
-     */
-    private T executeFindOne(Object[] args) {
-        if (args[0].getClass().equals(SelectQuery.class)) {
-            SelectQuery selectQuery = (SelectQuery) args[0];
-            List<Condition> conditions = selectQuery.getConditions();
-            List<String> targetRouters = selectQuery.getSelectTargets();
-            if (targetRouters != null && targetRouters.size() > 0) {
-                //查询部分字段
-                StringBuilder sql = new StringBuilder("select ");
-                for (String targetRouter : targetRouters) {
-                    sql.append(" ".concat(targetRouter).concat(","));
-                }
-                StringBuilder newSql = new StringBuilder(sql.substring(0, sql.length() - 1));
-                for (Condition c : conditions) {
-                    newSql.append(" ".concat(c.getPreJoin().name()).concat(" ").concat(c.getConstraint().getPart(c.getField())));
-                }
-                return getJdbcTemplate().findBeanByMap(newSql.toString(), super.getClazz(), selectQuery.getParamMap());
-            } else {
-                //查询所有字段
-                StringBuilder sql = new StringBuilder("select * from ".concat(super.tableName).concat(" where 1=1"));
-                for (Condition c : conditions) {
-                    sql.append(" ".concat(c.getPreJoin().name()).concat(" ").concat(c.getConstraint().getPart(c.getField())));
-                }
-                return getJdbcTemplate().findBeanByMap(sql.toString(), super.getClazz(), selectQuery.getParamMap());
-            }
-        } else {
-            //参数为主键类型
-            String sql = "select * from ".concat(super.tableName).concat(" where ").concat(super.pkDbName).concat(" = ?");
-            return getJdbcTemplate().findBeanByArray(sql, super.getClazz(), args[0]);
-        }
-    }
-
-    /**
-     * 执行「findAll」方法
-     *
-     * @param args
-     * @return
-     */
-    private List<T> executeFindAll(Object[] args) {
-        if (args == null) {
-            String sql = super.sbb.selectAll();
-            return getJdbcTemplate().findListBeanByArray(sql, super.getClazz());
-        } else if (args[0].getClass().equals(SelectQuery.class)) {
-            SelectQuery selectQuery = (SelectQuery) args[0];
-            List<Condition> conditions = selectQuery.getConditions();
-            List<String> targetRouters = selectQuery.getSelectTargets();
-            if (targetRouters != null && targetRouters.size() > 0) {
-                //查询部分字段
-                StringBuilder sql = new StringBuilder("select ");
-                for (String targetRouter : targetRouters) {
-                    sql.append(" ".concat(targetRouter).concat(","));
-                }
-                StringBuilder newSql = new StringBuilder(sql.substring(0, sql.length() - 1));
-                for (Condition c : conditions) {
-                    newSql.append(" ".concat(c.getPreJoin().name()).concat(" ").concat(c.getConstraint().getPart(c.getField())));
-                }
-                return getJdbcTemplate().findListBeanByMap(newSql.toString(), super.getClazz(), selectQuery.getParamMap());
-            } else {
-                //查询所有字段
-                StringBuilder sql = new StringBuilder("select * from ".concat(super.tableName).concat(" where 1=1"));
-                for (Condition c : conditions) {
-                    sql.append(" ".concat(c.getPreJoin().name()).concat(" ").concat(c.getConstraint().getPart(c.getField())));
-                }
-                return getJdbcTemplate().findListBeanByMap(sql.toString(), super.getClazz(), selectQuery.getParamMap());
-            }
-        } else {
-            String sql = super.sbb.selectAll();
-            return getJdbcTemplate().findListBeanByArray(sql, super.getClazz());
-        }
-    }
-
-    /**
-     * 执行「findBy」方法
-     *
-     * @param methodName
-     * @param args
-     * @return
-     * @throws MethodExecuteException
-     * @throws MethodParamException
-     */
-    private Object executeFindBy(String methodName, Object[] args) throws MethodExecuteException, MethodParamException {
-        String joinStr = "And|Or";
-        String fieldStr = methodName.substring(6);
-        String[] fields = fieldStr.split(joinStr);
-        StringBuilder sqlBuilder = new StringBuilder("select * from ".concat(super.tableName).concat(" where "));
-        MethodUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, true);
-        String sql = sqlBuilder.toString();
-        return executeFindCustomByParamAndReturn(args, methodName, super.getMethod().getReturnType(), sql);
-    }
-
-
-    /**
-     * 根据方法参数类型判断执行方法
-     *
-     * @param args
-     * @param sql
-     * @return
-     * @throws MethodParamException
-     */
     @SuppressWarnings("unchecked")
-    private Long executeByParamType(Object[] args, String sql) throws MethodParamException {
+    private Object executeWithSingleParam(String sql, Object[] args, Class returnType) throws MethodTypeMissMatch, MethodParamException {
         if (MethodUtils.paramTypeMapOrSub(args[0])) {
-            return getJdbcTemplate().queryNumberByMap(sql, Long.class, (Map<String, Object>) args[0]);
-        } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
-            return getJdbcTemplate().queryNumberByBean(sql, Long.class, args[0]);
-        } else {
-            throw new MethodParamException("方法:「" + super.getMethod().getName() + "」参数类型有误，请参考命名规则！");
-        }
-    }
-
-    /**
-     * 有selectQuery对象的参数时执行的方法
-     *
-     * @param args
-     * @return
-     */
-    private long executeCountBySelectQuery(Object[] args) {
-        SelectQuery selectQuery = (SelectQuery) args[0];
-        List<Condition> conditions = selectQuery.getConditions();
-        StringBuilder sql = new StringBuilder(super.sbb.countAll().concat(" and 1=1"));
-        for (Condition c : conditions) {
-            sql.append(" ".concat(c.getPreJoin().name()).concat(" ").concat(c.getConstraint().getPart(c.getField())));
-        }
-        return getJdbcTemplate().queryNumberByMap(sql.toString(), Long.class, selectQuery.getParamMap());
-    }
-
-    /**
-     * 执行「find」的方法，根据返回类型以及参数类型来判断具体执行的那个方法
-     *
-     * @param args
-     * @param methodName
-     * @param returnType
-     * @param sql
-     * @return
-     * @throws MethodExecuteException
-     * @throws MethodParamException
-     */
-    @SuppressWarnings("unchecked")
-    private Object executeFindCustomByParamAndReturn(Object[] args, String methodName, Class returnType, String sql) throws MethodExecuteException, MethodParamException {
-        if (MethodUtils.paramTypeMapOrSub(args[0])) {
-            if (returnType.getClass().equals(super.getClazz()) || super.getClazz().isAssignableFrom(returnType.getClass())) {
-                return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), (Map<String, Object>) args[0]);
-            } else if (Collection.class.isAssignableFrom(super.getClazz())) {
-                return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), (Map<String, Object>) args[0]);
+            Map<String, Object> mapArg = (Map<String, Object>) args[0];
+            if (returnType.equals(super.getClazz())) {
+                return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), mapArg);
+            } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
+                return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), mapArg);
+            } else if (returnType.getSimpleName().equals("long")) {
+                return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg);
+            } else if (returnType.getSimpleName().equals("int")) {
+                return getJdbcTemplate().queryNumberByArray(sql, Integer.class, mapArg);
+            } else if (returnType.getSimpleName().equals("boolean")) {
+                return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg) > 0;
+            } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
+                return getJdbcTemplate().findMapByMap(sql, mapArg);
+            } else if (returnType.isPrimitive()) {
+                Map<String, Object> result = getJdbcTemplate().findMapByMap(sql, mapArg);
+                return result.get(result.keySet().iterator().next());
             } else {
-                throw new MethodExecuteException("方法:「" + methodName + "」返回类型有误，请参考命名规则！");
+                throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
             }
+        } else if (MethodUtils.paramTypeArray(args[0])) {
+            Object[] objArg = (Object[]) args[0];
+            return executeWithMultiParam(sql, returnType, objArg);
+        } else if (MethodUtils.paramTypeCollectionOrSub(args[0])) {
+            Collection collectionArg = (Collection) args[0];
+            Object[] objArg = collectionArg.toArray();
+            return executeWithSingleParam(sql, new Object[]{objArg}, returnType);
         } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
-            if (returnType.getClass().equals(super.getClazz()) || super.getClazz().isAssignableFrom(returnType.getClass())) {
+            if (returnType.equals(super.getClazz())) {
                 return getJdbcTemplate().findBeanByBean(sql, super.getClazz(), args[0]);
-            } else if (Collection.class.isAssignableFrom(super.getClazz())) {
+            } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findListBeanByBean(sql, super.getClazz(), args[0]);
+            } else if (returnType.getSimpleName().equals("long")) {
+                return getJdbcTemplate().queryNumberByBean(sql, Long.class, args[0]);
+            } else if (returnType.getSimpleName().equals("int")) {
+                return getJdbcTemplate().queryNumberByArray(sql, Integer.class, args[0]);
+            } else if (returnType.getSimpleName().equals("boolean")) {
+                return getJdbcTemplate().queryNumberByBean(sql, Long.class, args[0]) > 0;
             } else {
-                throw new MethodExecuteException("方法:「" + methodName + "」返回类型有误，请参考命名规则！");
+                throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
             }
+        } else if (args[0].getClass().equals(SelectQuery.class)) {
+            SelectQuery selectQuery = (SelectQuery) args[0];
+            if (returnType.equals(super.getClazz())) {
+                return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
+            } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
+                return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
+            } else if (returnType.getSimpleName().equals("long")) {
+                return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap());
+            } else if (returnType.getSimpleName().equals("int")) {
+                return getJdbcTemplate().queryNumberByArray(sql, Integer.class, selectQuery.getParamMap());
+            } else if (returnType.getSimpleName().equals("boolean")) {
+                return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap()) > 0;
+            } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
+                return getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
+            } else if (returnType.isPrimitive()) {
+                Map<String, Object> result = getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
+                return result.get(result.keySet().iterator().next());
+            } else {
+                throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
+            }
+        } else if (args[0].getClass().isPrimitive()) {
+            Object objArg = args[0];
+            return executeWithMultiParam(sql, returnType, objArg);
         } else {
-            throw new MethodParamException("方法:「" + methodName + "」参数类型有误，请参考命名规则！");
+            throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型有误，请参考命名规则！");
         }
     }
+
+    /**
+     * 执行多个参数的方法
+     *
+     * @param sql
+     * @param returnType
+     * @param objArg
+     * @return
+     * @throws MethodTypeMissMatch
+     */
+    private Object executeWithMultiParam(String sql, Class returnType, Object objArg) throws MethodTypeMissMatch {
+        if (returnType.equals(super.getClazz())) {
+            return getJdbcTemplate().findBeanByArray(sql, super.getClazz(), objArg);
+        } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
+            return getJdbcTemplate().findListBeanByArray(sql, super.getClazz(), objArg);
+        } else if (returnType.getSimpleName().equals("long")) {
+            return getJdbcTemplate().queryNumberByArray(sql, Long.class, objArg);
+        } else if (returnType.getSimpleName().equals("int")) {
+            return getJdbcTemplate().queryNumberByArray(sql, Integer.class, objArg);
+        } else if (returnType.getSimpleName().equals("boolean")) {
+            return getJdbcTemplate().queryNumberByArray(sql, Long.class, objArg) > 0;
+        } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
+            return getJdbcTemplate().findMapByArray(sql, objArg);
+        } else if (returnType.isPrimitive()) {
+            Map<String, Object> result = getJdbcTemplate().findMapByArray(sql, objArg);
+            return result.get(result.keySet().iterator().next());
+        } else {
+            throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
+        }
+    }
+
+
+    /**
+     * 获取「By...」的sql语句
+     *
+     * @param methodName
+     * @param colon      是否为冒号形式
+     * @return
+     */
+    private String getSql(String methodName, int subLength, String preSql, boolean colon) throws MethodExecuteException {
+        String joinStr = "And|Or";
+        String fieldStr = methodName.substring(subLength);
+        String[] fields = fieldStr.split(joinStr);
+        StringBuilder sqlBuilder = new StringBuilder(preSql);
+        MethodUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, colon);
+        return sqlBuilder.toString();
+    }
+
 }
