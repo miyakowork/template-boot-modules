@@ -17,6 +17,7 @@ import org.springframework.util.NumberUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Map;
  * @see AncestorDao
  * @since 1.0.0
  */
+@SuppressWarnings("unchecked")
 public abstract class PosterityDao implements AncestorDao {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -287,8 +289,10 @@ public abstract class PosterityDao implements AncestorDao {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         if (mapParameters != null && mapParameters.length > 0) {
-            SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(mapParameters);
-            return namedParameterJdbcTemplate.batchUpdate(sql, batch);
+            SqlParameterSource[] mapSqlParamSource = SqlParameterSourceUtils.createBatch(mapParameters);
+            int[] affects = namedParameterJdbcTemplate.batchUpdate(sql, mapSqlParamSource);
+            logger.info("响应数目:[" + Arrays.toString(affects) + "]");
+            return affects;
         }
         return null;
     }
@@ -299,7 +303,9 @@ public abstract class PosterityDao implements AncestorDao {
         logger.info("SQL:" + sql);
         if (beanParameters != null && beanParameters.length > 0) {
             SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(beanParameters);
-            return namedParameterJdbcTemplate.batchUpdate(sql, batch);
+            int[] affects = namedParameterJdbcTemplate.batchUpdate(sql, batch);
+            logger.info("响应数目：[" + Arrays.toString(affects) + "]");
+            return affects;
         }
         return null;
     }
@@ -310,7 +316,9 @@ public abstract class PosterityDao implements AncestorDao {
         logger.info("SQL:" + sql);
         if (mapParameters != null && !mapParameters.isEmpty()) {
             Map[] mps = mapParameters.toArray(new Map[mapParameters.size()]);
-            return namedParameterJdbcTemplate.batchUpdate(sql, mps);
+            int[] affects = namedParameterJdbcTemplate.batchUpdate(sql, mps);
+            logger.info("响应数目:[" + Arrays.toString(affects) + "]");
+            return affects;
         }
         return null;
     }
@@ -321,7 +329,9 @@ public abstract class PosterityDao implements AncestorDao {
         logger.info("SQL:" + sql);
         if (beanParameters != null && !beanParameters.isEmpty()) {
             SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(beanParameters.toArray());
-            return namedParameterJdbcTemplate.batchUpdate(sql, batch);
+            int[] affects = namedParameterJdbcTemplate.batchUpdate(sql, batch);
+            logger.info("响应数目:[" + Arrays.toString(affects) + "]");
+            return affects;
         }
         return null;
     }
@@ -353,23 +363,23 @@ public abstract class PosterityDao implements AncestorDao {
             if (arrayParameters != null && arrayParameters.length > 0) {
                 Number n = jdbcTemplate.queryForObject(sql, numberClass, arrayParameters);
                 if (n == null) {
-                    return (T) NumberUtils.parseNumber("0", numberClass);
+                    return NumberUtils.parseNumber("0", numberClass);
                 }
                 return (T) n;
             } else {
                 Number n = jdbcTemplate.queryForObject(sql, numberClass);
                 if (n == null) {
-                    return (T) NumberUtils.parseNumber("0", numberClass);
+                    return NumberUtils.parseNumber("0", numberClass);
                 } else {
                     return (T) n;
                 }
             }
         } catch (EmptyResultDataAccessException e) {
             logger.error("查询SQL无结果------" + e);
-            return (T) NumberUtils.parseNumber("0", numberClass);
+            return NumberUtils.parseNumber("0", numberClass);
         } catch (Exception e) {
             logger.error("查询SQL异常 no result! {}" + e);
-            return (T) NumberUtils.parseNumber("0", numberClass);
+            return NumberUtils.parseNumber("0", numberClass);
         }
     }
 
@@ -399,24 +409,24 @@ public abstract class PosterityDao implements AncestorDao {
             if (mapParameter != null && mapParameter.size() > 0) {
                 Number n = namedParameterJdbcTemplate.queryForObject(sql, mapParameter, numberClass);
                 if (n == null) {
-                    return (T) NumberUtils.parseNumber("0", numberClass);
+                    return NumberUtils.parseNumber("0", numberClass);
                 } else {
                     return (T) n;
                 }
             } else {
                 Number n = queryNumberByArray(sql, numberClass);
                 if (n == null) {
-                    return (T) NumberUtils.parseNumber("0", numberClass);
+                    return NumberUtils.parseNumber("0", numberClass);
                 } else {
                     return (T) n;
                 }
             }
         } catch (EmptyResultDataAccessException e) {
             logger.error("查询SQL无结果------" + e);
-            return (T) NumberUtils.parseNumber("0", numberClass);
+            return NumberUtils.parseNumber("0", numberClass);
         } catch (Exception e) {
             logger.error("查询SQL异常 no result! {}" + e);
-            return (T) NumberUtils.parseNumber("0", numberClass);
+            return NumberUtils.parseNumber("0", numberClass);
         }
     }
 
@@ -446,24 +456,24 @@ public abstract class PosterityDao implements AncestorDao {
             if (beanParameter != null) {
                 Number n = namedParameterJdbcTemplate.queryForObject(sql, generateBeanSqlParamSource(beanParameter), numberClass);
                 if (n == null) {
-                    return (T) NumberUtils.parseNumber("0", numberClass);
+                    return NumberUtils.parseNumber("0", numberClass);
                 } else {
                     return (T) n;
                 }
             } else {
                 Number n = queryNumberByArray(sql, numberClass);
                 if (n == null) {
-                    return (T) NumberUtils.parseNumber("0", numberClass);
+                    return NumberUtils.parseNumber("0", numberClass);
                 } else {
                     return (T) n;
                 }
             }
         } catch (EmptyResultDataAccessException e) {
             logger.error("查询SQL无结果------" + e);
-            return (T) NumberUtils.parseNumber("0", numberClass);
+            return NumberUtils.parseNumber("0", numberClass);
         } catch (Exception e) {
             logger.error("查询SQL异常 no result! {}" + e);
-            return (T) NumberUtils.parseNumber("0", numberClass);
+            return NumberUtils.parseNumber("0", numberClass);
         }
     }
 

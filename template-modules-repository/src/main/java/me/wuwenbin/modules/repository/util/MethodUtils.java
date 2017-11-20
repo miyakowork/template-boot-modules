@@ -171,6 +171,7 @@ public class MethodUtils {
                 String tempAnd = fields[i - 1].concat("And").concat(fieldPart);
                 String tempOr = fields[i - 1].concat("Or").concat(fieldPart);
                 if (fieldStr.contains(tempAnd)) {
+                    field = field.substring(0, 1).toLowerCase().concat(field.substring(1, field.length()));
                     if (colon) {
                         sqlBuilder.append(" and ").append(constraint.getPart(column, field));
                     } else {

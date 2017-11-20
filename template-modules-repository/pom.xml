@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>template-modules-repository</artifactId>
-    <version>1.5.5.RELEASE</version>
+    <version>1.5.12.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>template-modules-repository</name>
@@ -17,7 +17,7 @@
 
     <properties>
         <tool.version>1.2.0.RELEASE</tool.version>
-        <modules.jpa.version>1.2.1.RELEASE</modules.jpa.version>
+        <modules.jpa.version>1.2.2.RELEASE</modules.jpa.version>
         <modules.pagination.version>1.1.1.RELEASE</modules.pagination.version>
         <spring.version>4.3.12.RELEASE</spring.version>
     </properties>

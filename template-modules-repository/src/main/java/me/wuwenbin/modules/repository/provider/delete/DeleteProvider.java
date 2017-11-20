@@ -11,10 +11,7 @@ import me.wuwenbin.modules.repository.util.MethodUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * created by Wuwenbin on 2017/11/1 at 19:38
@@ -52,28 +49,8 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
             //还有一种是自定义命名的且不是使用注解的方式如：deleteBySessionId或者是deleteByNameLike（此种情形是包含约束条件 - like），其中sessionId和name与列名一一对应
             //并且仅支持参数个数为一种类型或一个数量
             else if (args.length == 1) {
-                //依据主键条件删除数据的「delete」方法
-                if (methodName.equals(delete)) {
-                    String sql = super.sbb.deleteByPk();
-                    executeWithSingleField(sql, args, super.pkFiledName);
-                }
-                //自定义方法名的「deleteBy」方法
-                else if (methodName.startsWith(deleteBy)) {
-//                    String byField = methodName.substring(deleteBy.length(), methodName.length());
-//                    Constraint constraint = Constraint.getFromEndsWith(byField);
-//                    byField = byField.endsWith(constraint.name()) ? byField.substring(0, constraint.name().length()) : byField;
-//                    byField = byField.substring(0, 1).toLowerCase().concat(byField.substring(1));
-//                    String sql = "delete from ".concat(super.tableName).concat(" where ").concat(byField).concat(" ").concat(constraint.getConstraint()).concat(" :").concat(byField);
-                    String sql = getDeleteBySql(methodName, true);
-                    if (sql.indexOf(":") != sql.lastIndexOf(":")) {
-                        executeWithSingleField(sql, args, "");
-                    } else {
-                        String fieldName = sql.substring(sql.indexOf(":") + 1, sql.length() - 1);
-                        executeWithSingleField(sql, args, fieldName);
-                    }
-                }
                 //包含@Routers注解的方法
-                else if (super.getMethod().isAnnotationPresent(Routers.class)) {
+                if (super.getMethod().isAnnotationPresent(Routers.class)) {
                     Routers routerAnnotation = super.getMethod().getAnnotation(Routers.class);
                     int[] routers = routerAnnotation.value();
                     if (routers.length > 1) {
@@ -90,6 +67,21 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
                     String sql = deleteSQL.value();
                     sql = sql.replace("?", ":wuwenbin");//任意一个字符串做占位符
                     executeWithSingleField(sql, args, "wuwenbin");
+                }
+                //自定义方法名的「deleteBy」方法
+                else if (methodName.startsWith(deleteBy)) {
+                    String sql = getDeleteBySql(methodName, true);
+                    if (sql.indexOf(":") != sql.lastIndexOf(":")) {
+                        executeWithSingleField(sql, args, "");
+                    } else {
+                        String fieldName = sql.substring(sql.indexOf(":") + 1, sql.length());
+                        executeWithSingleField(sql, args, fieldName);
+                    }
+                }
+                //依据主键条件删除数据的「delete」方法
+                else if (methodName.equals(delete)) {
+                    String sql = super.sbb.deleteByPk();
+                    executeWithSingleField(sql, args, super.pkFiledName);
                 }
                 //暂不支持的方法
                 else {
@@ -176,8 +168,16 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
             //实体数组
             else if (pks[0].getClass().equals(super.getClazz())) {
                 getJdbcTemplate().executeBatchByArrayBeans(sql, pks);
-            } else {
-                throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型有误，请参考命名规则！");
+            }
+            //单个参数集合
+            else {
+                List<Map<String, Object>> paramMapList = new ArrayList<>(pks.length);
+                for (Object o : pks) {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put(filedName, o);
+                    paramMapList.add(paramMap);
+                }
+                getJdbcTemplate().executeBatchByCollectionMaps(sql, paramMapList);
             }
         }
 
@@ -192,8 +192,16 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
             //实体集合
             else if (temp.getClass().equals(super.getClazz())) {
                 getJdbcTemplate().executeBatchByCollectionBeans(sql, paramCollection);
-            } else {
-                throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型有误，请参考命名规则！");
+            }
+            //单个参数集合
+            else {
+                List<Map<String, Object>> paramMapList = new ArrayList<>(paramCollection.size());
+                for (Object o : paramCollection) {
+                    Map<String, Object> paramMap = new HashMap<>(1);
+                    paramMap.put(filedName, o);
+                    paramMapList.add(paramMap);
+                }
+                getJdbcTemplate().executeBatchByCollectionMaps(sql, paramMapList);
             }
         }
 
