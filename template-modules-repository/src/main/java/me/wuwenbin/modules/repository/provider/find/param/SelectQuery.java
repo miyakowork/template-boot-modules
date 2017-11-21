@@ -80,7 +80,7 @@ public class SelectQuery {
         List<Condition> conditions = this.getConditions();
         String sql = " where 1=1";
         for (Condition condition : conditions) {
-            sql = sql.concat(condition.getPreJoin().name()).concat(condition.getConstraint().getPart(condition.getField(), condition.getField()));
+            sql = sql.concat(" ").concat(condition.getPreJoin().name()).concat(" ").concat(condition.getConstraint().getPart(condition.getField(), condition.getField()));
         }
         return sql;
     }

@@ -1,12 +1,15 @@
 package me.wuwenbin.modules.repository.provider.update;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
-import me.wuwenbin.modules.repository.annotation.field.UpdateSQL;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMissMatch;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
+import me.wuwenbin.modules.repository.provider.update.annotation.Modify;
+import me.wuwenbin.modules.repository.provider.update.annotation.UpdateSQL;
+import me.wuwenbin.modules.repository.util.BeanUtils;
 import me.wuwenbin.modules.repository.util.MethodUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -26,74 +29,133 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
     public Object execute(Object[] args) throws Exception {
         String methodName = super.getMethod().getName();
         Class returnType = super.getMethod().getReturnType();
-        String updateRouterByPk = "updateRouter";
-        if (methodName.startsWith(updateRouterByPk)) {
-            int[] routers = MethodUtils.getRouters(methodName, updateRouterByPk.length());
-            String sql = super.sbb.updateRoutersByPk(routers);
-            return executeUpdateByParamAndReturnType(args, methodName, returnType, sql);
-        } else {
-            String updateRouterByRouters = "updateRouter";
-            String byRouters = "ByRouter";
-            if (methodName.startsWith(updateRouterByRouters) && methodName.contains(byRouters)) {
-                String[] tempArray = methodName.split(byRouters);
-                //noinspection AlibabaUndefineMagicConstant
-                if (tempArray.length != 2) {
-                    throw new MethodExecuteException("方法「" + methodName + "」命名有误，请参考命名规则！");
+        String updateBy = "updateBy";
+        //无参数
+        if (args == null) {
+            throw new MethodParamException("方法「" + methodName + "」参数不规范，请参考命名规则！");
+        }
+        //参数种类为一个
+        else if (args.length == 1) {
+            if (super.getMethod().isAnnotationPresent(UpdateSQL.class)) {
+                String sql = super.getMethod().getAnnotation(UpdateSQL.class).value();
+                return executeWithSingleParam(sql, args, returnType);
+            } else if (super.getMethod().isAnnotationPresent(Modify.class)) {
+                if (methodName.startsWith(updateBy)) {
+                    int[] updateRouters = super.getMethod().getAnnotation(Modify.class).value();
+                    String preSql = super.sbb.updateRoutersByPk(updateRouters).toLowerCase();
+                    preSql = preSql.substring(0, preSql.indexOf("where"));
+                    String finalSql = preSql.concat(" where ");
+                    String sql = (getSql(methodName, 8, finalSql, true));
+                    return executeWithSingleParam(sql, args, returnType);
                 } else {
-                    int[] updateRouters = MethodUtils.getRouters(tempArray[0], updateRouterByRouters.length());
-                    int[] conditionRouters = MethodUtils.getRouters(tempArray[1], 0);
-                    String sql = super.sbb.updateRoutersByRouterArray(updateRouters, conditionRouters);
-                    return executeUpdateByParamAndReturnType(args, methodName, returnType, sql);
+                    throw new MethodExecuteException("方法「" + methodName + "」命名不规范，请参考命名规则！");
                 }
-            } else {
-                String updateBySql = "updateBySql";
-                if (methodName.startsWith(updateBySql)) {
-                    if (super.getMethod().isAnnotationPresent(UpdateSQL.class)) {
-                        String sql = super.getMethod().getAnnotation(UpdateSQL.class).value();
-                        return executeUpdateByParamAndReturnType(args, methodName, returnType, sql);
-                    } else {
-                        throw new MethodExecuteException("方法「" + methodName + "」之上必须有@UpdateSQL注解指定相关SQL！");
+            } else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^update.*By$")) {
+                String fields = methodName.substring(methodName.indexOf("update") + 4, methodName.indexOf("By"));
+                String sql = "update ".concat(super.tableName).concat(" set");
+                if (!StringUtils.isEmpty(fields)) {
+                    String[] fieldArray = fields.split("And");
+                    for (String s : fieldArray) {
+                        s = s.substring(0, 1).toLowerCase().concat(s.substring(1, s.length()));
+                        sql = sql.concat(" ").concat(s).concat(" = :").concat(s);
                     }
-                } else {
-                    throw new MethodExecuteException("方法「" + methodName + "」命名有误，请参考命名规则！");
                 }
+                String finalSql = sql.concat(" where ");
+                finalSql = getSql(methodName, methodName.indexOf("By") + 2, finalSql, true);
+                return executeWithSingleParam(finalSql, args, returnType);
+            } else {
+                throw new MethodExecuteException("方法「" + methodName + "」不符合规范，请参考命名规则！");
             }
         }
+        //参数为多个/多种，sql语句为问号形式
+        else {
+            if (super.getMethod().isAnnotationPresent(Modify.class)) {
+                if (methodName.startsWith(updateBy)) {
+                    int[] updateRouters = super.getMethod().getAnnotation(Modify.class).value();
+                    String preSql = super.sbb.updateRoutersByPk(updateRouters).toLowerCase();
+                    preSql = preSql.substring(0, preSql.indexOf("where"));
+                    String finalSql = preSql.concat(" where ");
+                    String sql = getSql(methodName, 8, finalSql, false);
+                    return executeWithMultiParam(sql, args, returnType);
+                } else {
+                    throw new MethodExecuteException("方法「" + methodName + "」命名不规范，请参考命名规则！");
+                }
+            } else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^update.*By$")) {
+                String fields = methodName.substring(methodName.indexOf("update") + 6, methodName.indexOf("By"));
+                String sql = "update ".concat(super.tableName).concat(" set");
+                if (!StringUtils.isEmpty(fields)) {
+                    String[] fieldArray = fields.split("And");
+                    for (String s : fieldArray) {
+                        s = s.substring(0, 1).toLowerCase().concat(s.substring(1, s.length()));
+                        sql = sql.concat(" ").concat(s).concat(" = ?");
+                    }
+                }
+                String finalSql = sql.concat(" where ");
+                finalSql = getSql(methodName, methodName.indexOf("By") + 2, finalSql, false);
+                return executeWithMultiParam(finalSql, args, returnType);
+            } else {
+                throw new MethodExecuteException("方法「" + methodName + "」为不支持的类型，请参考命名规则！");
+            }
+        }
+
     }
 
+    /**
+     * 执行单参数的方法
+     *
+     * @param sql
+     * @param args
+     * @param returnTye
+     * @return
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
-    private Object executeUpdateByParamAndReturnType(Object[] args, String methodName, Class returnType, String sql) throws Exception {
-        if (MethodUtils.paramTypeMapOrSub(args[0])) {
-            Map<String, Object> param = (Map<String, Object>) args[0];
-            int n = getJdbcTemplate().executeMap(sql, param);
-            String bool = "boolean";
-            String voidName = "void";
-            if (returnType.equals(super.getClazz())) {
-                if (n > 0) {
-                    String findSql = super.sbb.selectAllByPk();
-                    return getJdbcTemplate().findBeanByMap(findSql, super.getClazz(), param);
-                } else {
-                    return null;
-                }
-            } else if (returnType.getSimpleName().equals(bool)) {
-                return n > 0;
-            } else if (returnType.getSimpleName().equals(voidName)) {
-                return null;
+    private int executeWithSingleParam(String sql, Object[] args, Class returnTye) throws Exception {
+        if (returnTye.getSimpleName().equals("int")) {
+            if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
+                return getJdbcTemplate().executeBean(sql, args[0]);
+            } else if (MethodUtils.paramTypeMapOrSub(args[0])) {
+                return getJdbcTemplate().executeMap(sql, (Map<String, Object>) args[0]);
+            } else if (args[0].getClass().isPrimitive() || BeanUtils.isPrimitive(args[0])) {
+                return getJdbcTemplate().executeArray(sql, args[0]);
             } else {
-                throw new MethodTypeMissMatch("方法「" + methodName + "」返回类型有误，请参考命名规则！");
-            }
-        } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
-            int n = getJdbcTemplate().executeBean(sql, args[0]);
-            if (n > 0) {
-                String findSql = super.sbb.selectAllByPk();
-                return getJdbcTemplate().findBeanByBean(findSql, super.getClazz(), args[0]);
-            } else {
-                return null;
+                throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合规范，请查看命名规则！");
             }
         } else {
-            throw new MethodParamException("方法「" + methodName + "」参数类型有误，请参考命名规则！");
+            throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不符合规范，请查看命名规则！");
         }
     }
 
+    /**
+     * 执行多参数的方法
+     *
+     * @param sql
+     * @param args
+     * @param returnType
+     * @return
+     * @throws Exception
+     */
+    private int executeWithMultiParam(String sql, Object[] args, Class returnType) throws Exception {
+        if (returnType.getSimpleName().equals("int")) {
+            return getJdbcTemplate().executeArray(sql, args);
+        } else {
+            throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不符合规范，请查看命名规则！");
+        }
+    }
 
+    /**
+     * 获取「By...」的sql语句
+     *
+     * @param methodName
+     * @param colon      是否为冒号形式
+     * @return
+     */
+    private String getSql(String methodName, int subLength, String preSql, boolean colon) throws MethodExecuteException {
+        String joinStr = "And|Or";
+        String fieldStr = methodName.substring(subLength);
+        StringBuilder sqlBuilder = new StringBuilder(preSql);
+        String[] fields = fieldStr.split(joinStr);
+        MethodUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, colon);
+        return sqlBuilder.toString();
+    }
 }

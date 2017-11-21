@@ -32,13 +32,16 @@
 + 无参的方法仅支持「count」统计所有数据数量以及「findAll」查询所有数据两种方法，其余暂不支持。
 + 支持自定义的方法名查询，对应相关的sql操作。
 + 智能根据方法的参数以及方法的返回类型做出相应的操作。
++ sql参数形式请根据方法参数种类来赋值。? -> Array ,  : -> Map/JavaBean
 ---
 ## update语句/update方法命名规则
-1. 所有方法均为「update...」开头。
-2. 非指定的sql的「update」方法包含三种，其中两种为开发者自定义，分别为「updateRouterABC」（依据主键字段来）和「updateRouterADByRouterC」。
-3. 返回值有「T」、「boolean」、「void」三种，其中「T」为返回更新后的实体，失败则返回null。
-4. 方法参数只能为「Map」或「T」。
-5. 额外的一种方法为指定sql的update方法「updateBySqlXXX」可自定义更新的sql语句，参数类型和返回值参考以上的几条规则。
++ 所有方法均为「update」开头。
++ 方法参数可以为「Map」或「T」或多个基本类型。
++ 方法的返回值必须为「int」。
++ 「@Modify」必须和「updateByXxx」配合使用，方法的参数必须为「Map」或者「T」。
++ 指定的sql语句请配合适当的参数类型（冒号/问号，基本类型/非基本类型）。
++ 参数为多种多个时，sql语句参数形式为冒号形式。
 ---
 ##分页方法
-1. 包含两个方法，定义在「IPageAndSortDataRepo」中。
++ 分页方法是结合「pagination」模块使用的，目前已经实现BootstrapTable和LayTable两大Table的前后台稳定交互。
++ 包含两个方法，定义在「IPageAndSortRepository」中。

@@ -10,6 +10,7 @@ import me.wuwenbin.modules.repository.provider.find.annotation.CountSQL;
 import me.wuwenbin.modules.repository.provider.find.annotation.ExistSQL;
 import me.wuwenbin.modules.repository.provider.find.annotation.FindSQL;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
+import me.wuwenbin.modules.repository.util.BeanUtils;
 import me.wuwenbin.modules.repository.util.MethodUtils;
 
 import java.lang.reflect.Method;
@@ -32,9 +33,9 @@ public class FindProvider<T> extends AbstractProvider<T> {
     public Object execute(Object[] args) throws Exception {
         String methodName = super.getMethod().getName();
         Class returnType = super.getMethod().getReturnType();
-        int argsLength = args.length;
+        int argsLength = args == null ? 0 : args.length;
         String count = "count", exist = "exists", find = "find", findOne = "findOne", findAll = "findAll";
-        String countBy = "countBy", existsBy = "existsBy", findBy = "findBy";
+        String countBy = "countBy", findBy = "findBy";
 
         //无参数的情况
         //支持count()统计所有数据、findAll()查询数据库中所有数据， 其他情况暂时不支持
@@ -83,11 +84,13 @@ public class FindProvider<T> extends AbstractProvider<T> {
                     //count语句
                     if (methodName.startsWith(count)) {
                         String sql = super.sbb.countAndByRouters(routers);
+                        sql = sql.substring(0, sql.indexOf(":")).concat("?");
                         return executeWithSingleParam(sql, args, returnType);
                     }
                     //find
                     else if (methodName.startsWith(find)) {
                         String sql = super.sbb.selectAllByRoutersAnd(routers);
+                        sql = sql.substring(0, sql.indexOf(":")).concat("?");
                         return executeWithSingleParam(sql, args, returnType);
                     } else {
                         throw new MethodExecuteException("方法「" + methodName + "」不支持，请参考命名规则！");
@@ -126,7 +129,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
                     String sql = "select * from ".concat(super.tableName).concat(selectQuery.getWhereSqlPart());
                     return executeWithSingleParam(sql, args, returnType);
                 } else {
-                    throw new MethodParamException("方法「」参数类型不支持，请参考命名规则！");
+                    throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不支持，请参考命名规则！");
                 }
             }
             //以下也是无注解的情况，为自定义的方法名的情形
@@ -144,8 +147,10 @@ public class FindProvider<T> extends AbstractProvider<T> {
             }
             //自定义findXxxBy语句
             else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^find.*By$")) {
-                String preSql = "select ".concat(methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"))).concat(" from ").concat(super.tableName).concat(" where ");
-                String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, true);
+                String field = methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"));
+                field = field.substring(0, 1).toLowerCase().concat(field.substring(1));
+                String preSql = "select ".concat(field).concat(" from ").concat(super.tableName).concat(" where ");
+                String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, false);
                 return executeWithSingleParam(sql, args, returnType);
             }
             //不支持的方法
@@ -188,7 +193,9 @@ public class FindProvider<T> extends AbstractProvider<T> {
             }
             //自定义findXxxBy语句
             else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^find.*By$")) {
-                String preSql = "select ".concat(methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"))).concat(" from ").concat(super.tableName).concat(" where ");
+                String field = methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"));
+                field = field.substring(0, 1).toLowerCase().concat(field.substring(1));
+                String preSql = "select ".concat(field).concat(" from ").concat(super.tableName).concat(" where ");
                 String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, false);
                 return executeWithMultiParam(sql, returnType, args);
             }
@@ -212,7 +219,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
      * @throws MethodParamException
      */
     @SuppressWarnings("unchecked")
-    private Object executeWithSingleParam(String sql, Object[] args, Class returnType) throws MethodTypeMissMatch, MethodParamException {
+    private Object executeWithSingleParam(String sql, Object[] args, Class returnType) throws MethodTypeMissMatch, MethodParamException, MethodExecuteException {
         if (MethodUtils.paramTypeMapOrSub(args[0])) {
             Map<String, Object> mapArg = (Map<String, Object>) args[0];
             if (returnType.equals(super.getClazz())) {
@@ -227,9 +234,9 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, mapArg);
-            } else if (returnType.isPrimitive()) {
+            } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(args)) {
                 Map<String, Object> result = getJdbcTemplate().findMapByMap(sql, mapArg);
-                return result.get(result.keySet().iterator().next());
+                return getByIterator(returnType, result);
             } else {
                 throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
             }
@@ -268,17 +275,29 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap()) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
-            } else if (returnType.isPrimitive()) {
+            } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(args)) {
                 Map<String, Object> result = getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
-                return result.get(result.keySet().iterator().next());
+                return getByIterator(returnType, result);
             } else {
                 throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
             }
-        } else if (args[0].getClass().isPrimitive()) {
+        } else if (args[0].getClass().isPrimitive() || BeanUtils.isPrimitive(args[0])) {
             Object objArg = args[0];
-            return executeWithMultiParam(sql, returnType, objArg);
+            return executeWithMultiParam(sql, returnType, new Object[]{objArg});
         } else {
             throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型有误，请参考命名规则！");
+        }
+    }
+
+    private Object getByIterator(Class returnType, Map<String, Object> result) throws MethodExecuteException {
+        if (result != null) {
+            return result.get(result.keySet().iterator().next());
+        } else {
+            if (BeanUtils.isPrimitive(returnType)) {
+                return null;
+            } else {
+                throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」返回类型有误，请参考命名规则！");
+            }
         }
     }
 
@@ -291,7 +310,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
      * @return
      * @throws MethodTypeMissMatch
      */
-    private Object executeWithMultiParam(String sql, Class returnType, Object objArg) throws MethodTypeMissMatch {
+    private Object executeWithMultiParam(String sql, Class returnType, Object[] objArg) throws MethodTypeMissMatch, MethodExecuteException {
         if (returnType.equals(super.getClazz())) {
             return getJdbcTemplate().findBeanByArray(sql, super.getClazz(), objArg);
         } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
@@ -304,9 +323,9 @@ public class FindProvider<T> extends AbstractProvider<T> {
             return getJdbcTemplate().queryNumberByArray(sql, Long.class, objArg) > 0;
         } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
             return getJdbcTemplate().findMapByArray(sql, objArg);
-        } else if (returnType.isPrimitive()) {
+        } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(objArg)) {
             Map<String, Object> result = getJdbcTemplate().findMapByArray(sql, objArg);
-            return result.get(result.keySet().iterator().next());
+            return getByIterator(returnType, result);
         } else {
             throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
         }

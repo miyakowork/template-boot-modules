@@ -4,13 +4,14 @@ import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.jpa.support.Page;
 import me.wuwenbin.modules.pagination.Pagination;
 import me.wuwenbin.modules.pagination.query.TableQuery;
-import me.wuwenbin.modules.pagination.util.StringUtils;
 import me.wuwenbin.modules.repository.annotation.sql.SQLPkRefer;
 import me.wuwenbin.modules.repository.annotation.sql.SQLRefer;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
+import me.wuwenbin.tools.sqlgen.SQLGen;
 import me.wuwenbin.tools.sqlgen.annotation.SQLColumn;
 import me.wuwenbin.tools.sqlgen.annotation.SQLTable;
+import me.wuwenbin.tools.sqlgen.factory.SQLBeanBuilder;
 import me.wuwenbin.tools.sqlgen.util.SQLDefineUtils;
 
 import java.lang.reflect.Field;
@@ -39,29 +40,28 @@ public class PageProvider<T> extends AbstractProvider<T> {
             StringBuilder joinSqlBuilder = new StringBuilder();
             Class<?> mainClass = clazz.getSuperclass();
             String mainTableName = getTableName(mainClass);
-            sqlBuilder.append(" ").append(mainTableName).append(".* from ").append(mainTableName);
+            sqlBuilder.append(" ").append(mainTableName).append(".*");
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 if (field.isAnnotationPresent(SQLPkRefer.class)) {
-                    String tempTable = field.getAnnotation(SQLPkRefer.class).table();
-                    String minorTableName = StringUtils.isEmpty(tempTable) ? getTableName(field.getAnnotation(SQLPkRefer.class).targetClass()) : tempTable;
-                    String minorPkName = SQLDefineUtils.java2SQL(super.sbb.getPkField().getAnnotation(SQLColumn.class).value(), super.sbb.getPkField().getName());
-                    String selfJoinColumn = field.getAnnotation(SQLPkRefer.class).column();
+                    String minorTableName = getTableName(field.getAnnotation(SQLPkRefer.class).targetClass());
+                    SQLBeanBuilder tempSbb = SQLGen.builder(field.getAnnotation(SQLPkRefer.class).targetClass());
+                    String minorPkName = SQLDefineUtils.java2SQL(tempSbb.getPkField().getAnnotation(SQLColumn.class).value(), tempSbb.getPkField().getName());
+                    String selfJoinColumn = field.getAnnotation(SQLPkRefer.class).joinColumn();
                     String minorSelectColumn = field.getAnnotation(SQLPkRefer.class).targetColumn();
                     sqlBuilder.append(",").append(minorTableName).append(".").append(minorSelectColumn).append(" as ").append(field.getName());
                     joinSqlBuilder.append(" left join").append(" ").append(minorTableName).append(" on ").append(minorTableName).append(".").append(minorPkName).append(" = ").append(mainTableName).append(".").append(selfJoinColumn);
                 }
                 if (field.isAnnotationPresent(SQLRefer.class)) {
-                    String tempTable = field.getAnnotation(SQLRefer.class).table();
-                    String minorTableName = StringUtils.isEmpty(tempTable) ? getTableName(field.getAnnotation(SQLRefer.class).targetClass()) : tempTable;
+                    String minorTableName = getTableName(field.getAnnotation(SQLRefer.class).targetClass());
                     String minorPkName = field.getAnnotation(SQLRefer.class).referColumn();
-                    String selfJoinColumn = field.getAnnotation(SQLRefer.class).column();
+                    String selfJoinColumn = field.getAnnotation(SQLRefer.class).joinColumn();
                     String minorSelectColumn = field.getAnnotation(SQLRefer.class).targetColumn();
                     sqlBuilder.append(",").append(minorTableName).append(".").append(minorSelectColumn).append(" as ").append(field.getName());
                     joinSqlBuilder.append(" left join").append(" ").append(minorTableName).append(" on ").append(minorTableName).append(".").append(minorPkName).append(" = ").append(mainTableName).append(".").append(selfJoinColumn);
                 }
             }
-            sqlBuilder.append(joinSqlBuilder);
+            sqlBuilder.append(" from ").append(mainTableName).append(joinSqlBuilder);
             String mainSql = sqlBuilder.toString();
             return execute(page, clazz, tableQuery, mainSql);
         } else if (paramLength == 4) {

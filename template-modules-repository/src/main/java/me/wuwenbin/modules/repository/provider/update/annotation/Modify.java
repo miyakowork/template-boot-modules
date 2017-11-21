@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.repository.annotation.field;
+package me.wuwenbin.modules.repository.provider.update.annotation;
 
 import java.lang.annotation.*;
 
@@ -9,12 +9,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface UpdateSQL {
+public @interface Modify {
 
     /**
-     * 根据此处指定的SQL语句来操作
+     * 更新的字段router
      *
      * @return
      */
-    String value();
+    int[] value();
 }

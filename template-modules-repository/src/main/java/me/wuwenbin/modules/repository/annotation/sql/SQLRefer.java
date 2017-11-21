@@ -25,19 +25,13 @@ public @interface SQLRefer {
      */
     String targetColumn();
 
-    /**
-     * 与target()作用相同，此处则直接指明tableName
-     *
-     * @return
-     */
-    String table() default "";
 
     /**
      * 本身被关联的列（数据库中的列名）
      *
      * @return
      */
-    String column();
+    String joinColumn();
 
     /**
      * 关联的列名（是指数据库中的列名）

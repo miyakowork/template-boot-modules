@@ -8,9 +8,9 @@ import me.wuwenbin.modules.repository.annotation.sql.SQLRefer;
  */
 public class UserVO extends User {
 
-    @SQLRefer(targetClass = Role.class, targetColumn = "name", column = "role_id", referColumn = "id")
+    @SQLRefer(targetClass = Role.class, targetColumn = "name", joinColumn = "role_id", referColumn = "id")
     private String defaultRoleName;
-    @SQLPkRefer(targetClass = Department.class, targetColumn = "name", column = "dept_id")
+    @SQLPkRefer(targetClass = Department.class, targetColumn = "name", joinColumn = "dept_id")
     private String deptName;
 
     public String getDefaultRoleName() {

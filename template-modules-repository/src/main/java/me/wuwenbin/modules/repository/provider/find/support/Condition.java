@@ -64,8 +64,8 @@ public class Condition {
         return new Condition(PreJoin.AND, field, Constraint.Equal, value);
     }
 
-    public static Condition build(String field, Constraint constraint) {
-        return new Condition(PreJoin.AND, field, constraint, null);
+    public static Condition build(String field, Constraint constraint, Object value) {
+        return new Condition(PreJoin.AND, field, constraint, value);
     }
 
     public static List<Condition> buildList(FiledValue... filedValues) {
