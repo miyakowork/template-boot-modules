@@ -383,6 +383,15 @@ public interface AncestorDao {
     Map<String, Object> findMapByMap(final String sql, Map<String, Object> mapParameter);
 
     /**
+     * 查找键值对集合，参数为冒号形式的对象
+     *
+     * @param sql
+     * @param beanParameter
+     * @return
+     */
+    Map<String, Object> findMapByBean(final String sql, Object beanParameter);
+
+    /**
      * get object by sql statement,assigning return type
      *
      * @param sql             statement of database
@@ -432,6 +441,15 @@ public interface AncestorDao {
      * @return {@link List<Map>}
      */
     List<Map<String, Object>> findListMapByMap(final String sql, Map<String, Object> mapParameter);
+
+    /**
+     * 查询list集合，参数为冒号形式的对象
+     *
+     * @param sql
+     * @param beanParameter
+     * @return
+     */
+    List<Map<String, Object>> findListMapByBean(final String sql, Object beanParameter);
 
     /**
      * get object list by sql statement,assigning object type
