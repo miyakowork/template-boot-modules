@@ -3,12 +3,11 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.1.0.RELEASE</version>
+        <version>1.8.0.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>template-modules-repository</artifactId>
-    <version>1.7.11.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>template-modules-repository</name>

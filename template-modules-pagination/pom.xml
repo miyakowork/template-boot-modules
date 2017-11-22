@@ -3,16 +3,36 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.1.0.RELEASE</version>
+        <version>1.8.0.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>template-modules-pagination</artifactId>
-    <version>1.1.1.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>template-modules-pagination</name>
     <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-pagination</url>
     <description>多种表格组件（可扩展）的分页模型处理</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
