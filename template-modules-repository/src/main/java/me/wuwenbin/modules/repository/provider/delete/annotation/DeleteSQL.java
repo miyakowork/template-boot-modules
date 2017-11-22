@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 public @interface DeleteSQL {
 
     /**
-     * 根据此处指定的SQL语句来操作
+     * 根据此处指定的SQL语句来操作，可以省略delete from [table]前缀语句
      *
      * @return
      */

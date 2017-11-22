@@ -1,7 +1,9 @@
 package me.wuwenbin.modules.repository.provider.save;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.pagination.util.StringUtils;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
+import me.wuwenbin.modules.repository.constant.Parametric;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMissMatch;
@@ -10,7 +12,6 @@ import me.wuwenbin.modules.repository.provider.save.annotation.SaveSQL;
 import me.wuwenbin.modules.repository.util.MethodUtils;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -29,8 +30,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
     @Override
     public Object execute(Object[] args) throws Exception {
         String methodName = super.getMethod().getName();
-        Type returnType = super.getMethod().getGenericReturnType();
-
+        Class returnType = super.getMethod().getReturnType();
         //插入全部实体字段
         String save = "save";
         if (save.equals(methodName)) {
@@ -47,6 +47,23 @@ public class SaveProvider<T> extends AbstractProvider<T> {
         //指定自定义insert SQL语句，方法参数视sql语句而定（可以为多个，每个依次对应sql语句中的参数）,且返回值一定为int
         else if (methodName.startsWith(save) && super.getMethod().isAnnotationPresent(SaveSQL.class)) {
             String saveSql = super.getMethod().getAnnotation(SaveSQL.class).value();
+            if (StringUtils.isEmpty(saveSql)) {
+                StringBuilder inserts = new StringBuilder();
+                StringBuilder values = new StringBuilder();
+                String[] insertFields = super.getMethod().getAnnotation(SaveSQL.class).columns();
+                for (String insertField : insertFields) {
+                    inserts.append(insertField).append(", ");
+                    if (super.getMethod().getAnnotation(SaveSQL.class).paramType().equals(Parametric.Colon)) {
+                        values.append(":").append(insertField).append(", ");
+                    }
+                    if (super.getMethod().getAnnotation(SaveSQL.class).paramType().equals(Parametric.Doubt)) {
+                        values.append("?, ");
+                    }
+                }
+                inserts = new StringBuilder(inserts.substring(0, inserts.length() - 2));
+                values = new StringBuilder(values.substring(0, values.length() - 2));
+                saveSql = "insert into " + super.tableName + "(" + inserts + ")" + " values (" + values + ")";
+            }
             return executeByParamType(args, returnType, saveSql);
         }
 
@@ -75,10 +92,10 @@ public class SaveProvider<T> extends AbstractProvider<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    private Object executeByParamType(Object[] args, Type returnType, String sql) throws Exception {
+    private Object executeByParamType(Object[] args, Class returnType, String sql) throws Exception {
         if (args.length > 1) {
             String intName = "int", paramSign = ":";
-            if (intName.equals(returnType.getTypeName())) {
+            if (intName.equals(returnType.getSimpleName())) {
                 String considerSql = sql;
                 if (considerSql.contains(paramSign)) {
                     String values = considerSql.substring(considerSql.lastIndexOf("(") + 1, considerSql.lastIndexOf(")"));
@@ -88,13 +105,26 @@ public class SaveProvider<T> extends AbstractProvider<T> {
                     return getJdbcTemplate().executeArray(considerSql, args);
                 }
                 return getJdbcTemplate().executeArray(sql, args);
+            } else if (returnType.equals(super.getClazz())) {
+                int argLength = args.length;
+                String considerSql = sql;
+                Map<String, Object> map = new HashMap<>(argLength);
+                considerSql = considerSql.substring(0, considerSql.indexOf("values") + 6);
+                StringBuilder mapValues = new StringBuilder();
+                for (int i = 0; i < argLength; i++) {
+                    mapValues.append(":p").append(i).append(", ");
+                    map.put("p" + i, args[i]);
+                }
+                String temp = mapValues.substring(0, mapValues.length() - 2);
+                considerSql = considerSql.concat(" (").concat(temp).concat(")");
+                return getJdbcTemplate().insertMapAutoGenKeyReturnBean(considerSql, map, super.getClazz(), super.tableName, super.pkDbName);
             } else {
                 throw new MethodParamException("方法「" + super.getMethod().getName() + "」返回类型不正确，请参考命名规则！");
             }
         } else if (MethodUtils.paramTypeMapOrSub(args[0])) {
             return getJdbcTemplate().insertMapAutoGenKeyReturnBean(sql, (Map<String, Object>) args[0], super.getClazz(), super.tableName, super.pkDbName);
         } else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
-            return getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, (T) args[0], super.getClazz(), super.tableName, super.pkDbName);
+            return getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, args[0], super.getClazz(), super.tableName, super.pkDbName);
         } else if (MethodUtils.paramTypeCollectionOrSub(args[0])) {
             Collection<T> paramCollection = (Collection<T>) args[0];
             List<T> result = new ArrayList<>(paramCollection.size());
@@ -109,7 +139,6 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合要求，请参考命名规则！");
         }
     }
-
 
 
     /**
@@ -131,7 +160,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             return result;
         } else if (objects[0].getClass().equals(super.getClazz())) {
             for (Object p : objects) {
-                result.add(getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, (T) p, getClazz(), tableName, super.pkDbName));
+                result.add(getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, p, getClazz(), tableName, super.pkDbName));
             }
             return result;
         } else {

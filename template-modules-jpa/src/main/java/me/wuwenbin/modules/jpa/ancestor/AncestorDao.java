@@ -152,7 +152,7 @@ public interface AncestorDao {
      * @return 插入影响的条数
      * @throws Exception 插入之中发生的异常
      */
-    <T> int insertBeanAutoGenKeyReturnAffect(String sql, T beanParameter) throws Exception;
+    <T> int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception;
 
     /**
      * 插入Map返回插入的主键
@@ -173,11 +173,10 @@ public interface AncestorDao {
      * @return 自动生成的主键
      * @throws Exception 插入时发生的异常
      */
-    <T> long insertBeanAutoGenKeyReturnKey(String sql, T beanParameter) throws Exception;
+    <T> long insertBeanAutoGenKeyReturnKey(String sql, Object beanParameter) throws Exception;
 
     /**
      * 插入一条Map记录，返回插入的记录（含主键）
-     * 注：此方法要求主键列名必须为[id]
      *
      * @param insertSQL    插入语句
      * @param mapParameter map参数
@@ -187,6 +186,18 @@ public interface AncestorDao {
      * @throws Exception 插入时发生的异常
      */
     Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) throws Exception;
+
+    /**
+     * 插入一条Bean记录，返回Map对象，参数类型为冒号
+     *
+     * @param insertSQL
+     * @param beanParameter
+     * @param tableName
+     * @param pkName
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String tableName, String pkName) throws Exception;
 
     /**
      * 插入一条记录，参数为Map返回一个对应的实体类
@@ -204,7 +215,6 @@ public interface AncestorDao {
 
     /**
      * 插入一条bean记录，返回插入记录（含主键）
-     * 注：此方法要求主键列名必须为[id]
      *
      * @param insertSQL    插入语句
      * @param beaParameter bean类型参数
@@ -215,7 +225,7 @@ public interface AncestorDao {
      * @return 插入的对象
      * @throws Exception 插入时发生的异常
      */
-    <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, T beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
+    <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
 
     /**
      * execute method which is <tt>INSERT</tt> or <tt>UPDATE</tt> or <tt>DELETE</tt>

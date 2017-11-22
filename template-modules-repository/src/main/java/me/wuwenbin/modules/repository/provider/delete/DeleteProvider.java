@@ -65,6 +65,9 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
                 else if (super.getMethod().isAnnotationPresent(DeleteSQL.class)) {
                     DeleteSQL deleteSQL = super.getMethod().getAnnotation(DeleteSQL.class);
                     String sql = deleteSQL.value();
+                    if (!sql.toLowerCase().startsWith("delete from ".concat(super.tableName))) {
+                        sql = "delete from ".concat(super.tableName).concat(" ").concat(sql);
+                    }
                     sql = sql.replace("?", ":wuwenbin");//任意一个字符串做占位符
                     executeWithSingleField(sql, args, "wuwenbin");
                 }
@@ -97,6 +100,9 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
                 if (super.getMethod().isAnnotationPresent(DeleteSQL.class)) {
                     DeleteSQL deleteSql = super.getMethod().getAnnotation(DeleteSQL.class);
                     String sql = deleteSql.value();
+                    if (!sql.toLowerCase().startsWith("delete from ".concat(super.tableName))) {
+                        sql = "delete from ".concat(super.tableName).concat(" ").concat(sql);
+                    }
                     getJdbcTemplate().executeArray(sql, args);
                 }
                 //此条件为自定义方法名的情况

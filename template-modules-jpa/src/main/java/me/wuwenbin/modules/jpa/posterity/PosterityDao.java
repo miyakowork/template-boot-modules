@@ -191,7 +191,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T> int insertBeanAutoGenKeyReturnAffect(String sql, T beanParameter) throws Exception {
+    public <T> int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);
@@ -210,7 +210,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T> long insertBeanAutoGenKeyReturnKey(String sql, T beanParameter) throws Exception {
+    public <T> long insertBeanAutoGenKeyReturnKey(String sql, Object beanParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);
@@ -228,18 +228,24 @@ public abstract class PosterityDao implements AncestorDao {
 
     @Override
     public <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) throws Exception {
-        long key = insertMapAutoGenKeyReturnAffect(insertSQL, mapParameter);
+        long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
         return findBeanByArray(sql, clazz, key);
     }
 
     @Override
-    public <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, T beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception {
+    public <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception {
         long key = insertBeanAutoGenKeyReturnKey(insertSQL, beaParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
         return findBeanByArray(sql, clazz, key);
     }
 
+    @Override
+    public Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String tableName, String pkName) throws Exception {
+        long key = insertBeanAutoGenKeyReturnKey(insertSQL, beanParameter);
+        String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
+        return findMapByArray(sql, key);
+    }
 
     @Override
     public int executeArray(String sql, Object... arrayParameters) throws Exception {

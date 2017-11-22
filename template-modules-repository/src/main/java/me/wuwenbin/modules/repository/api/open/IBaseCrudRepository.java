@@ -45,7 +45,7 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
      * @return
      * @throws Exception
      */
-    List<T> save(Collection<T> entities) throws Exception;
+    int[] save(Collection<T> entities) throws Exception;
 
 
     /**
@@ -54,7 +54,7 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
      * @param entities
      * @return
      */
-    List<T> save(T... entities) throws Exception;
+    int[] save(T... entities) throws Exception;
 
     /**
      * 插入多条实体记录，参数为不定类型的数组map
@@ -63,7 +63,7 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
      * @return
      * @throws Exception
      */
-    List<T> save(Map<String, Object>... entityMaps) throws Exception;
+    int[] save(Map<String, Object>... entityMaps) throws Exception;
 
 
     //==============================增加/插入操作  结束==============================//
