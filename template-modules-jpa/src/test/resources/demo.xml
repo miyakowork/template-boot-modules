@@ -20,7 +20,7 @@ http://www.springframework.org/schema/context
     <bean id="ds2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url"
-                  value="jdbc:mysql://127.0.0.1:3306/sys"/>
+                  value="jdbc:mysql://127.0.0.1:3306/campustalk"/>
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
     </bean>
@@ -39,7 +39,7 @@ http://www.springframework.org/schema/context
         <property name="dataSourceMap">
             <map key-type="java.lang.String">
                 <entry key="tp" value-ref="dsx1"/>
-                <entry key="s4" value-ref="dsx2"/>
+                <entry key="ct" value-ref="dsx2"/>
             </map>
         </property>
         <property name="defaultDao" ref="dsx1"/>
@@ -49,5 +49,5 @@ http://www.springframework.org/schema/context
     <context:component-scan base-package="me.wuwenbin"/>
 
 
-    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <aop:aspectj-autoproxy proxy-target-class="true" expose-proxy="true"/>
 </beans>

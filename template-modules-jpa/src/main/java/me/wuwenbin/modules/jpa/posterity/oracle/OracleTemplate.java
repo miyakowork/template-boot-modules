@@ -11,7 +11,9 @@ import java.util.Map;
 /**
  * the implement of oracle
  * <p>
- * Created by wuwenbin on 2017/3/27.
+ *
+ * @author wuwenbin
+ * @date 2017/3/27
  */
 public class OracleTemplate extends PosterityDao {
     public OracleTemplate(DataSource dataSource) {
@@ -37,8 +39,8 @@ public class OracleTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListMapByArray(getSqlOfOracle(sql, page), arrayParameters);
-        page.setResult(list);
+        List<Map<String, Object>> list = findListMapByArray(getSqlOfOracle(sql, page), arrayParameters);
+        page.setRawResult(list);
         return page;
     }
 
@@ -51,7 +53,7 @@ public class OracleTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List list = findListMapByMap(getSqlOfOracle(sql, page), mapParameter);
+        List<Map<String, Object>> list = findListMapByMap(getSqlOfOracle(sql, page), mapParameter);
         page.setRawResult(list);
         return page;
     }
@@ -65,8 +67,8 @@ public class OracleTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByArray(getSqlOfOracle(sql, page), clazz, arrayParameters);
-        page.setResult(list);
+        List<T> list = findListBeanByArray(getSqlOfOracle(sql, page), clazz, arrayParameters);
+        page.setTResult(list);
         return page;
     }
 
@@ -79,8 +81,8 @@ public class OracleTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByMap(getSqlOfOracle(sql, page), clazz, mapParameter);
-        page.setResult(list);
+        List<T> list = findListBeanByMap(getSqlOfOracle(sql, page), clazz, mapParameter);
+        page.setTResult(list);
         return page;
     }
 
@@ -93,8 +95,8 @@ public class OracleTemplate extends PosterityDao {
             count = queryNumberByBean(getCountSql(sql), Long.class, beanParameter);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByBean(getSqlOfOracle(sql, page), clazz, beanParameter);
-        page.setResult(list);
+        List<T> list = findListBeanByBean(getSqlOfOracle(sql, page), clazz, beanParameter);
+        page.setTResult(list);
         return page;
     }
 }

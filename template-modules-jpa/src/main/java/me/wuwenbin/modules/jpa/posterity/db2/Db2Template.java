@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.jpa.posterity.sqlite;
+package me.wuwenbin.modules.jpa.posterity.db2;
 
 import me.wuwenbin.modules.jpa.posterity.PosterityDao;
 import me.wuwenbin.modules.jpa.support.Page;
@@ -9,22 +9,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * the implements of sqlite
+ * AncestorDao的Db2的实现
+ * created by Wuwenbin on 2017/11/29 at 21:35
  *
- * @author wuwenbin
- * @date 2017/3/27
+ * @author Wuwenbin
  */
-public class SqliteTemplate extends PosterityDao {
-    public SqliteTemplate(DataSource dataSource) {
+public class Db2Template extends PosterityDao {
+
+    public Db2Template(DataSource dataSource) {
         super(dataSource);
     }
 
-    private static String getSqlOfSqlite(final String sql, Page page) {
-        String querySql = sql;
+    private static String getSqlOfDb2(final String sql, Page page) {
         if (page.isFirstSetted() && page.isPageSizeSetted()) {
-            querySql = querySql.concat(" LIMIT " + page.getPageSize() + " OFFSET " + page.getFirst());
+            String queryLastSql = ") rs1) rs2 WHERE rn > " + page.getFirst() + " AND rn <= " + page.getFirst() + page.getPageSize();
+            int groupBy = sql.toUpperCase().indexOf("GROUP BY");
+            int orderBy = sql.toUpperCase().indexOf("ORDER BY");
+            if (orderBy > groupBy) {
+                groupBy = sql.length();
+            }
+            String temp1 = "";
+            if (orderBy > 0) {
+                temp1 = sql.substring(orderBy, groupBy);
+            }
+            String queryFirstSql = "SELECT * FROM (SELECT rs1.*,ROWNUMBER() OVER(" + temp1 + ") rn FROM(";
+            return queryFirstSql.concat(sql.concat(queryLastSql));
+        } else {
+            return sql;
         }
-        return querySql;
     }
 
     @Override
@@ -36,7 +48,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List<Map<String, Object>> list = findListMapByArray(getSqlOfSqlite(sql, page), arrayParameters);
+        List<Map<String, Object>> list = findListMapByArray(getSqlOfDb2(sql, page), arrayParameters);
         page.setRawResult(list);
         return page;
     }
@@ -50,7 +62,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List<Map<String, Object>> list = findListMapByMap(getSqlOfSqlite(sql, page), mapParameter);
+        List<Map<String, Object>> list = findListMapByMap(getSqlOfDb2(sql, page), mapParameter);
         page.setRawResult(list);
         return page;
     }
@@ -64,7 +76,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByArray(getSqlOfSqlite(sql, page), clazz, arrayParameters);
+        List<T> list = findListBeanByArray(getSqlOfDb2(sql, page), clazz, arrayParameters);
         page.setTResult(list);
         return page;
     }
@@ -78,7 +90,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByMap(getSqlOfSqlite(sql, page), clazz, mapParameter);
+        List<T> list = findListBeanByMap(getSqlOfDb2(sql, page), clazz, mapParameter);
         page.setTResult(list);
         return page;
     }
@@ -92,7 +104,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByBean(getCountSql(sql), Long.class, beanParameter);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByBean(getSqlOfSqlite(sql, page), clazz, beanParameter);
+        List<T> list = findListBeanByBean(getSqlOfDb2(sql, page), clazz, beanParameter);
         page.setTResult(list);
         return page;
     }

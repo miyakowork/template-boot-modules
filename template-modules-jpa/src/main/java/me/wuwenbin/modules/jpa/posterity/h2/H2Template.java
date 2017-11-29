@@ -10,8 +10,9 @@ import java.util.Map;
 
 /**
  * the implements of h2
- * <p>
- * Created by wuwenbin on 2017/3/27.
+ *
+ * @author wuwenbin
+ * @date 2017/3/27
  */
 public class H2Template extends PosterityDao {
     public H2Template(DataSource dataSource) {
@@ -35,7 +36,7 @@ public class H2Template extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListMapByArray(getSqlOfH2(sql, page), arrayParameters);
+        List<Map<String, Object>> list = findListMapByArray(getSqlOfH2(sql, page), arrayParameters);
         page.setRawResult(list);
         return page;
     }
@@ -49,7 +50,7 @@ public class H2Template extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List list = findListMapByMap(getSqlOfH2(sql, page), mapParameter);
+        List<Map<String, Object>> list = findListMapByMap(getSqlOfH2(sql, page), mapParameter);
         page.setRawResult(list);
         return page;
     }
@@ -63,8 +64,8 @@ public class H2Template extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByArray(getSqlOfH2(sql, page), clazz, arrayParameters);
-        page.setResult(list);
+        List<T> list = findListBeanByArray(getSqlOfH2(sql, page), clazz, arrayParameters);
+        page.setTResult(list);
         return page;
     }
 
@@ -78,8 +79,8 @@ public class H2Template extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByMap(getSqlOfH2(sql, page), clazz, mapParameter);
-        page.setResult(list);
+        List<T> list = findListBeanByMap(getSqlOfH2(sql, page), clazz, mapParameter);
+        page.setTResult(list);
         return page;
     }
 
@@ -92,8 +93,8 @@ public class H2Template extends PosterityDao {
             count = queryNumberByBean(getCountSql(sql), Long.class, beanParameter);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByBean(getSqlOfH2(sql, page), clazz, beanParameter);
-        page.setResult(list);
+        List<T> list = findListBeanByBean(getSqlOfH2(sql, page), clazz, beanParameter);
+        page.setTResult(list);
         return page;
     }
 }

@@ -73,7 +73,8 @@ public final class Scanner {
                                         if (method.isAnnotationPresent(RequiresPermissions.class)) {
                                             String[] permissionMarks = method.getAnnotation(RequiresPermissions.class).value();
                                             for (String permissionMark : permissionMarks) {
-                                                if (config.getType() == ScanType.UPDATE) {//可做修改，前提是url不能修改否则会当做是个全新的资源插入
+                                                //可做修改，前提是url不能修改否则会当做是个全新的资源插入
+                                                if (config.getType() == ScanType.UPDATE) {
                                                     String existSql = "select count(0) from t_oauth_resource where url = ? ";
                                                     if (scanDao.isExistRes(existSql, url, systemCode)) {
                                                         String sql = "insert into t_oauth_resource(name,url,permission_mark,enabled,order_index,system_code,remark) values (?,?,?,?,?,?,?)";

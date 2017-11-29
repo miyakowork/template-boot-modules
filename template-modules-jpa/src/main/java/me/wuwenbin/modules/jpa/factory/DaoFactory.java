@@ -5,11 +5,17 @@ import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
 import me.wuwenbin.modules.jpa.factory.business.DataSourceX;
 import me.wuwenbin.modules.jpa.factory.business.DbType;
 import me.wuwenbin.modules.jpa.factory.support.KeyContextHolder;
+import me.wuwenbin.modules.jpa.posterity.db2.Db2Template;
+import me.wuwenbin.modules.jpa.posterity.derby.DerbyTemplate;
 import me.wuwenbin.modules.jpa.posterity.h2.H2Template;
+import me.wuwenbin.modules.jpa.posterity.hsql.HsqlTemplate;
+import me.wuwenbin.modules.jpa.posterity.informix.InformixTemplate;
 import me.wuwenbin.modules.jpa.posterity.mysql.MysqlTemplate;
 import me.wuwenbin.modules.jpa.posterity.oracle.OracleTemplate;
 import me.wuwenbin.modules.jpa.posterity.postgresql.PostgreSqlTemplate;
 import me.wuwenbin.modules.jpa.posterity.sqlite.SqliteTemplate;
+import me.wuwenbin.modules.jpa.posterity.sqlserver.SqlServer2000Template;
+import me.wuwenbin.modules.jpa.posterity.sqlserver.SqlServer2005Template;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Hashtable;
@@ -61,14 +67,26 @@ public class DaoFactory implements InitializingBean {
      * @param dataSourceX
      */
     public synchronized void setDefaultDao(DataSourceX dataSourceX) {
-        if (dataSourceX.getInitDbType() == DbType.H2) {
+        if (dataSourceX.getInitDbType() == DbType.Db2) {
+            this.defaultDao = new Db2Template(dataSourceX.getDataSource());
+        } else if (dataSourceX.getInitDbType() == DbType.Derby) {
+            this.defaultDao = new DerbyTemplate(dataSourceX.getDataSource());
+        } else if (dataSourceX.getInitDbType() == DbType.H2) {
             this.defaultDao = new H2Template(dataSourceX.getDataSource());
+        } else if (dataSourceX.getInitDbType() == DbType.Hsql) {
+            this.defaultDao = new HsqlTemplate(dataSourceX.getDataSource());
+        } else if (dataSourceX.getInitDbType() == DbType.Informix) {
+            this.defaultDao = new InformixTemplate(dataSourceX.getDataSource());
         } else if (dataSourceX.getInitDbType() == DbType.Oracle) {
             this.defaultDao = new OracleTemplate(dataSourceX.getDataSource());
         } else if (dataSourceX.getInitDbType() == DbType.Sqlite) {
             this.defaultDao = new SqliteTemplate(dataSourceX.getDataSource());
         } else if (dataSourceX.getInitDbType() == DbType.Postgresql) {
             this.defaultDao = new PostgreSqlTemplate(dataSourceX.getDataSource());
+        } else if (dataSourceX.getInitDbType() == DbType.Sqlserver2000) {
+            this.defaultDao = new SqlServer2000Template(dataSourceX.getDataSource());
+        } else if (dataSourceX.getInitDbType() == DbType.Sqlserver2005) {
+            this.defaultDao = new SqlServer2005Template(dataSourceX.getDataSource());
         } else {
             this.defaultDao = new MysqlTemplate(dataSourceX.getDataSource());
         }
@@ -116,14 +134,26 @@ public class DaoFactory implements InitializingBean {
             if (dataSourceX == null || dataSourceX.getDataSource() == null) {
                 throw new IllegalStateException("不能以key [" + key + "] 来设置目标Dao");
             }
-            if (dataSourceX.getInitDbType() == DbType.H2) {
+            if (dataSourceX.getInitDbType() == DbType.Db2) {
+                return new Db2Template(dataSourceX.getDataSource());
+            } else if (dataSourceX.getInitDbType() == DbType.Derby) {
+                return new DerbyTemplate(dataSourceX.getDataSource());
+            } else if (dataSourceX.getInitDbType() == DbType.H2) {
                 return new H2Template(dataSourceX.getDataSource());
+            } else if (dataSourceX.getInitDbType() == DbType.Hsql) {
+                return new HsqlTemplate(dataSourceX.getDataSource());
+            } else if (dataSourceX.getInitDbType() == DbType.Informix) {
+                return new InformixTemplate(dataSourceX.getDataSource());
             } else if (dataSourceX.getInitDbType() == DbType.Oracle) {
                 return new OracleTemplate(dataSourceX.getDataSource());
             } else if (dataSourceX.getInitDbType() == DbType.Sqlite) {
                 return new SqliteTemplate(dataSourceX.getDataSource());
             } else if (dataSourceX.getInitDbType() == DbType.Postgresql) {
                 return new PostgreSqlTemplate(dataSourceX.getDataSource());
+            } else if (dataSourceX.getInitDbType() == DbType.Sqlserver2000) {
+                return new SqlServer2000Template(dataSourceX.getDataSource());
+            } else if (dataSourceX.getInitDbType() == DbType.Sqlserver2005) {
+                return new SqlServer2005Template(dataSourceX.getDataSource());
             } else {
                 return new MysqlTemplate(dataSourceX.getDataSource());
             }

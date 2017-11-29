@@ -191,7 +191,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T> int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception {
+    public int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);

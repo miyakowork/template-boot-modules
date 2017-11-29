@@ -3,12 +3,24 @@ package me.wuwenbin.modules.jpa.factory.business;
 /**
  * the type of database
  * <p>
- * Created by wuwenbin on 2017/3/27.
+ *
+ * @author wuwenbin
+ * @date 2017/3/27
  */
 public enum DbType {
-    Mysql,
+    /**
+     * 数据库类型
+     */
+    Db2,
+    Derby,
     H2,
+    Hsql,
+    Informix,
+    Mysql,
     Oracle,
+    Postgresql,
     Sqlite,
-    Postgresql
+    Sqlserver2000,
+    Sqlserver2005
+
 }

@@ -1,6 +1,5 @@
 package me.wuwenbin.modules.jdbc.test;
 
-import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +13,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:demo.xml"})
 public class TestCase {
 
-
     @Autowired
-    DaoFactory daoFactory;
-
+    private PublicService publicService;
 
     @Test
     public void testJDBC() {
-        String sql = "SELECT count(0) FROM t_oauth_user";
-        int a = daoFactory.defaultDao.queryNumberByArray(sql, Integer.class);
-        System.out.println("====:" + a);
+//        System.out.println(publicService.templateItemsOauth2());
+//        System.out.println(publicService.campusTalk());
+        publicService.sout();
     }
 }

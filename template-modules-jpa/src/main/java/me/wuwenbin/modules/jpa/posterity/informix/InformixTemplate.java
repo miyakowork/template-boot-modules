@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.jpa.posterity.sqlite;
+package me.wuwenbin.modules.jpa.posterity.informix;
 
 import me.wuwenbin.modules.jpa.posterity.PosterityDao;
 import me.wuwenbin.modules.jpa.support.Page;
@@ -9,20 +9,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * the implements of sqlite
+ * AncestorDao的informix实现
+ * created by Wuwenbin on 2017/11/29 at 22:57
  *
- * @author wuwenbin
- * @date 2017/3/27
+ * @author Wuwenbin
  */
-public class SqliteTemplate extends PosterityDao {
-    public SqliteTemplate(DataSource dataSource) {
+public class InformixTemplate extends PosterityDao {
+
+    public InformixTemplate(DataSource dataSource) {
         super(dataSource);
     }
 
-    private static String getSqlOfSqlite(final String sql, Page page) {
+    private static String getSqlOfInfomix(final String sql, Page page) {
         String querySql = sql;
         if (page.isFirstSetted() && page.isPageSizeSetted()) {
-            querySql = querySql.concat(" LIMIT " + page.getPageSize() + " OFFSET " + page.getFirst());
+            querySql = "SELECT SKIP " + page.getFirst() + " FIRST " + page.getFirst() + page.getPageSize() + " " + querySql.substring(7, querySql.length());
         }
         return querySql;
     }
@@ -36,7 +37,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List<Map<String, Object>> list = findListMapByArray(getSqlOfSqlite(sql, page), arrayParameters);
+        List<Map<String, Object>> list = findListMapByArray(getSqlOfInfomix(sql, page), arrayParameters);
         page.setRawResult(list);
         return page;
     }
@@ -45,12 +46,12 @@ public class SqliteTemplate extends PosterityDao {
     public Page findPageListMapByMap(String sql, Page page, Map<String, Object> mapParameter) {
         Assert.notNull(page, "分页信息不能为空");
         Assert.hasText(sql, "sql语句不正确!");
-        long count;
+        long count = 0;
         if (page.isAutoCount()) {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List<Map<String, Object>> list = findListMapByMap(getSqlOfSqlite(sql, page), mapParameter);
+        List<Map<String, Object>> list = findListMapByMap(getSqlOfInfomix(sql, page), mapParameter);
         page.setRawResult(list);
         return page;
     }
@@ -64,7 +65,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByArray(getSqlOfSqlite(sql, page), clazz, arrayParameters);
+        List<T> list = findListBeanByArray(getSqlOfInfomix(sql, page), clazz, arrayParameters);
         page.setTResult(list);
         return page;
     }
@@ -78,8 +79,8 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByMap(getSqlOfSqlite(sql, page), clazz, mapParameter);
-        page.setTResult(list);
+        List<T> list = findListBeanByMap(getSqlOfInfomix(sql, page), clazz, mapParameter);
+        page.setResult(list);
         return page;
     }
 
@@ -92,8 +93,8 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByBean(getCountSql(sql), Long.class, beanParameter);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByBean(getSqlOfSqlite(sql, page), clazz, beanParameter);
-        page.setTResult(list);
+        List<T> list = findListBeanByBean(getSqlOfInfomix(sql, page), clazz, beanParameter);
+        page.setResult(list);
         return page;
     }
 }

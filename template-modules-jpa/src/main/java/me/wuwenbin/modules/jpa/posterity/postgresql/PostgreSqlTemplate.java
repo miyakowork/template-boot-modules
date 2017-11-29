@@ -37,7 +37,7 @@ public final class PostgreSqlTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListMapByArray(getSqlOfPostgresql(sql, page), arrayParameters);
+        List<Map<String, Object>> list = findListMapByArray(getSqlOfPostgresql(sql, page), arrayParameters);
         page.setRawResult(list);
         return page;
     }
@@ -51,7 +51,7 @@ public final class PostgreSqlTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByArray(getSqlOfPostgresql(sql, page), clazz, arrayParameters);
+        List<T> list = findListBeanByArray(getSqlOfPostgresql(sql, page), clazz, arrayParameters);
         page.setResult(list);
         return page;
     }
@@ -66,8 +66,8 @@ public final class PostgreSqlTemplate extends PosterityDao {
             count = queryNumberByBean(getCountSql(sql), Long.class, beanParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByBean(getSqlOfPostgresql(sql, page), clazz, beanParameters);
-        page.setResult(list);
+        List<T> list = findListBeanByBean(getSqlOfPostgresql(sql, page), clazz, beanParameters);
+        page.setTResult(list);
         return page;
     }
 
@@ -80,8 +80,8 @@ public final class PostgreSqlTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListBeanByMap(getSqlOfPostgresql(sql, page), clazz, mapParameters);
-        page.setResult(list);
+        List<T> list = findListBeanByMap(getSqlOfPostgresql(sql, page), clazz, mapParameters);
+        page.setTResult(list);
         return page;
     }
 
@@ -94,8 +94,8 @@ public final class PostgreSqlTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameters);
             page.setTotalCount((int) count);
         }
-        List list = findListMapByMap(getSqlOfPostgresql(sql, page), mapParameters);
-        page.setResult(list);
+        List<Map<String, Object>> list = findListMapByMap(getSqlOfPostgresql(sql, page), mapParameters);
+        page.setRawResult(list);
         return page;
     }
 

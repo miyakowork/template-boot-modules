@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.jpa.posterity.sqlite;
+package me.wuwenbin.modules.jpa.posterity.derby;
 
 import me.wuwenbin.modules.jpa.posterity.PosterityDao;
 import me.wuwenbin.modules.jpa.support.Page;
@@ -9,22 +9,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * the implements of sqlite
+ * AncestorDao的derby实现
+ * created by Wuwenbin on 2017/11/29 at 21:45
  *
  * @author wuwenbin
- * @date 2017/3/27
  */
-public class SqliteTemplate extends PosterityDao {
-    public SqliteTemplate(DataSource dataSource) {
+public class DerbyTemplate extends PosterityDao {
+
+    public DerbyTemplate(DataSource dataSource) {
         super(dataSource);
     }
 
-    private static String getSqlOfSqlite(final String sql, Page page) {
-        String querySql = sql;
+    private static String getSqlOfDerby(final String sql, Page page) {
         if (page.isFirstSetted() && page.isPageSizeSetted()) {
-            querySql = querySql.concat(" LIMIT " + page.getPageSize() + " OFFSET " + page.getFirst());
+            String queryLastSql = ") temp_results) final_results WHERE row_number > " + page.getFirst() + " AND row_number <= " + page.getFirst() + page.getPageSize();
+            int groupBy = sql.toUpperCase().indexOf("GROUP BY");
+            int orderBy = sql.toUpperCase().indexOf("ORDER BY");
+            if (orderBy > groupBy) {
+                groupBy = sql.length();
+            }
+            String temp1 = "";
+            if (orderBy > 0) {
+                temp1 = sql.substring(orderBy, groupBy);
+            }
+            String queryFirstSql = "SELECT * FROM (SELECT ROW_NUMBER() OVER (" + temp1 + ") row_number,temp_results.* FROM(";
+            return queryFirstSql.concat(sql.concat(queryLastSql));
+        } else {
+            return sql;
         }
-        return querySql;
     }
 
     @Override
@@ -36,7 +48,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List<Map<String, Object>> list = findListMapByArray(getSqlOfSqlite(sql, page), arrayParameters);
+        List<Map<String, Object>> list = findListMapByArray(getSqlOfDerby(sql, page), arrayParameters);
         page.setRawResult(list);
         return page;
     }
@@ -50,7 +62,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List<Map<String, Object>> list = findListMapByMap(getSqlOfSqlite(sql, page), mapParameter);
+        List<Map<String, Object>> list = findListMapByMap(getSqlOfDerby(sql, page), mapParameter);
         page.setRawResult(list);
         return page;
     }
@@ -64,8 +76,8 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByArray(getCountSql(sql), Long.class, arrayParameters);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByArray(getSqlOfSqlite(sql, page), clazz, arrayParameters);
-        page.setTResult(list);
+        List<T> list = findListBeanByArray(getSqlOfDerby(sql, page), clazz, arrayParameters);
+        page.setRawResult(list);
         return page;
     }
 
@@ -78,8 +90,8 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByMap(getCountSql(sql), Long.class, mapParameter);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByMap(getSqlOfSqlite(sql, page), clazz, mapParameter);
-        page.setTResult(list);
+        List<T> list = findListBeanByMap(getSqlOfDerby(sql, page), clazz, mapParameter);
+        page.setResult(list);
         return page;
     }
 
@@ -92,7 +104,7 @@ public class SqliteTemplate extends PosterityDao {
             count = queryNumberByBean(getCountSql(sql), Long.class, beanParameter);
             page.setTotalCount((int) count);
         }
-        List<T> list = findListBeanByBean(getSqlOfSqlite(sql, page), clazz, beanParameter);
+        List<T> list = findListBeanByBean(getSqlOfDerby(sql, page), clazz, beanParameter);
         page.setTResult(list);
         return page;
     }

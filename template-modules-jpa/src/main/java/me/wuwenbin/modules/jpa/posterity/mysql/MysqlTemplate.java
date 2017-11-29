@@ -10,8 +10,9 @@ import java.util.Map;
 
 /**
  * the implement of mysql
- * <p>
- * Created by wuwenbin on 2017/3/27.
+ *
+ * @author wuwenbin
+ * @date 2017/3/27
  */
 public class MysqlTemplate extends PosterityDao {
 
@@ -51,7 +52,7 @@ public class MysqlTemplate extends PosterityDao {
             page.setTotalCount((int) count);
         }
         List<Map<String, Object>> list = findListMapByMap(getSqlOfMySQL(sql, page), mapParameter);
-        page.setResult(list);
+        page.setRawResult(list);
         return page;
     }
 
@@ -65,7 +66,7 @@ public class MysqlTemplate extends PosterityDao {
             page.setTotalCount((int) count);
         }
         List<T> list = findListBeanByArray(getSqlOfMySQL(sql, page), clazz, arrayParameters);
-        page.setResult(list);
+        page.setTResult(list);
         return page;
     }
 
@@ -79,7 +80,7 @@ public class MysqlTemplate extends PosterityDao {
             page.setTotalCount((int) count);
         }
         List<T> list = findListBeanByMap(getSqlOfMySQL(sql, page), clazz, mapParameter);
-        page.setResult(list);
+        page.setTResult(list);
         return page;
     }
 
@@ -93,7 +94,7 @@ public class MysqlTemplate extends PosterityDao {
             page.setTotalCount((int) count);
         }
         List<T> list = findListBeanByBean(getSqlOfMySQL(sql, page), clazz, beanParameter);
-        page.setResult(list);
+        page.setTResult(list);
         return page;
     }
 }
