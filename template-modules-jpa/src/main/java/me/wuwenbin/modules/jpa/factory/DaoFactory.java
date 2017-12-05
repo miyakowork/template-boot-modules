@@ -128,7 +128,7 @@ public class DaoFactory implements InitializingBean {
      * @return {@link AncestorDao}
      * @throws DataSourceKeyNotExistException
      */
-    private AncestorDao getAncestorDaoByKey(String key) throws DataSourceKeyNotExistException {
+    public AncestorDao getAncestorDaoByKey(String key) throws DataSourceKeyNotExistException {
         if (dataSourceMap.containsKey(key)) {
             DataSourceX dataSourceX = this.dataSourceMap.get(key);
             if (dataSourceX == null || dataSourceX.getDataSource() == null) {
