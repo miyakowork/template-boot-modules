@@ -25,28 +25,28 @@ import java.util.Map;
 public interface AncestorDao {
 
     /**
-     * get current dataSource
+     * transfer current dataSource
      *
      * @return {@link DataSource}
      */
     DataSource getCurrentDataSource();
 
     /**
-     * get object of current JdbcTemplate
+     * transfer object of current JdbcTemplate
      *
      * @return {@link org.springframework.jdbc.core.JdbcTemplate}
      */
     JdbcTemplate getJdbcTemplateObj();
 
     /**
-     * get object of current namedParameterJdbcTemplate
+     * transfer object of current namedParameterJdbcTemplate
      *
      * @return {@link org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate}
      */
     NamedParameterJdbcTemplate getNamedParameterJdbcTemplateObj();
 
     /**
-     * get object of current simpleJdbcInsert
+     * transfer object of current simpleJdbcInsert
      * the property is not recommended,it could result in some problems that is not expected
      * if you want to user generatedKey,we recommend to user {@link #getJdbcTemplateObj()}
      *
@@ -56,14 +56,14 @@ public interface AncestorDao {
     SimpleJdbcInsert getSimpleJdbcInsertObj();
 
     /**
-     * get object of current simpleJdbcCall
+     * transfer object of current simpleJdbcCall
      *
      * @return {@link org.springframework.jdbc.core.simple.SimpleJdbcCall}
      */
     SimpleJdbcCall getSimpleJdbcCall();
 
     /**
-     * get the connection of current datasource.
+     * transfer the connection of current datasource.
      * it can do some work of customizable jdbc operation.
      *
      * @return {@link Connection}
@@ -301,10 +301,10 @@ public interface AncestorDao {
     int[] executeBatchByCollectionBeans(final String sql, Collection<?> beanParameters) throws Exception;
 
     /**
-     * get math value by sql statement
-     * when developer get the returned math value,he/she can use {@link Number#longValue()}
+     * transfer math value by sql statement
+     * when developer transfer the returned math value,he/she can use {@link Number#longValue()}
      * or other method to transfer to other type.
-     * Besides,developer use {@link #queryNumberByArray(String, Class, Object...)} to get long value directly
+     * Besides,developer use {@link #queryNumberByArray(String, Class, Object...)} to transfer long value directly
      *
      * @param sql             statement of database
      * @param arrayParameters params in array way
@@ -313,7 +313,7 @@ public interface AncestorDao {
     Number findNumberByArray(final String sql, Object... arrayParameters);
 
     /**
-     * get math value by sql statement
+     * transfer math value by sql statement
      * if need <tt>double</tt> value,setting the second param by <tt>Double.class</tt>
      *
      * @param sql             statement of database
@@ -325,10 +325,10 @@ public interface AncestorDao {
     <T extends Number> T queryNumberByArray(final String sql, Class<T> numberClass, Object... arrayParameters);
 
     /**
-     * get math value by sql statement
-     * when developer get the returned math value,he/she can use {@link Number#longValue()}
+     * transfer math value by sql statement
+     * when developer transfer the returned math value,he/she can use {@link Number#longValue()}
      * or other method to transfer to other type.
-     * Besides,developer use {@link #queryNumberByMap(String, Class, Map)} to get long value directly
+     * Besides,developer use {@link #queryNumberByMap(String, Class, Map)} to transfer long value directly
      *
      * @param sql          statement of database
      * @param mapParameter params in map way
@@ -337,7 +337,7 @@ public interface AncestorDao {
     Number findNumberByMap(final String sql, Map<String, Object> mapParameter);
 
     /**
-     * get math value by sql statement
+     * transfer math value by sql statement
      * if need <tt>double</tt> value,setting the second param by <tt>Double.class</tt>
      *
      * @param sql          statement of database
@@ -349,10 +349,10 @@ public interface AncestorDao {
     <T extends Number> T queryNumberByMap(final String sql, Class<T> numberClass, Map<String, Object> mapParameter);
 
     /**
-     * get math value by sql statement
-     * when developer get the returned math value,he/she can use {@link Number#longValue()}
+     * transfer math value by sql statement
+     * when developer transfer the returned math value,he/she can use {@link Number#longValue()}
      * or other method to transfer to other type.
-     * Besides,developer use {@link #queryNumberByBean(String, Class, Object)} to get long value directly
+     * Besides,developer use {@link #queryNumberByBean(String, Class, Object)} to transfer long value directly
      *
      * @param sql           statement of database
      * @param beanParameter params in bean way
@@ -361,7 +361,7 @@ public interface AncestorDao {
     Number findNumberByBean(final String sql, Object beanParameter);
 
     /**
-     * get math value by sql statement
+     * transfer math value by sql statement
      * if need <tt>double</tt> value,setting the second param by <tt>Double.class</tt>
      *
      * @param sql           statement of database
@@ -373,7 +373,7 @@ public interface AncestorDao {
     <T extends Number> T queryNumberByBean(final String sql, Class<T> numberClass, Object beanParameter);
 
     /**
-     * get a series of key-value objects
+     * transfer a series of key-value objects
      * for sometimes does not ready a bean for selected results,using a map to collect them
      *
      * @param sql             statement of database
@@ -383,7 +383,7 @@ public interface AncestorDao {
     Map<String, Object> findMapByArray(final String sql, Object... arrayParameters);
 
     /**
-     * get a series of key-value objects
+     * transfer a series of key-value objects
      * for sometimes does not ready a bean for selected results,using a map to collect them
      *
      * @param sql          statement of database
@@ -402,7 +402,7 @@ public interface AncestorDao {
     Map<String, Object> findMapByBean(final String sql, Object beanParameter);
 
     /**
-     * get object by sql statement,assigning return type
+     * transfer object by sql statement,assigning return type
      *
      * @param sql             statement of database
      * @param clazz           return type
@@ -413,7 +413,7 @@ public interface AncestorDao {
     <T> T findBeanByArray(final String sql, Class<T> clazz, Object... arrayParameters);
 
     /**
-     * get object by sql statement,assigning return type
+     * transfer object by sql statement,assigning return type
      *
      * @param sql          statement of database
      * @param clazz        return type
@@ -435,7 +435,7 @@ public interface AncestorDao {
     <T> T findBeanByBean(final String sql, Class<T> clazz, Object beanParameter);
 
     /**
-     * get map collection by sql statement
+     * transfer map collection by sql statement
      *
      * @param sql             statement of database
      * @param arrayParameters params in array
@@ -444,7 +444,7 @@ public interface AncestorDao {
     List<Map<String, Object>> findListMapByArray(final String sql, Object... arrayParameters);
 
     /**
-     * get map collection by sql statement
+     * transfer map collection by sql statement
      *
      * @param sql          statement of database
      * @param mapParameter params in map
@@ -462,7 +462,7 @@ public interface AncestorDao {
     List<Map<String, Object>> findListMapByBean(final String sql, Object beanParameter);
 
     /**
-     * get object list by sql statement,assigning object type
+     * transfer object list by sql statement,assigning object type
      *
      * @param <T>             refer to second param
      * @param sql             statement of database
@@ -473,7 +473,7 @@ public interface AncestorDao {
     <T> List<T> findListBeanByArray(final String sql, Class<T> clazz, Object... arrayParameters);
 
     /**
-     * get object list by sql statement,assigning object type
+     * transfer object list by sql statement,assigning object type
      *
      * @param <T>          refer to second param
      * @param sql          statement of database
@@ -484,7 +484,7 @@ public interface AncestorDao {
     <T> List<T> findListBeanByMap(final String sql, Class<T> clazz, Map<String, Object> mapParameter);
 
     /**
-     * get object list by sql statement,assigning object type
+     * transfer object list by sql statement,assigning object type
      *
      * @param sql           statement of database
      * @param clazz         return object type

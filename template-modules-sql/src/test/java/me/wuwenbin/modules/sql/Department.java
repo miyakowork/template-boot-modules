@@ -1,12 +1,13 @@
-package me.wuwenbin.modules.repository.test;
+package me.wuwenbin.modules.sql;
+
 
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 
 /**
- * created by Wuwenbin on 2017/10/6 at 10:59
+ * created by Wuwenbin on 2017/10/6 at 10:58
  */
 @SQLTable
-public class Role {
+public class Department {
 
     private Integer id;
     private String name;
@@ -17,13 +18,5 @@ public class Role {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

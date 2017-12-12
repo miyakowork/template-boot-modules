@@ -11,10 +11,10 @@ import me.wuwenbin.modules.repository.provider.find.support.Constraint;
 import me.wuwenbin.modules.repository.provider.page.PageProvider;
 import me.wuwenbin.modules.repository.provider.save.SaveProvider;
 import me.wuwenbin.modules.repository.provider.update.UpdateProvider;
-import me.wuwenbin.tools.sqlgen.annotation.SQLColumn;
-import me.wuwenbin.tools.sqlgen.constant.Router;
-import me.wuwenbin.tools.sqlgen.util.SQLBuilderUtils;
-import me.wuwenbin.tools.sqlgen.util.SQLDefineUtils;
+import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.constant.Router;
+import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
+import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;

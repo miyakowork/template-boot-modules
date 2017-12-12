@@ -13,3 +13,6 @@
 + dao增加了2个插入方法，可以传入tableName和pkName，但前提，必须是实体类对应。
 + 新增SQLServer2000以及SQLServer2005+的方法。
 + 新增db2、derby、hsql、informix等支持。
+## 更新 - 20171211
++ 取消自定义的函数式接口，改为直接调用JDK8内置的函数式接口。
++ 修改了响应的方法以及类名称，使文意更清晰。具体为```InternalCall.transfer()```方法。表示```内部调用.调用方法```

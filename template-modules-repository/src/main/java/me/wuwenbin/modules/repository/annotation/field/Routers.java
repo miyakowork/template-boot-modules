@@ -1,6 +1,6 @@
 package me.wuwenbin.modules.repository.annotation.field;
 
-import me.wuwenbin.tools.sqlgen.constant.Router;
+import me.wuwenbin.modules.sql.constant.Router;
 
 import java.lang.annotation.*;
 

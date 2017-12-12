@@ -129,7 +129,7 @@ public class Page<T> extends PageOrder implements Serializable {
     }
 
     /**
-     * @return get data of the current page
+     * @return transfer data of the current page
      */
     public List<?> getResult() {
         return result == null ? new ArrayList<>() : result;

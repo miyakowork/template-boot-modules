@@ -8,11 +8,11 @@ import me.wuwenbin.modules.repository.annotation.sql.SQLPkRefer;
 import me.wuwenbin.modules.repository.annotation.sql.SQLRefer;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
-import me.wuwenbin.tools.sqlgen.SQLGen;
-import me.wuwenbin.tools.sqlgen.annotation.SQLColumn;
-import me.wuwenbin.tools.sqlgen.annotation.SQLTable;
-import me.wuwenbin.tools.sqlgen.factory.SQLBeanBuilder;
-import me.wuwenbin.tools.sqlgen.util.SQLDefineUtils;
+import me.wuwenbin.modules.sql.SQLGen;
+import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLTable;
+import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
+import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

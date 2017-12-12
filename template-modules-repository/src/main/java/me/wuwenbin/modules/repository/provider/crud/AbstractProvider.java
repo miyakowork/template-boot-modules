@@ -1,14 +1,14 @@
 package me.wuwenbin.modules.repository.provider.crud;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
-import me.wuwenbin.tools.sqlgen.SQLGen;
-import me.wuwenbin.tools.sqlgen.annotation.GeneralType;
-import me.wuwenbin.tools.sqlgen.annotation.SQLColumn;
-import me.wuwenbin.tools.sqlgen.annotation.SQLTable;
-import me.wuwenbin.tools.sqlgen.annotation.support.PkGenType;
-import me.wuwenbin.tools.sqlgen.factory.SQLBeanBuilder;
-import me.wuwenbin.tools.sqlgen.factory.SQLTextBuilder;
-import me.wuwenbin.tools.sqlgen.util.SQLDefineUtils;
+import me.wuwenbin.modules.sql.SQLGen;
+import me.wuwenbin.modules.sql.annotation.GeneralType;
+import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLTable;
+import me.wuwenbin.modules.sql.annotation.support.PkGenType;
+import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
+import me.wuwenbin.modules.sql.factory.SQLTextBuilder;
+import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

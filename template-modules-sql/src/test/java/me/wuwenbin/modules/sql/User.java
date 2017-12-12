@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.repository.test;
+package me.wuwenbin.modules.sql;
 
 
 import me.wuwenbin.modules.sql.annotation.SQLColumn;

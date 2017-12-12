@@ -15,6 +15,7 @@
         <module>template-modules-mongodb</module>
         <module>template-modules-scanner</module>
         <module>template-modules-repository</module>
+        <module>template-modules-sql</module>
     </modules>
 
     <properties>

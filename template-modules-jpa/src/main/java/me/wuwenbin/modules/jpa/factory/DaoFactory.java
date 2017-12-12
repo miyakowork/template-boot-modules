@@ -122,7 +122,7 @@ public class DaoFactory implements InitializingBean {
     }
 
     /**
-     * get dao by key you set just now
+     * transfer dao by key you set just now
      *
      * @param #key the key of dataSource you set
      * @return {@link AncestorDao}
