@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.9.0.RELEASE</version>
+        <version>1.10.1.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,9 +15,7 @@
     <description>轻松实现数据持久化的模块</description>
 
     <properties>
-        <tool.version>1.2.0.RELEASE</tool.version>
-        <modules.jpa.version>1.2.7.RELEASE</modules.jpa.version>
-        <modules.pagination.version>1.1.1.RELEASE</modules.pagination.version>
+        <modules.version>1.10.1.RELEASE</modules.version>
         <spring.version>4.3.12.RELEASE</spring.version>
     </properties>
 
@@ -32,26 +30,26 @@
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-tools-util</artifactId>
-            <version>${tool.version}</version>
+            <version>1.2.0.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>me.wuwenbin</groupId>
-            <artifactId>template-tools-sqlgen</artifactId>
-            <version>${tool.version}</version>
+            <artifactId>template-modules-sql</artifactId>
+            <version>${modules.version}</version>
         </dependency>
 
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>${modules.jpa.version}</version>
+            <version>${modules.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-pagination</artifactId>
-            <version>${modules.pagination.version}</version>
+            <version>${modules.version}</version>
         </dependency>
 
     </dependencies>

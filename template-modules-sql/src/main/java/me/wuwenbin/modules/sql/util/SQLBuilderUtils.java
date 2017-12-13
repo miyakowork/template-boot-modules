@@ -100,8 +100,11 @@ public class SQLBuilderUtils {
         while (tempClass != Object.class) {
             fields.addAll(Arrays.asList(tempClass.getDeclaredFields()));
             tempClass = tempClass.getSuperclass();
-            if (!isMappedSuperClass(tempClass)) {
-                break;
+            while (!isMappedSuperClass(tempClass)) {
+                if (tempClass == Object.class) {
+                    break;
+                }
+                tempClass = tempClass.getSuperclass();
             }
         }
         Field[] newField = new Field[fields.size()];

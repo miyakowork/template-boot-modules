@@ -5,6 +5,8 @@ import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
 import me.wuwenbin.modules.sql.factory.SQLTextBuilder;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by wuwenbin on 2017/7/8.
  */
@@ -16,7 +18,11 @@ public class UserTest {
         SQLTextBuilder ssb = SQLGen.builder();
         String sql = sbb.insertAllWithoutPk();
 //        sql = sbb.selectPartByPk(Router.B, Router.C);
-        System.out.println(sql);
+//        System.out.println(sql);
+        Field[] fields = sbb.getAllFieldExceptObject();
+        for (Field field : fields) {
+            System.out.println(field.getName());
+        }
     }
 
 }

@@ -4,6 +4,7 @@ package me.wuwenbin.modules.sql.factory;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.support.Condition;
+import me.wuwenbin.modules.sql.exception.*;
 import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
@@ -204,7 +205,6 @@ public final class SQLBeanBuilder {
      *
      * @return {@link String}
      * @throws SQLTableNotFoundException
-     * @throws NotSetPrimaryKeyException
      */
     public String selectAllByPk() {
         return selectPartByPk();
@@ -215,8 +215,6 @@ public final class SQLBeanBuilder {
      *
      * @param routers 需要查询的字段routers
      * @return {@link String}
-     * @throws SQLTableNotFoundException
-     * @throws NotSetPrimaryKeyException
      */
     public String selectPartByPk(int... routers) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
@@ -378,8 +376,6 @@ public final class SQLBeanBuilder {
      * @param updateRouters    指定更新列
      * @param conditionRouters 指定更新条件
      * @return {@link String}
-     * @throws SQLTableNotFoundException
-     * @throws UpdateColumnNullException
      */
     public String updateRoutersByRouterArray(int[] updateRouters, int[] conditionRouters) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
@@ -412,8 +408,6 @@ public final class SQLBeanBuilder {
      * @param updateRouters
      * @param conditionRouters
      * @return {@link String}
-     * @throws SQLTableNotFoundException
-     * @throws UpdateColumnNullException
      */
     public String updateRoutersByRouters(int[] updateRouters, int... conditionRouters) {
         return updateRoutersByRouterArray(updateRouters, conditionRouters);
@@ -424,9 +418,6 @@ public final class SQLBeanBuilder {
      *
      * @param updateRouters 指定routers更新列
      * @return {@link String}
-     * @throws SQLTableNotFoundException
-     * @throws UpdateColumnNullException
-     * @throws UpdatePkNotExistException
      */
     public String updateRoutersByPk(int... updateRouters) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {

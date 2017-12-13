@@ -8,7 +8,7 @@ import me.wuwenbin.modules.sql.annotation.not.NotInsert;
  * created by Wuwenbin on 2017/8/16 at 14:10
  */
 @MappedSuper
-public class Person {
+public class Person extends Human {
     private String age;
     @SQLColumn(select = false)
     @NotInsert

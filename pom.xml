@@ -6,7 +6,7 @@
 
     <groupId>me.wuwenbin</groupId>
     <artifactId>template-boot-modules</artifactId>
-    <version>1.9.0.RELEASE</version>
+    <version>1.10.1.RELEASE</version>
     <packaging>pom</packaging>
 
     <modules>
