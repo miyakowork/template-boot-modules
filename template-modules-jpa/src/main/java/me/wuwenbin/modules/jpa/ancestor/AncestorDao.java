@@ -169,11 +169,10 @@ public interface AncestorDao {
      *
      * @param sql           插入的语句
      * @param beanParameter bean对象类型的参数，对应sql中的占位符
-     * @param <T>           匹配对象的泛型类型
      * @return 自动生成的主键
      * @throws Exception 插入时发生的异常
      */
-    <T> long insertBeanAutoGenKeyReturnKey(String sql, Object beanParameter) throws Exception;
+    long insertBeanAutoGenKeyReturnKey(String sql, Object beanParameter) throws Exception;
 
     /**
      * 插入一条Map记录，返回插入的记录（含主键）
@@ -373,6 +372,39 @@ public interface AncestorDao {
     <T extends Number> T queryNumberByBean(final String sql, Class<T> numberClass, Object beanParameter);
 
     /**
+     * 查询一列单条数据
+     *
+     * @param sql
+     * @param objClass        可以为String、基本类型的包装类型，出此两种情况其余都不可以
+     * @param arrayParameters sql语句中的参数
+     * @param <T>
+     * @return
+     */
+    <T> T findPrimitiveByArray(final String sql, Class<T> objClass, Object... arrayParameters);
+
+    /**
+     * 查询一列单条数据
+     *
+     * @param sql
+     * @param objClass     可以为String、基本类型的包装类型，出此两种情况其余都不可以
+     * @param mapParameter
+     * @param <T>
+     * @return
+     */
+    <T> T findPrimitiveByMap(final String sql, Class<T> objClass, Map<String, Object> mapParameter);
+
+    /**
+     * 查询一列单条数据
+     *
+     * @param sql
+     * @param objClass      可以为String、基本类型的包装类型，出此两种情况其余都不可以
+     * @param beanParameter
+     * @param <T>
+     * @return
+     */
+    <T> T findPrimitiveByBean(final String sql, Class<T> objClass, Object beanParameter);
+
+    /**
      * transfer a series of key-value objects
      * for sometimes does not ready a bean for selected results,using a map to collect them
      *
@@ -433,6 +465,39 @@ public interface AncestorDao {
      * @return
      */
     <T> T findBeanByBean(final String sql, Class<T> clazz, Object beanParameter);
+
+    /**
+     * 查询一列单条数据
+     *
+     * @param sql
+     * @param objClass        可以为String、基本类型的包装类型，出此两种情况其余都不可以
+     * @param arrayParameters sql语句中的参数
+     * @param <T>
+     * @return
+     */
+    <T> List<T> findListPrimitiveByArray(final String sql, Class<T> objClass, Object... arrayParameters);
+
+    /**
+     * 查询一列单条数据
+     *
+     * @param sql
+     * @param objClass     可以为String、基本类型的包装类型，出此两种情况其余都不可以
+     * @param mapParameter
+     * @param <T>
+     * @return
+     */
+    <T> List<T> findListPrimitiveByMap(final String sql, Class<T> objClass, Map<String, Object> mapParameter);
+
+    /**
+     * 查询一列单条数据
+     *
+     * @param sql
+     * @param objClass      可以为String、基本类型的包装类型，出此两种情况其余都不可以
+     * @param beanParameter
+     * @param <T>
+     * @return
+     */
+    <T> List<T> findListPrimitiveByBean(final String sql, Class<T> objClass, Object beanParameter);
 
     /**
      * transfer map collection by sql statement

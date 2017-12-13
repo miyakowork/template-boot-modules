@@ -9,7 +9,7 @@ http://www.springframework.org/schema/context
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
 
-    <bean id="ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="ds2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url"
                   value="jdbc:mysql://127.0.0.1:3306/templateitemsoauth2"/>
@@ -17,7 +17,7 @@ http://www.springframework.org/schema/context
         <property name="password" value="123456"/>
     </bean>
 
-    <bean id="ds2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url"
                   value="jdbc:mysql://127.0.0.1:3306/campustalk"/>

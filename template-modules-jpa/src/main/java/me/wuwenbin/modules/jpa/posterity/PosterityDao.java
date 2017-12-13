@@ -1,7 +1,6 @@
 package me.wuwenbin.modules.jpa.posterity;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
-import me.wuwenbin.modules.jpa.support.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -159,7 +158,7 @@ public abstract class PosterityDao implements AncestorDao {
 
     @Override
     @Deprecated
-    public long insertBeanGetGeneratedKey(String tableName, String keyName, Object beanParameter) throws Exception {
+    public long insertBeanGetGeneratedKey(String tableName, String keyName, Object beanParameter) {
         Assert.notNull(tableName, "表名不能为空");
         Assert.notNull(keyName, "自增字段名称不能为空");
         Assert.notNull(beanParameter, "对象bean不能为空");
@@ -171,7 +170,7 @@ public abstract class PosterityDao implements AncestorDao {
 
     @Override
     @Deprecated
-    public long insertMapGetGeneratedKey(String tableName, String keyName, Map<String, Object> mapParameter) throws Exception {
+    public long insertMapGetGeneratedKey(String tableName, String keyName, Map<String, Object> mapParameter) {
         Assert.notNull(tableName, "表名不能为空!");
         Assert.notNull(keyName, "自增字段名称不能为空!");
         Assert.notNull(mapParameter, "对象map不能为空!");
@@ -182,7 +181,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int insertMapAutoGenKeyReturnAffect(String sql, Map<String, Object> mapParameter) throws Exception {
+    public int insertMapAutoGenKeyReturnAffect(String sql, Map<String, Object> mapParameter) {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(mapParameter, "对象mapParameter不能为空");
         logger.info("SQL:" + sql);
@@ -191,7 +190,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception {
+    public int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);
@@ -200,7 +199,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public long insertMapAutoGenKeyReturnKey(String sql, Map<String, Object> mapParameter) throws Exception {
+    public long insertMapAutoGenKeyReturnKey(String sql, Map<String, Object> mapParameter) {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(mapParameter, "对象mapParameter不能为空");
         logger.info("SQL:" + sql);
@@ -210,7 +209,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T> long insertBeanAutoGenKeyReturnKey(String sql, Object beanParameter) throws Exception {
+    public long insertBeanAutoGenKeyReturnKey(String sql, Object beanParameter) {
         Assert.hasText(sql, "sql语句不正确！");
         Assert.notNull(beanParameter, "对象beanParameter不能为空");
         logger.info("SQL:" + sql);
@@ -220,14 +219,14 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) throws Exception {
+    public Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) {
         long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
         return findMapByArray(sql, key);
     }
 
     @Override
-    public <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) throws Exception {
+    public <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) {
         long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
         return findBeanByArray(sql, clazz, key);
@@ -248,7 +247,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int executeArray(String sql, Object... arrayParameters) throws Exception {
+    public int executeArray(String sql, Object... arrayParameters) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         int affectCount;
@@ -317,7 +316,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int[] executeBatchByCollectionMaps(String sql, Collection<Map<String, Object>> mapParameters) throws Exception {
+    public int[] executeBatchByCollectionMaps(String sql, Collection<Map<String, Object>> mapParameters) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         if (mapParameters != null && !mapParameters.isEmpty()) {
@@ -330,7 +329,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int[] executeBatchByCollectionBeans(String sql, Collection<?> beanParameters) throws Exception {
+    public int[] executeBatchByCollectionBeans(String sql, Collection<?> beanParameters) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         if (beanParameters != null && !beanParameters.isEmpty()) {
@@ -484,6 +483,63 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
+    public <T> T findPrimitiveByArray(String sql, Class<T> objClass, Object... arrayParameters) {
+        try {
+            Assert.hasText(sql, "sql语句不正确!");
+            logger.info("SQL:" + sql);
+            if (arrayParameters != null && arrayParameters.length > 0) {
+                return jdbcTemplate.queryForObject(sql, objClass, arrayParameters);
+            } else {
+                return jdbcTemplate.queryForObject(sql, objClass);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("查询SQL无结果------ " + e);
+            return null;
+        } catch (Exception e) {
+            logger.error("查询SQL异常 no result! {}" + e);
+            return null;
+        }
+    }
+
+    @Override
+    public <T> T findPrimitiveByMap(String sql, Class<T> objClass, Map<String, Object> mapParameter) {
+        try {
+            Assert.hasText(sql, "sql语句不正确!");
+            logger.info("SQL:" + sql);
+            if (mapParameter != null && mapParameter.size() > 0) {
+                return namedParameterJdbcTemplate.queryForObject(sql, mapParameter, objClass);
+            } else {
+                return findPrimitiveByArray(sql, objClass);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("查询SQL无结果------ " + e);
+            return null;
+        } catch (Exception e) {
+            logger.error("查询SQL异常 no result! {}" + e);
+            return null;
+        }
+    }
+
+    @Override
+    public <T> T findPrimitiveByBean(String sql, Class<T> objClass, Object beanParameter) {
+        try {
+            Assert.hasText(sql, "sql语句不正确!");
+            logger.info("SQL:" + sql);
+            if (beanParameter != null) {
+                return namedParameterJdbcTemplate.queryForObject(sql, generateBeanSqlParamSource(beanParameter), objClass);
+            } else {
+                return findPrimitiveByArray(sql, objClass);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("查询SQL无结果------ " + e);
+            return null;
+        } catch (Exception e) {
+            logger.error("查询SQL异常 no result! {}" + e);
+            return null;
+        }
+    }
+
+    @Override
     public Map<String, Object> findMapByArray(String sql, Object... arrayParameters) {
         try {
             Assert.hasText(sql, "sql语句不正确!");
@@ -592,6 +648,72 @@ public abstract class PosterityDao implements AncestorDao {
             return null;
         } catch (Exception e) {
             logger.error("not result{}", e);
+            return null;
+        }
+    }
+
+    @Override
+    public <T> List<T> findListPrimitiveByArray(String sql, Class<T> objClass, Object... arrayParameters) {
+        try {
+            Assert.hasText(sql, "sql语句不正确!");
+            logger.info("SQL:" + sql);
+            List<T> list;
+            if (arrayParameters != null && arrayParameters.length > 0) {
+                list = jdbcTemplate.queryForList(sql, objClass, arrayParameters);
+            } else {
+                list = jdbcTemplate.queryForList(sql, objClass);
+            }
+            logger.info("查询SQL响应条目:" + list.size());
+            return list;
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("查询SQL无结果------" + e);
+            return null;
+        } catch (Exception e) {
+            logger.error("查询SQL异常 no result! {}" + e);
+            return null;
+        }
+    }
+
+    @Override
+    public <T> List<T> findListPrimitiveByMap(String sql, Class<T> objClass, Map<String, Object> mapParameter) {
+        try {
+            Assert.hasText(sql, "sql语句不正确!");
+            logger.info("SQL:" + sql);
+            List<T> list;
+            if (mapParameter != null && mapParameter.size() > 0) {
+                list = namedParameterJdbcTemplate.queryForList(sql, mapParameter, objClass);
+            } else {
+                list = findListPrimitiveByArray(sql, objClass);
+            }
+            logger.info("查询SQL响应条目:" + list.size());
+            return list;
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("查询SQL无结果------" + e);
+            return null;
+        } catch (Exception e) {
+            logger.error("查询SQL异常 no result! {}" + e);
+            return null;
+        }
+    }
+
+    @Override
+    public <T> List<T> findListPrimitiveByBean(String sql, Class<T> objClass, Object beanParameter) {
+        try {
+            Assert.hasText(sql, "sql语句不正确!");
+            logger.info("SQL:" + sql);
+            List<T> list;
+            if (beanParameter != null) {
+                list = namedParameterJdbcTemplate.queryForList(sql, generateBeanSqlParamSource(beanParameter), objClass);
+            } else {
+                list = findListPrimitiveByArray(sql, objClass);
+            }
+            logger.info("查询SQL响应条目:" + list.size());
+            return list;
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("查询SQL无结果------" + e);
+            return null;
+        } catch (Exception e) {
+            logger.error("查询SQL异常 no result! {}" + e);
             return null;
         }
     }
@@ -725,21 +847,5 @@ public abstract class PosterityDao implements AncestorDao {
             return null;
         }
     }
-
-
-    @Override
-    public abstract Page findPageListMapByArray(String sql, Page page, Object... arrayParameters);
-
-    @Override
-    public abstract Page findPageListMapByMap(String sql, Page page, Map<String, Object> mapParameter);
-
-    @Override
-    public abstract <T> Page<T> findPageListBeanByArray(String sql, Class<T> clazz, Page<T> page, Object... arrayParameters);
-
-    @Override
-    public abstract <T> Page<T> findPageListBeanByMap(String sql, Class<T> clazz, Page<T> page, Map<String, Object> mapParameter);
-
-    @Override
-    public abstract <T> Page<T> findPageListBeanByBean(String sql, Class<T> clazz, Page<T> page, Object beanParameter);
 
 }
