@@ -189,3 +189,17 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
             List<UserA> as = InternalCall.transfer(PublicService::campusTalk);
         }
 ```
+## 自定义使用
++ 如果AncestorDao中的方法还不能满足你的需求（基本上99%都可以），你可以自己获取相关原始对象来操作
+```java
+    private AncestorDao daoTemplate;
+
+    //获取simpleJdbcCall，一般用来执行存储过程的
+    daoTemplate.getSimpleJdbcCallObj();
+    
+    //获取jdbcTemplate对象，用来执行？参数的sql语句
+    daoTemplate.getJdbcTemplateObj();
+    
+    //获取namedParameterJdbcTemplate对象，一般用来执行：参数的sql语句
+    daoTemplate.getNamedParameterJdbcTemplateObj();
+```
