@@ -1,3 +1,12 @@
+## 当前版本：
+ ```Maven```
+    ```xml
+    <dependency>
+       <groupId>com.alibaba</groupId>
+       <artifactId>druid-spring-boot-starter</artifactId>
+       <version>1.1.6</version>
+    </dependency>
+    ```
 ---
 ## 更新 - 20171213
 + 删除一些不必要的throws
