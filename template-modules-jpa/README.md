@@ -31,11 +31,13 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
    ## 入门使用
    1. 配置数据源（此处示例使用DruidDataSource）
        1. xml配置方法（具体属性值配置此处省略，根据开发情况配置）
+       
        ```xml
           <bean id="ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close"/>
           <bean id="ds2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close"/>
        ```
        2. java配置方法（推荐Druid Spring Boot Starter快速配置）
+       
        ```java
           @Primary
           @Bean
@@ -52,6 +54,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
        ```
    2. 配置增加数据源（DataSourceX类）
        1. xml配置方法
+       
        ```xml
               <bean id="dsx1" class="me.wuwenbin.modules.jpa.factory.business.DataSourceX">
                   <property name="dataSource" ref="ds1"/>
@@ -64,6 +67,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
               </bean>
        ```
        2. java配置方法
+       
        ```java
               @Bean
               public DataSourceX dataSourceX(DruidDataSource dataSource) {
@@ -75,6 +79,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
        ```
 3. 配置DaoFactory（核心配置）
     1. xml配置
+    
     ```xml
             <bean id="daoFactory" class="me.wuwenbin.modules.jpa.factory.DaoFactory">
                <!--多个增强数据源的map集合-->
@@ -89,6 +94,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
             </bean>
     ```
     2. java配置
+    
     ```java
            @Bean
            public DaoFactory daoFactory(DataSourceX dataSourceX) {
@@ -102,6 +108,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
     ```
 4. 开始使用
     1. 使用方法1：在Spring项目的一个Bean中注入DaoFactory即可。
+    
     ```java
         @Autowired
          private DaoFactory daoFactory;
@@ -112,6 +119,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
          }
     ```
     2. 使用方法2：在Spring项目的一个Bean中注入AncestorDao即可。
+    
     ```java
        private AncestorDao daoTemplate;
 
