@@ -1,7 +1,7 @@
-## Druid Spring Boot Starter
+## Template Modules JPA
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-jpa/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-jpa%7C1.10.2.RELEASE%7Cjar)
 ---
-template modules jpa 帮你轻松
+template modules jpa 帮你轻松完成对数据的操作，无需额外编写dao，一个dao满足你所有需求
 ## 当前版本：
 ```xml
     <dependency>
