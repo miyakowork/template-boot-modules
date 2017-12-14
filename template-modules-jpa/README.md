@@ -1,7 +1,7 @@
 ## Template Modules JPA
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-jpa/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-jpa%7C1.10.2.RELEASE%7Cjar)
 ---
-template modules jpa 帮你轻松完成对数据的操作，无需额外编写dao，一个dao满足你所有需求。支持多数据源。
+template modules jpa 帮你轻松完成对数据的操作，无需额外编写dao，一个dao满足你所有需求。支持多数据源（多数据源也只需定义一个dao即可）。
 ## 当前版本：
    ```xml
        <dependency>
@@ -106,6 +106,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
            return daoFactory;
        }
 ```
+---
 ## 基本使用
 + 使用方法1：在Spring项目的一个Bean中注入DaoFactory即可。
 
@@ -132,4 +133,58 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
       String sql = "select * from t_stu_info where campus_no = ?";
       return daoTemplate.findListBeanByArray(sql, Student.class, campusNo);
     }
+```
+## 进阶使用
++ 如果切换多数据源的操作 _（在方法上加上@DynamicDataSource注解即可，其中参数为配置何种指定的key）_
+    
+```java
+    /**
+    * 当程序进入此方法时，数据源切换到key为tp的数据上，访问完毕后，会切回配置中默认的数据源。
+    */
+    @DynamicDataSource("tp")
+     public List<Student> findStudentsByCampusNo(String campusNo){
+          String sql = "select * from t_stu_info where campus_no = ?";
+          return daoTemplate.findListBeanByArray(sql, Student.class, campusNo);
+     }
+```
++ 如果某方法内含有调用其他方法的操作 _（譬如a方法中有调用b方法的操作，且b方法切换了与a不同的数据源）_，则需以下操作
+
+```java
+        @DynamicDataSource("ct")
+        public List<UserA> findUserAs() {
+            String sql = "select * from t_user";
+            return daoFactory.dynamicDao.findListMapByArray(sql);
+        }
+    
+        /**
+        * 此方法为默认数据源 ，所以无需注解，写注解也可以
+        */
+        public List<UserB> findUserBs() {
+            String sql = "select * from t_oauth_user";
+            return daoFactory.dynamicDao.findListMapByArray(sql);
+        }
+        
+        @DynamicDataSource("tp")
+        public List<UserB> findUserBs2(String sql) {
+            return daoFactory.dynamicDao.findListMapByArray(sql);
+        }
+        
+        /**
+        * 以下为错误的用法 ，此处数据源则不会切换，一致使用默认的访问
+        */
+        public void testError(){
+            tp1();
+            ct();
+            tp2();
+        }
+        
+        /**
+        * 正确的用法如下。
+        * 原因：因为被aop代理之后，代理类中内部方法的调用并不能编译到上面的注解，aop没有拦截到，故需要显式调用（此处使用JDK8的函数式接口模式）。
+        */
+        public void testCorrect(){
+            List<UserB> bs1 = InternalCall.transfer(PublicService::findUserBs);
+            List<UserB> bs2 = InternalCall.transfer((Function<PublicService, List<UserB>>) bean -> bean.findUserBs2("select * from t_oauth_role"));
+            List<UserA> as = InternalCall.transfer(PublicService::campusTalk);
+        }
 ```
