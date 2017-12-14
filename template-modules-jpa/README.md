@@ -203,3 +203,9 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
     //获取namedParameterJdbcTemplate对象，一般用来执行：参数的sql语句
     daoTemplate.getNamedParameterJdbcTemplateObj();
 ```
+---
+## API参考
++ 执行存储过程
+---------------- 
+以 _callProcedure_ 为开头的方法
++
