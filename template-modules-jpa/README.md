@@ -1,10 +1,5 @@
-
-## 文档
-- [入门指南](https://github.com/miyakowork/template-modules-dao/wiki/入门)
-- [主要方法](https://github.com/miyakowork/template-modules-dao/wiki/主要方法API)
-
 ---
-##  1.2.0更新
+## 更新 - 20170214
 + 增加了insertMapAutoGenKeyOutBean方法。
 ## 更新 - 20171129
 + 从1.9.0版本开始需要JDK8及以上支持。
