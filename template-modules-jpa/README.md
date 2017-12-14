@@ -206,6 +206,8 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
 ---
 ## API参考
 + 执行存储过程
----------------- 
-以 _callProcedure_ 为开头的方法
-+
+> 以 _callProcedure_ 为开头的方法
++ 执行插入语句，并且需要返回值的
+> 类似 _insertXxxAutoGenKeyReturnXxx_ 这样的方法
+> 根据插入的类型选择前缀匹配，以及根据返回的需求进行后缀匹配即可
+
