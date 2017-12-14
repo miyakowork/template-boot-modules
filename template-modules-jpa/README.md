@@ -1,11 +1,9 @@
 ## 当前版本：
-    ```xml
     <dependency>
-       <groupId>com.alibaba</groupId>
-       <artifactId>druid-spring-boot-starter</artifactId>
-       <version>1.1.6</version>
+       <groupId>me.wuwenbin</groupId>
+       <artifactId>template-modules-jpa</artifactId>
+       <version>1.10.2.RELEASE</version>
     </dependency>
-    ```
 ---
 ## 更新 - 20171213
 + 删除一些不必要的throws
