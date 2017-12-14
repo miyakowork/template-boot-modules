@@ -184,7 +184,8 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
         */
         public void testCorrect(){
             List<UserB> bs1 = InternalCall.transfer(PublicService::findUserBs);
-            List<UserB> bs2 = InternalCall.transfer((Function<PublicService, List<UserB>>) bean -> bean.findUserBs2("select * from t_oauth_role"));
+            List<UserB> bs2 =
+                    InternalCall.transfer((Function<PublicService, List<UserB>>) bean -> bean.findUserBs2("select * from t_oauth_role"));
             List<UserA> as = InternalCall.transfer(PublicService::campusTalk);
         }
 ```
