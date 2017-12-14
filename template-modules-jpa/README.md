@@ -1,9 +1,15 @@
+## Druid Spring Boot Starter
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-jpa/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-jpa%7C1.10.2.RELEASE%7Cjar)
+---
+template modules jpa 帮你轻松
 ## 当前版本：
+```xml
     <dependency>
-       <groupId>me.wuwenbin</groupId>
-       <artifactId>template-modules-jpa</artifactId>
-       <version>1.10.2.RELEASE</version>
-    </dependency>
+         <groupId>me.wuwenbin</groupId>
+         <artifactId>template-modules-jpa</artifactId>
+         <version>1.10.2.RELEASE</version>
+     </dependency>
+```
 ---
 ## 更新 - 20171213
 + 删除一些不必要的throws
@@ -21,3 +27,7 @@
 + 新增db2、derby、hsql、informix等支持。
 ## 更新 - 20170214
 + 增加了insertMapAutoGenKeyOutBean方法。
+---
+## 入门使用
+1. 配置数据源
+    1. 
