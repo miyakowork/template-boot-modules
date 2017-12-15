@@ -179,12 +179,34 @@ public interface AncestorDao {
      *
      * @param insertSQL    插入语句
      * @param mapParameter map参数
+     * @param pkName       主键列明
+     * @return 所有字段组装成的map对象
+     * @throws Exception 插入时发生的异常
+     */
+    Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String pkName) throws Exception;
+
+    /**
+     * 插入一条Map记录，返回插入的记录（含主键）
+     *
+     * @param insertSQL    插入语句
+     * @param mapParameter map参数
      * @param tableName    表名
      * @param pkName       主键列明
      * @return 所有字段组装成的map对象
      * @throws Exception 插入时发生的异常
      */
     Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) throws Exception;
+
+    /**
+     * 插入一条Bean记录，返回Map对象，参数类型为冒号
+     *
+     * @param insertSQL
+     * @param beanParameter
+     * @param pkName
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String pkName) throws Exception;
 
     /**
      * 插入一条Bean记录，返回Map对象，参数类型为冒号
@@ -204,6 +226,19 @@ public interface AncestorDao {
      * @param insertSQL
      * @param mapParameter
      * @param clazz
+     * @param pkName       主键列明
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String pkName) throws Exception;
+
+    /**
+     * 插入一条记录，参数为Map返回一个对应的实体类
+     *
+     * @param insertSQL
+     * @param mapParameter
+     * @param clazz
      * @param tableName
      * @param pkName       主键列明
      * @param <T>
@@ -211,6 +246,19 @@ public interface AncestorDao {
      * @throws Exception
      */
     <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
+
+    /**
+     * 插入一条bean记录，返回插入记录（含主键）
+     *
+     * @param insertSQL    插入语句
+     * @param beaParameter bean类型参数
+     * @param clazz        对象匹配的class类型
+     * @param pkName       主键列明
+     * @param <T>          对象匹配的泛型类型
+     * @return 插入的对象
+     * @throws Exception 插入时发生的异常
+     */
+    <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String pkName) throws Exception;
 
     /**
      * 插入一条bean记录，返回插入记录（含主键）
