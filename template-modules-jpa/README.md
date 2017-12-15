@@ -11,6 +11,8 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
         </dependency>
    ```
    ---
+   ## 更新 - 20171215
+   + 更新insertXxxAutoGenKeyReturnXxx带tableName的方法，改为由方法自己从插入语句中计算出tableName，取代用户自己传入tableName参数
    ## 更新 - 20171213
    + 删除一些不必要的throws
    + 删除一些不必要的泛型指定
@@ -242,3 +244,4 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
 > 方法名后缀根据sql语句以及方法传的参数来选择
 + 执行分页方法的查找，情况大致同上一条
 > 此处不再列举，仅仅是方法名前面多了Page，情况和上一条一致
+
