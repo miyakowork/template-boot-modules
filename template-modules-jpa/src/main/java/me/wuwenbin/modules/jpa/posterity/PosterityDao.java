@@ -66,6 +66,20 @@ public abstract class PosterityDao implements AncestorDao {
         return new BeanPropertySqlParameterSource(o);
     }
 
+    private String getTableNameFromInsertSql(String sql) {
+        sql = sql.toLowerCase();
+        int firstLeft = sql.indexOf("(");
+        int into = sql.indexOf("into");
+        int values = sql.indexOf("values");
+        if (firstLeft > values) {
+            return sql.substring(into + 5, values);
+        }
+        if (firstLeft < values) {
+            return sql.substring(into + 5, firstLeft);
+        }
+        throw new RuntimeException("获取表名失败！");
+    }
+
 
     protected static String getCountSql(String nativeSQL) {
         final String countSQL = "COUNT(0)";
@@ -219,6 +233,15 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
+    public Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String pkName) {
+        String tableName = getTableNameFromInsertSql(insertSQL);
+        long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
+        String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
+        return findMapByArray(sql, key);
+    }
+
+    @Override
+    @Deprecated
     public Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) {
         long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
@@ -226,6 +249,15 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
+    public <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String pkName) {
+        String tableName = getTableNameFromInsertSql(insertSQL);
+        long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
+        String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
+        return findBeanByArray(sql, clazz, key);
+    }
+
+    @Override
+    @Deprecated
     public <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) {
         long key = insertMapAutoGenKeyReturnKey(insertSQL, mapParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
@@ -233,14 +265,32 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception {
+    public <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String pkName) {
+        String tableName = getTableNameFromInsertSql(insertSQL);
         long key = insertBeanAutoGenKeyReturnKey(insertSQL, beaParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
         return findBeanByArray(sql, clazz, key);
     }
 
     @Override
-    public Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String tableName, String pkName) throws Exception {
+    @Deprecated
+    public <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String tableName, String pkName) {
+        long key = insertBeanAutoGenKeyReturnKey(insertSQL, beaParameter);
+        String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
+        return findBeanByArray(sql, clazz, key);
+    }
+
+    @Override
+    public Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String pkName) {
+        String tableName = getTableNameFromInsertSql(insertSQL);
+        long key = insertBeanAutoGenKeyReturnKey(insertSQL, beanParameter);
+        String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
+        return findMapByArray(sql, key);
+    }
+
+    @Override
+    @Deprecated
+    public Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String tableName, String pkName) {
         long key = insertBeanAutoGenKeyReturnKey(insertSQL, beanParameter);
         String sql = "SELECT * FROM ".concat(tableName).concat(" WHERE ").concat(pkName).concat(" = ?");
         return findMapByArray(sql, key);
@@ -261,7 +311,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int executeMap(String sql, Map<String, Object> mapParameter) throws Exception {
+    public int executeMap(String sql, Map<String, Object> mapParameter) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         int affectCount;
@@ -275,7 +325,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int executeBean(String sql, Object beanParameter) throws Exception {
+    public int executeBean(String sql, Object beanParameter) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         int affectCount;
@@ -290,7 +340,7 @@ public abstract class PosterityDao implements AncestorDao {
 
     @SafeVarargs
     @Override
-    public final int[] executeBatchByArrayMaps(String sql, Map<String, Object>... mapParameters) throws Exception {
+    public final int[] executeBatchByArrayMaps(String sql, Map<String, Object>... mapParameters) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         if (mapParameters != null && mapParameters.length > 0) {
@@ -303,7 +353,7 @@ public abstract class PosterityDao implements AncestorDao {
     }
 
     @Override
-    public int[] executeBatchByArrayBeans(String sql, Object... beanParameters) throws Exception {
+    public int[] executeBatchByArrayBeans(String sql, Object... beanParameters) {
         Assert.hasText(sql, "sql语句不正确!");
         logger.info("SQL:" + sql);
         if (beanParameters != null && beanParameters.length > 0) {
