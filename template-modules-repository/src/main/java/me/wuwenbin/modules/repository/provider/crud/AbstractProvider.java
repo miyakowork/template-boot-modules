@@ -61,4 +61,5 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
         this.sbb = SQLGen.builder(getClazz());
         this.stb = SQLGen.builder();
     }
+
 }

@@ -3,7 +3,7 @@ package me.wuwenbin.modules.repository.provider;
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.repository.provider.crud.ICrudProvider;
-import me.wuwenbin.modules.repository.util.MethodUtils;
+import me.wuwenbin.modules.repository.util.BeanUtils;
 
 import java.lang.reflect.Method;
 
@@ -23,7 +23,7 @@ public class RepositoryProvider {
     }
 
     public <T> Object execute(Method method, Object[] args, Class<T> clazz) throws Exception {
-        ICrudProvider provider = MethodUtils.getProvider(method, this.jdbcTemplate, clazz);
+        ICrudProvider provider = BeanUtils.getProvider(method, this.jdbcTemplate, clazz);
         return provider.execute(args);
     }
 }

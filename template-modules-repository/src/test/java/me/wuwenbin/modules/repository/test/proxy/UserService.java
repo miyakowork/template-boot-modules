@@ -14,11 +14,14 @@ import java.util.Set;
 public interface UserService<S> extends PublicService<S> {
 
     int age();
+
     S name();
 
     void empty();
 
     List<S> save(String b, S... ss);
+
+    void testPoint3(String... s);
 
     List<S> save1(Map<String, Object> ss);
 

@@ -146,13 +146,12 @@ public interface AncestorDao {
     /**
      * 插入bean返回插入的影响条数，自动生成key
      *
-     * @param <T>           匹配的类型
      * @param sql           插入sql语句
      * @param beanParameter bean类型参数
      * @return 插入影响的条数
      * @throws Exception 插入之中发生的异常
      */
-    <T> int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception;
+    int insertBeanAutoGenKeyReturnAffect(String sql, Object beanParameter) throws Exception;
 
     /**
      * 插入Map返回插入的主键
@@ -195,6 +194,7 @@ public interface AncestorDao {
      * @return 所有字段组装成的map对象
      * @throws Exception 插入时发生的异常
      */
+    @Deprecated
     Map<String, Object> insertMapAutoGenKeyReturnMap(String insertSQL, Map<String, Object> mapParameter, String tableName, String pkName) throws Exception;
 
     /**
@@ -218,6 +218,7 @@ public interface AncestorDao {
      * @return
      * @throws Exception
      */
+    @Deprecated
     Map<String, Object> insertBeanAutoGenKeyReturnMap(String insertSQL, Object beanParameter, String tableName, String pkName) throws Exception;
 
     /**
@@ -245,6 +246,7 @@ public interface AncestorDao {
      * @return
      * @throws Exception
      */
+    @Deprecated
     <T> T insertMapAutoGenKeyReturnBean(String insertSQL, Map<String, Object> mapParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
 
     /**
@@ -272,6 +274,7 @@ public interface AncestorDao {
      * @return 插入的对象
      * @throws Exception 插入时发生的异常
      */
+    @Deprecated
     <T> T insertBeanAutoGenKeyReturnBean(String insertSQL, Object beaParameter, Class<T> clazz, String tableName, String pkName) throws Exception;
 
     /**

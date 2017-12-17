@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class Condition {
 
-    private PreJoin preJoin = PreJoin.AND;
+    private PreJoin preJoin;
     private String field;
-    private Constraint constraint = Constraint.Equal;
+    private Constraint constraint;
     private Object value;
 
     private Condition(PreJoin preJoin, String field, Constraint constraint, Object value) {

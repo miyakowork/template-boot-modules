@@ -9,12 +9,15 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface ExistSQL {
+public @interface OrderBy {
 
-    /**
-     * 根据此处指定的SQL语句来操作
-     *
-     * @return
-     */
     String value();
+
+    Order order() default Order.ASC;
+
+
+    enum Order {
+        ASC,
+        DESC
+    }
 }

@@ -28,6 +28,8 @@ public class ServiceProxyFactory<T> implements InvocationHandler {
 //        System.out.println(Arrays.toString(clazz.getDeclaredFields()));
         System.out.println("========================");
         System.out.println(method.getGenericReturnType().getTypeName());
+        System.out.println(args.getClass().isArray());
+        System.out.println(args.length);
 //        System.out.println("代理类:" + proxy.getClass());
 //        System.out.println("方法名:" + method.getName());
 //        System.out.println("注解:" + Arrays.toString(method.getDeclaredAnnotations()));

@@ -91,7 +91,7 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
      * @param deleteParam
      * @throws Exception
      */
-    void delete(Map<String, Object> deleteParam) throws Exception;
+    void delete(Map<String, PK> deleteParam) throws Exception;
 
     /**
      * 根据主键集合删除多条记录

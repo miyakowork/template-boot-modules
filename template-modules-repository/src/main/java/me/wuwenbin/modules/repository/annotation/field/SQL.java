@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.repository.provider.find.annotation;
+package me.wuwenbin.modules.repository.annotation.field;
 
 import java.lang.annotation.*;
 
@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface CountSQL {
+public @interface SQL {
 
     /**
      * 根据此处指定的SQL语句来操作

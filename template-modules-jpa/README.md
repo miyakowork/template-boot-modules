@@ -1,5 +1,5 @@
 ## Template Modules JPA
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-jpa/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-jpa%7C1.10.2.RELEASE%7Cjar)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-jpa/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-jpa%7C1.10.5.RELEASE%7Cjar)
 ---
 template modules jpa 帮你轻松完成对数据的操作，无需额外编写dao，一个dao满足你所有需求。支持多数据源（多数据源也只需定义一个dao即可）。
 ## 当前版本：
@@ -7,7 +7,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>1.10.2.RELEASE</version>
+            <version>1.10.5.RELEASE</version>
         </dependency>
    ```
    ---

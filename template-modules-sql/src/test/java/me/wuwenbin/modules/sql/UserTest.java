@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.sql;
 
 
+import me.wuwenbin.modules.sql.constant.Router;
 import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
 import me.wuwenbin.modules.sql.factory.SQLTextBuilder;
 import org.junit.Test;
@@ -16,13 +17,13 @@ public class UserTest {
     public void main() {
         SQLBeanBuilder sbb = SQLGen.builder(User.class);
         SQLTextBuilder ssb = SQLGen.builder();
-        String sql = sbb.insertAllWithoutPk();
-//        sql = sbb.selectPartByPk(Router.B, Router.C);
-//        System.out.println(sql);
+//        String sql = sbb.insertAllWithoutPk();
+        String sql = sbb.selectPartByRoutersAnd(new int[]{Router.DEFAULT});
+        System.out.println(sql);
         Field[] fields = sbb.getAllFieldExceptObject();
-        for (Field field : fields) {
-            System.out.println(field.getName());
-        }
+//        for (Field field : fields) {
+//            System.out.println(field.getName());
+//        }
     }
 
 }

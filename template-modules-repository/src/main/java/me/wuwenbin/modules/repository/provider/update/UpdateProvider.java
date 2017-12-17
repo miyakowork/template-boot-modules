@@ -1,14 +1,13 @@
 package me.wuwenbin.modules.repository.provider.update;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.repository.annotation.field.SQL;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
-import me.wuwenbin.modules.repository.exception.MethodTypeMissMatch;
+import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.provider.update.annotation.Modify;
-import me.wuwenbin.modules.repository.provider.update.annotation.UpdateSQL;
 import me.wuwenbin.modules.repository.util.BeanUtils;
-import me.wuwenbin.modules.repository.util.MethodUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
@@ -36,8 +35,8 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
         }
         //参数种类为一个
         else if (args.length == 1) {
-            if (super.getMethod().isAnnotationPresent(UpdateSQL.class)) {
-                String sql = super.getMethod().getAnnotation(UpdateSQL.class).value();
+            if (super.getMethod().isAnnotationPresent(SQL.class)) {
+                String sql = super.getMethod().getAnnotation(SQL.class).value();
                 return executeWithSingleParam(sql, args, returnType);
             } else if (super.getMethod().isAnnotationPresent(Modify.class)) {
                 if (methodName.startsWith(updateBy)) {
@@ -112,9 +111,9 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
     @SuppressWarnings("unchecked")
     private int executeWithSingleParam(String sql, Object[] args, Class returnTye) throws Exception {
         if (returnTye.getSimpleName().equals("int")) {
-            if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
+            if (BeanUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
                 return getJdbcTemplate().executeBean(sql, args[0]);
-            } else if (MethodUtils.paramTypeMapOrSub(args[0])) {
+            } else if (BeanUtils.paramTypeMapOrSub(args[0])) {
                 return getJdbcTemplate().executeMap(sql, (Map<String, Object>) args[0]);
             } else if (args[0].getClass().isPrimitive() || BeanUtils.isPrimitive(args[0])) {
                 return getJdbcTemplate().executeArray(sql, args[0]);
@@ -122,7 +121,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
                 throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合规范，请查看命名规则！");
             }
         } else {
-            throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不符合规范，请查看命名规则！");
+            throw new MethodTypeMismatchException("方法「" + super.getMethod().getName() + "」返回类型不符合规范，请查看命名规则！");
         }
     }
 
@@ -139,7 +138,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
         if (returnType.getSimpleName().equals("int")) {
             return getJdbcTemplate().executeArray(sql, args);
         } else {
-            throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回类型不符合规范，请查看命名规则！");
+            throw new MethodTypeMismatchException("方法「" + super.getMethod().getName() + "」返回类型不符合规范，请查看命名规则！");
         }
     }
 
@@ -155,7 +154,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
         String fieldStr = methodName.substring(subLength);
         StringBuilder sqlBuilder = new StringBuilder(preSql);
         String[] fields = fieldStr.split(joinStr);
-        MethodUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, colon);
+        BeanUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, colon);
         return sqlBuilder.toString();
     }
 }

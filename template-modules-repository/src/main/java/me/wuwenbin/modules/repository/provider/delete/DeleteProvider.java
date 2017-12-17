@@ -2,12 +2,12 @@ package me.wuwenbin.modules.repository.provider.delete;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
+import me.wuwenbin.modules.repository.annotation.field.SQL;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
-import me.wuwenbin.modules.repository.exception.MethodTypeMissMatch;
+import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
-import me.wuwenbin.modules.repository.provider.delete.annotation.DeleteSQL;
-import me.wuwenbin.modules.repository.util.MethodUtils;
+import me.wuwenbin.modules.repository.util.BeanUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -28,12 +28,13 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
     public Object execute(Object[] args) throws Exception {
         String methodName = super.getMethod().getName();
         Class<?> returnType = super.getMethod().getReturnType();
-        String returnVoid = "void", deleteBy = "deleteBy";
+        String returnVoid = "void";
         if (returnVoid.equals(returnType.getSimpleName())) {
 
             //方法名为delete且没有参数，则为删除表中所有数据
             //并且仅支持参数个数为一种类型或一个数量
             String delete = "delete";
+            String deleteBy = "deleteBy";
             if (args.length == 0) {
                 if (methodName.equals(delete)) {
                     String sql = "delete from ".concat(super.tableName);
@@ -57,18 +58,19 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
                         throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」参数个数与sql语句不匹配，请参考命名规则！");
                     } else {
                         String sql = super.sbb.deleteByRouters(routers);
-                        List<Field> field = MethodUtils.getFieldsByRouter(super.getClazz(), routers[0]);
+                        List<Field> field = BeanUtils.getFieldsByRouter(super.getClazz(), routers[0]);
                         executeWithSingleField(sql, args, field.get(0).getName());
                     }
                 }
                 //包含@DeleteSQL注解的方法
-                else if (super.getMethod().isAnnotationPresent(DeleteSQL.class)) {
-                    DeleteSQL deleteSQL = super.getMethod().getAnnotation(DeleteSQL.class);
-                    String sql = deleteSQL.value();
+                else if (super.getMethod().isAnnotationPresent(SQL.class)) {
+                    SQL sqlAnnotation = super.getMethod().getAnnotation(SQL.class);
+                    String sql = sqlAnnotation.value();
                     if (!sql.toLowerCase().startsWith("delete from ".concat(super.tableName))) {
                         sql = "delete from ".concat(super.tableName).concat(" ").concat(sql);
                     }
-                    sql = sql.replace("?", ":wuwenbin");//任意一个字符串做占位符
+                    //任意一个字符串做占位符
+                    sql = sql.replace("?", ":wuwenbin");
                     executeWithSingleField(sql, args, "wuwenbin");
                 }
                 //自定义方法名的「deleteBy」方法
@@ -97,9 +99,9 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
             //此条件下不支持@Routers注解，因为在这种情况下无法正确匹配到参数名与参数值
             else {
                 //此条件是表示有@DeleteSQL注解的情况，方法名此时无关，只要符合语法即可，且参数形式为问号形式
-                if (super.getMethod().isAnnotationPresent(DeleteSQL.class)) {
-                    DeleteSQL deleteSql = super.getMethod().getAnnotation(DeleteSQL.class);
-                    String sql = deleteSql.value();
+                if (super.getMethod().isAnnotationPresent(SQL.class)) {
+                    SQL delSql = super.getMethod().getAnnotation(SQL.class);
+                    String sql = delSql.value();
                     if (!sql.toLowerCase().startsWith("delete from ".concat(super.tableName))) {
                         sql = "delete from ".concat(super.tableName).concat(" ").concat(sql);
                     }
@@ -122,10 +124,11 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
 
         //返回类型只能为 void
         else {
-            throw new MethodTypeMissMatch("方法「" + super.getMethod().getName() + "」返回值只能是「void」类型！");
+            throw new MethodTypeMismatchException("方法「" + super.getMethod().getName() + "」返回值只能是「void」类型！");
         }
 
     }
+
 
     /**
      * 获取「deleteBy」的sql语句
@@ -139,7 +142,7 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
         String fieldStr = methodName.substring(8);
         String[] fields = fieldStr.split(joinStr);
         StringBuilder sqlBuilder = new StringBuilder("delete from ".concat(super.tableName).concat(" where "));
-        MethodUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, colon);
+        BeanUtils.getWherePart(methodName, fieldStr, fields, sqlBuilder, colon);
         return sqlBuilder.toString();
     }
 
@@ -156,16 +159,16 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
     @SuppressWarnings("unchecked")
     private void executeWithSingleField(String sql, Object[] args, String filedName) throws Exception {
         //Map类型以及Map的子类/子接口类型
-        if (MethodUtils.paramTypeMapOrSub(args[0])) {
+        if (BeanUtils.paramTypeMapOrSub(args[0])) {
             getJdbcTemplate().executeMap(sql, (Map<String, Object>) args[0]);
         }
 
         //T实体对象类型
-        else if (MethodUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
+        else if (BeanUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
             getJdbcTemplate().executeBean(sql, args[0]);
         }
         //数组类型
-        else if (MethodUtils.paramTypeArray(args[0])) {
+        else if (BeanUtils.paramTypeArray(args[0])) {
             Object[] pks = (Object[]) args[0];
             //Map数组
             if (pks[0] instanceof Map) {
@@ -188,7 +191,7 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
         }
 
         //集合类型
-        else if (MethodUtils.paramTypeCollectionOrSub(args[0])) {
+        else if (BeanUtils.paramTypeCollectionOrSub(args[0])) {
             Collection paramCollection = (Collection) args[0];
             Object temp = paramCollection.iterator().next();
             //Map集合

@@ -1,18 +1,11 @@
 package me.wuwenbin.modules.repository.test.proxy.test;
 
-import me.wuwenbin.modules.repository.test.Person;
 import me.wuwenbin.modules.repository.test.proxy.PublicService;
 import me.wuwenbin.modules.repository.test.proxy.ServiceProxyFactory;
 import me.wuwenbin.modules.repository.test.proxy.UserService;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * created by Wuwenbin on 2017/10/28 at 11:24
@@ -29,16 +22,16 @@ public class ProxyTest {
     public void proxyTest2() throws Exception {
         UserService userService = new ServiceProxyFactory<>(UserService.class).newInstance();
 //        userService.name();
-        Person p1 = new Person();
-        Person p2 = new Person();
-        Person p3 = new Person();
-        List<Person> pl = Stream.of(p1, p2, p3).collect(Collectors.toList());
-        Set<Person> sps = Stream.of(p1, p2, p3).collect(Collectors.toSet());
-        Map<String, Object> sp = new HashMap<>();
-        sp.put("p1", p1);
-        sp.put("p2", p2);
-        sp.put("p4", p3);
-        userService.age();
+//        Person p1 = new Person();
+//        Person p2 = new Person();
+//        Person p3 = new Person();
+//        List<Person> pl = Stream.of(p1, p2, p3).collect(Collectors.toList());
+//        Set<Person> sps = Stream.of(p1, p2, p3).collect(Collectors.toSet());
+//        Map<String, Object> sp = new HashMap<>();
+//        sp.put("p1", p1);
+//        sp.put("p2", p2);
+//        sp.put("p4", p3);
+//        userService.age();
 //        userService.name("wwb","123",1);
 //        userService.findList2();
 //        userService.empty();
@@ -49,6 +42,8 @@ public class ProxyTest {
 //        userService.save4(sps);
 //        userService.test();
 //        userService.saveTest("1", "2");
+
+        userService.testPoint3("1", "2", "3");
     }
 
     @Test
