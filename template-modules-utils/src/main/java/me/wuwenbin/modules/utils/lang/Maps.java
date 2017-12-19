@@ -1,6 +1,8 @@
 package me.wuwenbin.modules.utils.lang;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -9,143 +11,48 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Wuwenbin
  */
-public final class Maps<K, V> {
-
-    /**
-     * 默认Map的初始容量：16 - 必须是2的幂
-     */
-    private static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
-
-    private TreeSet<K> keys;
-    private TreeSet<V> values;
-
-
-    public static Maps builder() {
-        return new Maps<>();
+public final class Maps {
+    enum MapType {
+        ConcurrentHashMap,
+        HashMap,
+        TreeMap
     }
 
-    public Maps<K, V> key(K key) {
-        if (this.keys == null) {
-            this.keys = new TreeSet<>();
-        }
-        if (this.keys.size() == 0 || (this.keys.size() == this.values.size())) {
-            this.keys.add(key);
-        } else {
-            throw new RuntimeException("生成Map过程中出错。keys 与 values 数量不匹配，请检查 [" + key + "] 之前定义的 key 或者 val！");
-        }
-        return this;
+    public static <K, V> HashMap<K, V> hashMap(Object... keyValues) {
+        return (HashMap<K, V>) map(MapType.HashMap, keyValues);
     }
 
-    public Maps<K, V> keys(K... keys) {
-        Set<K> keySet = new TreeSet<>(Arrays.asList(keys));
-        return keys(keySet);
+    public static <K, V> ConcurrentHashMap<K, V> concurrentHashMap(Object... keyValues) {
+        return (ConcurrentHashMap<K, V>) map(MapType.HashMap, keyValues);
     }
 
-    public Maps<K, V> keys(Collection<K> keys) {
-
-        if (this.keys == null) {
-            this.keys = new TreeSet<>();
-        }
-        if (this.keys.size() == 0 || (this.keys.size() == this.values.size())) {
-            this.keys.addAll(keys);
-        } else {
-            throw new RuntimeException("生成Map过程中出错。keys 与 values 数量不匹配，请检查定义的 key 或者 val！");
-        }
-        return this;
+    public static <K, V> TreeMap<K, V> treeMap(Object... keyValues) {
+        return (TreeMap<K, V>) map(MapType.HashMap, keyValues);
     }
 
-    public Maps<K, V> val(V value) {
-        if (this.keys == null || this.keys.isEmpty()) {
-            throw new RuntimeException("生成Map过程中出错。请在赋值 values 之前先赋值 key！");
-        } else {
-            if (this.values == null) {
-                this.values = new TreeSet<>();
-            }
-            if (this.keys.size() - 1 == this.values.size()) {
-                this.values.add(value);
+    private static <K, V> Map<K, V> map(MapType mapType, Object... keyValues) {
+        int length = keyValues.length;
+        if (length % 2 == 0) {
+            Map<K, V> map;
+            if (mapType.equals(MapType.ConcurrentHashMap)) {
+                map = new ConcurrentHashMap<>(length / 2);
+            } else if (mapType.equals(MapType.HashMap)) {
+                map = new HashMap<>(length / 2);
+            } else if (mapType.equals(MapType.TreeMap)) {
+                map = new TreeMap<>();
             } else {
-                throw new RuntimeException("生成Map过程中出错。请在赋值 values 之前先赋值 key！");
+                throw new RuntimeException("不支持的Map类型！");
             }
-        }
-        return this;
-    }
-
-    public Maps<K, V> vals(V... vals) {
-        Set<V> valSet = new TreeSet<>(Arrays.asList(vals));
-        return vals(valSet);
-    }
-
-    public Maps<K, V> vals(Collection<V> values) {
-        if (this.keys == null || this.keys.isEmpty()) {
-            throw new RuntimeException("生成Map过程中出错。请在赋值 values 之前先赋值 key！");
+            for (int i = 1; i < keyValues.length; i = i + 2) {
+                //noinspection unchecked
+                K key = (K) keyValues[i - 1];
+                //noinspection unchecked
+                V value = (V) keyValues[i];
+                map.put(key, value);
+            }
+            return map;
         } else {
-            if (this.values == null) {
-                this.values = new TreeSet<>();
-            }
-            if (this.keys.size() - 1 == this.values.size()) {
-                this.values.addAll(values);
-            } else {
-                throw new RuntimeException("生成Map过程中出错。请在赋值 values 之前先赋值 key！");
-            }
-        }
-        return this;
-    }
-
-    /**
-     * 快速生成一个TreeMap
-     *
-     * @return
-     */
-    public TreeMap<K, V> treeMap() {
-        if (this.keys == null || this.keys.isEmpty()) {
-            return new TreeMap<>();
-        } else {
-            TreeMap<K, V> treeMap = new TreeMap<>();
-            while (keys.iterator().hasNext()) {
-                K key = keys.iterator().next();
-                V value = values.iterator().next();
-                treeMap.put(key, value);
-            }
-            return treeMap;
+            throw new RuntimeException("键值对数目不匹配！");
         }
     }
-
-    /**
-     * 快速生成一个HashMap
-     *
-     * @return
-     */
-    public HashMap<K, V> hashMap() {
-        if (this.keys == null || this.keys.isEmpty()) {
-            return new HashMap<>(DEFAULT_INITIAL_CAPACITY);
-        } else {
-            HashMap<K, V> hashMap = new HashMap<>(this.keys.size());
-            while (keys.iterator().hasNext()) {
-                K key = keys.iterator().next();
-                V value = values.iterator().next();
-                hashMap.put(key, value);
-            }
-            return hashMap;
-        }
-    }
-
-    /**
-     * 快速生成一个ConcurrentHashMap
-     *
-     * @return
-     */
-    public ConcurrentHashMap<K, V> concurrentHashMap() {
-        if (this.keys == null || this.keys.isEmpty()) {
-            return new ConcurrentHashMap<>(DEFAULT_INITIAL_CAPACITY);
-        } else {
-            ConcurrentHashMap<K, V> concurrentHashMap = new ConcurrentHashMap<>(this.keys.size());
-            while (keys.iterator().hasNext()) {
-                K key = keys.iterator().next();
-                V value = values.iterator().next();
-                concurrentHashMap.put(key, value);
-            }
-            return concurrentHashMap;
-        }
-    }
-
 }

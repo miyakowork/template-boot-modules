@@ -106,8 +106,8 @@ public class MongoFactory implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        if (mongoDataSources != null && mongoDataSources.size() > 0 && !mongoDataSources.isEmpty()) {
+    public void afterPropertiesSet() {
+        if (mongoDataSources != null && mongoDataSources.size() > 0) {
             for (String key : mongoDataSources.keySet()) {
                 if (mongoDaoMap == null || !mongoDaoMap.containsKey(key)) {
                     mongoDaoMap.put(key, getMongoDbDaoByKey(key));

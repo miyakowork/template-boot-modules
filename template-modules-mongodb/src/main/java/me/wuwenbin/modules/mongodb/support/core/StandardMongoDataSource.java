@@ -36,7 +36,7 @@ public class StandardMongoDataSource implements MongoDataSource {
     private MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
 
     /**
-     * 处理mongodb自动加的_class字段，如果想自定义处理，则请事先此接口，默认null（即_class将会默认插入到数据库中）
+     * 处理mongodb自动加的_class字段，如果想自定义处理，则请实现此接口，默认null（即_class将会默认插入到数据库中）
      */
     private MongoConverter mongoConverter = null;
 
