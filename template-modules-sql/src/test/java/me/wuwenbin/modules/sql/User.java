@@ -88,4 +88,5 @@ public class User extends Person {
     public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
+
 }

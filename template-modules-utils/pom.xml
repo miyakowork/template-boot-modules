@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>template-boot-modules</artifactId>
+        <groupId>me.wuwenbin</groupId>
+        <version>1.10.5.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>template-modules-utils</artifactId>
+    <packaging>jar</packaging>
+
+    <name>template-modules-utils</name>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-utils</url>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <description>常用工具类超实用的集合</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.nutz</groupId>
+            <artifactId>nutz</artifactId>
+            <version>1.r.63</version>
+        </dependency>
+    </dependencies>
+</project>
