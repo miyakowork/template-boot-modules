@@ -7,7 +7,7 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>1.10.5.RELEASE</version>
+            <version>1.10.6.RELEASE</version>
         </dependency>
    ```
    ---

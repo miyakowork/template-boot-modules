@@ -1,17 +1,20 @@
 package me.wuwenbin.modules.utils.rest;
 
 import me.wuwenbin.modules.utils.http.R;
-import me.wuwenbin.modules.utils.support.MySupplier;
+import me.wuwenbin.modules.utils.util.function.TemplateSupplier;
 
 import java.util.function.Supplier;
 
 
 /**
+ * Controller层经常要做的操作，这里把基本操作给函数式化了
+ * 方便同意调用，省的重复写try catch代码段
  * created by Wuwenbin on 2017/12/20 at 下午3:28
  *
  * @author wuwenbin
+ * @since 1.10.5.RELEASE
  */
-public final class Rests {
+public final class Controllers {
 
     private String operationName;
 
@@ -19,22 +22,22 @@ public final class Rests {
     private String errorMsg;
     private String exceptionMsg;
 
-    private Rests(String operationName) {
+    private Controllers(String operationName) {
         this.operationName = operationName;
     }
 
-    private Rests(String successMsg, String errorMsg, String exceptionMsg) {
+    private Controllers(String successMsg, String errorMsg, String exceptionMsg) {
         this.successMsg = successMsg;
         this.errorMsg = errorMsg;
         this.exceptionMsg = exceptionMsg;
     }
 
-    public static Rests builder(String operationName) {
-        return new Rests(operationName);
+    public static Controllers builder(String operationName) {
+        return new Controllers(operationName);
     }
 
-    public static Rests builder(String successMsg, String errorMsg, String exceptionMsg) {
-        return new Rests(successMsg, errorMsg, exceptionMsg);
+    public static Controllers builder(String successMsg, String errorMsg, String exceptionMsg) {
+        return new Controllers(successMsg, errorMsg, exceptionMsg);
     }
 
     /**
@@ -45,7 +48,7 @@ public final class Rests {
      * @param elseSupplier
      * @return
      */
-    public R exec(Supplier<Boolean> preOperation, MySupplier<Boolean> mainBody, Supplier<R> elseSupplier) {
+    public R exec(Supplier<Boolean> preOperation, TemplateSupplier<Boolean> mainBody, Supplier<R> elseSupplier) {
         if (preOperation.get()) {
             return exec(mainBody);
         } else {
@@ -56,12 +59,12 @@ public final class Rests {
     /**
      * 有if条件判断的
      *
-     * @param mySupplier
+     * @param templateSupplier
      * @return
      */
-    public R exec(MySupplier<Boolean> mySupplier) {
+    public R exec(TemplateSupplier<Boolean> templateSupplier) {
         try {
-            boolean res = mySupplier.get();
+            boolean res = templateSupplier.get();
             if (res) {
                 String msg = operationName == null ? successMsg : operationName.concat("成功！");
                 return R.ok(msg);
@@ -78,12 +81,12 @@ public final class Rests {
     /**
      * 无需要判断的，仅需要try catch即可
      *
-     * @param mySupplier
+     * @param templateSupplier
      * @return
      */
-    public R execLight(MySupplier<Object> mySupplier) {
+    public R execLight(TemplateSupplier<Object> templateSupplier) {
         try {
-            mySupplier.get();
+            templateSupplier.get();
             String msg = operationName == null ? successMsg : operationName.concat("成功！");
             return R.ok(msg);
         } catch (Exception e) {

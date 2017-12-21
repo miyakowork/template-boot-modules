@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.utils.lang;
+package me.wuwenbin.modules.utils.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class Maps {
     enum MapType {
+        /**
+         * M生成Map的类型
+         */
         ConcurrentHashMap,
         HashMap,
         TreeMap
