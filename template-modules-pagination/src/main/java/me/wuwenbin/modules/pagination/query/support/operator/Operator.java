@@ -4,11 +4,15 @@ import java.util.Objects;
 
 /**
  * SQL中运算操作符
- * Created by Wuwenbin on 2017/7/22.
+ *
+ * @author Wuwenbin
+ * @date 2017/7/22
  */
 public enum Operator {
 
-
+    /**
+     * 运算符级别
+     */
     EQ("="),
     NE("!="),
     GLT("<>"),

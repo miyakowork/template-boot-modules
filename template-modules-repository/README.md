@@ -7,10 +7,12 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-repository</artifactId>
-            <version>1.10.6.RELEASE</version>
+            <version>1.10.7.RELEASE</version>
         </dependency>
    ```
    ---
+   ## 修复 - 20171223
+   + 修复一个查询方法的BUG （array -> map）。
    ## 更新 - 20171217
    + 增加select语句的order by，使用@OrderBy注解
    + 重新构建UpdateProvider代码

@@ -249,7 +249,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             } else if (returnType.getSimpleName().equals("long")) {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg);
             } else if (returnType.getSimpleName().equals("int")) {
-                return getJdbcTemplate().queryNumberByArray(sql, Integer.class, mapArg);
+                return getJdbcTemplate().queryNumberByMap(sql, Integer.class, mapArg);
             } else if (returnType.getSimpleName().equals("boolean")) {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
@@ -290,7 +290,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             } else if (returnType.getSimpleName().equals("long")) {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap());
             } else if (returnType.getSimpleName().equals("int")) {
-                return getJdbcTemplate().queryNumberByArray(sql, Integer.class, selectQuery.getParamMap());
+                return getJdbcTemplate().queryNumberByMap(sql, Integer.class, selectQuery.getParamMap());
             } else if (returnType.getSimpleName().equals("boolean")) {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap()) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {

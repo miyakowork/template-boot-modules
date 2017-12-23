@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * created by Wuwenbin on 2017/8/30 at 11:41
+ * @author wuwenbin
  */
 public interface Table<T> {
 

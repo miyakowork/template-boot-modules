@@ -7,13 +7,26 @@ import java.util.List;
 /**
  * layui2.x版本推出的dataTable插件
  * created by Wuwenbin on 2017/8/30 at 11:41
+ * @author wuwenbin
  */
 public class LayTable<T> implements Table<T> {
 
-    private int code; //状态码，0代表成功，其它失败
-    private String message;//状态信息，一般可为空
-    private long count;//数据总量
-    private List<T> data; //数据，字段是任意的。如：[{"id":1,"username":"贤心"}, {"id":2,"username":"佟丽娅"}]
+    /**
+     * 状态码，0代表成功，其它失败
+     */
+    private int code;
+    /**
+     * 状态信息，一般可为空
+     */
+    private String message;
+    /**
+     * 数据总量
+     */
+    private long count;
+    /**
+     * 数据，字段是任意的。如：[{"id":1,"username":"贤心"}, {"id":2,"username":"佟丽娅"}]
+     */
+    private List<T> data;
 
     public LayTable(int code, String message, long count, List<T> data) {
         this.code = code;
