@@ -7,10 +7,14 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-repository</artifactId>
-            <version>1.10.7.RELEASE</version>
+            <version>1.10.8.RELEASE</version>
         </dependency>
    ```
    ---
+   ## 新增 - 20171225
+   + 新增查找返回类型为基础集合（如 List<String>）的判定，适用于查找集合中只有一列的情况。
+       请使用使用注解 @PrimitiveCollection 在方法上标识（此处标识的原因是因为java的泛型机制导致不能直接获取到集合的泛型类型） 
+   + 修改返回类型为基础类型的方法逻辑为  map/iterator -> findPrimitiveByXxx();/findListPrimitiveByXxx();
    ## 新增 - 20171224
    + 新增批量更新的方法
    + 新增 in[] 返回值的判定，可实现批量更新的方法
@@ -24,6 +28,8 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
   
    ---
    ## 入门操作方法概要
+### 说明
++ 以下把【String】类型也归为基本类型，此处是为了更好的判别返回方法类型
 ###  An fast and convenient api for data-operation
 + 以下所有的实体类都需要有相关注解支持（详细请参考文档）。
 + 本模块中的所有sql语句（除使用@XxxxSQL注解指定sql的之外）参数形式全部为 「filedValue = :paramKey」形式，即冒号形式。

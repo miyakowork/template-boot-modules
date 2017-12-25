@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.7.RELEASE</version>
+        <version>1.10.8.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
     <description>轻松实现数据持久化的模块</description>
 
     <properties>
-        <modules.version>1.10.7.RELEASE</modules.version>
+        <modules.version>1.10.8.RELEASE</modules.version>
         <spring.version>4.3.12.RELEASE</spring.version>
     </properties>
 

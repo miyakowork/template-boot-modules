@@ -8,6 +8,8 @@ import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.provider.find.annotation.OrderBy;
+import me.wuwenbin.modules.repository.provider.find.annotation.Primitive;
+import me.wuwenbin.modules.repository.provider.find.annotation.PrimitiveCollection;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
 import me.wuwenbin.modules.repository.util.BeanUtils;
 
@@ -245,7 +247,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
             if (returnType.equals(super.getClazz())) {
                 return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), mapArg);
             } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
-                return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), mapArg);
+                if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
+                    Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
+                    return getJdbcTemplate().findListPrimitiveByMap(sql, genericClass, mapArg);
+                } else {
+                    return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), mapArg);
+                }
             } else if (returnType.getSimpleName().equals("long")) {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg);
             } else if (returnType.getSimpleName().equals("int")) {
@@ -255,8 +262,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, mapArg);
             } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(args)) {
-                Map<String, Object> result = getJdbcTemplate().findMapByMap(sql, mapArg);
-                return getByIterator(returnType, result);
+                if (super.getMethod().isAnnotationPresent(Primitive.class)) {
+                    Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
+                    return getJdbcTemplate().findPrimitiveByMap(sql, genericClass, mapArg);
+                } else {
+                    throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」返回类型为基本类型，必须使用注解@PrimitiveCollection或者@Primitive标明泛型类型");
+                }
             } else {
                 throw new MethodTypeMismatchException("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
             }
@@ -271,7 +282,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
             if (returnType.equals(super.getClazz())) {
                 return getJdbcTemplate().findBeanByBean(sql, super.getClazz(), args[0]);
             } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
-                return getJdbcTemplate().findListBeanByBean(sql, super.getClazz(), args[0]);
+                if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
+                    Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
+                    return getJdbcTemplate().findListPrimitiveByBean(sql, genericClass, args[0]);
+                } else {
+                    return getJdbcTemplate().findListBeanByBean(sql, super.getClazz(), args[0]);
+                }
             } else if (returnType.getSimpleName().equals("long")) {
                 return getJdbcTemplate().queryNumberByBean(sql, Long.class, args[0]);
             } else if (returnType.getSimpleName().equals("int")) {
@@ -286,7 +302,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
             if (returnType.equals(super.getClazz())) {
                 return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
             } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
-                return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
+                if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
+                    Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
+                    return getJdbcTemplate().findListPrimitiveByMap(sql, genericClass, selectQuery.getParamMap());
+                } else {
+                    return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
+                }
             } else if (returnType.getSimpleName().equals("long")) {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap());
             } else if (returnType.getSimpleName().equals("int")) {
@@ -296,8 +317,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
             } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(args)) {
-                Map<String, Object> result = getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
-                return getByIterator(returnType, result);
+                if (super.getMethod().isAnnotationPresent(Primitive.class)) {
+                    Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
+                    return getJdbcTemplate().findPrimitiveByMap(sql, genericClass, selectQuery.getParamMap());
+                } else {
+                    throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」返回类型为基本类型，必须使用注解@PrimitiveCollection或者@Primitive标明泛型类型");
+                }
             } else {
                 throw new MethodTypeMismatchException("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
             }
@@ -306,18 +331,6 @@ public class FindProvider<T> extends AbstractProvider<T> {
             return executeWithMultiParam(sql, returnType, new Object[]{objArg});
         } else {
             throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型有误，请参考命名规则！");
-        }
-    }
-
-    private Object getByIterator(Class returnType, Map<String, Object> result) throws MethodExecuteException {
-        if (result != null) {
-            return result.get(result.keySet().iterator().next());
-        } else {
-            if (BeanUtils.isPrimitive(returnType)) {
-                return null;
-            } else {
-                throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」返回类型有误，请参考命名规则！");
-            }
         }
     }
 
@@ -334,7 +347,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
         if (returnType.equals(super.getClazz())) {
             return getJdbcTemplate().findBeanByArray(sql, super.getClazz(), objArg);
         } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
-            return getJdbcTemplate().findListBeanByArray(sql, super.getClazz(), objArg);
+            if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
+                Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
+                return getJdbcTemplate().findListPrimitiveByArray(sql, genericClass, objArg);
+            } else {
+                return getJdbcTemplate().findListBeanByArray(sql, super.getClazz(), objArg);
+            }
         } else if (returnType.getSimpleName().equals("long")) {
             return getJdbcTemplate().queryNumberByArray(sql, Long.class, objArg);
         } else if (returnType.getSimpleName().equals("int")) {
@@ -344,8 +362,12 @@ public class FindProvider<T> extends AbstractProvider<T> {
         } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
             return getJdbcTemplate().findMapByArray(sql, objArg);
         } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(objArg)) {
-            Map<String, Object> result = getJdbcTemplate().findMapByArray(sql, objArg);
-            return getByIterator(returnType, result);
+            if (super.getMethod().isAnnotationPresent(Primitive.class)) {
+                Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
+                return getJdbcTemplate().findPrimitiveByArray(sql, genericClass, objArg);
+            } else {
+                throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」返回类型为基本类型，必须使用注解@PrimitiveCollection或者@Primitive标明泛型类型！");
+            }
         } else {
             throw new MethodTypeMismatchException("方法「" + super.getMethod().getName() + "」返回类型不规范，请参考命名规则！");
         }
