@@ -11,6 +11,7 @@ import me.wuwenbin.modules.repository.util.BeanUtils;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -109,7 +110,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    private int executeWithSingleParam(String sql, Object[] args, Class returnTye) throws Exception {
+    private Object executeWithSingleParam(String sql, Object[] args, Class returnTye) throws Exception {
         if (returnTye.getSimpleName().equals("int")) {
             if (BeanUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
                 return getJdbcTemplate().executeBean(sql, args[0]);
@@ -117,6 +118,29 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().executeMap(sql, (Map<String, Object>) args[0]);
             } else if (args[0].getClass().isPrimitive() || BeanUtils.isPrimitive(args[0])) {
                 return getJdbcTemplate().executeArray(sql, args[0]);
+            } else {
+                throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合规范，请查看命名规则！");
+            }
+        } else if (returnTye.getSimpleName().equals("int[]")) {
+            if (BeanUtils.paramTypeArray(args[0])) {
+                Object obj = args[0];
+                if (obj instanceof Map) {
+                    return getJdbcTemplate().executeBatchByArrayMaps(sql, (Map<String, Object>) args[0]);
+                } else if (BeanUtils.paramTypeJavaBeanOrSub(obj, super.getClazz())) {
+                    return getJdbcTemplate().executeBatchByArrayBeans(sql, args);
+                } else {
+                    throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合规范，请查看命名规则！");
+                }
+            } else if (BeanUtils.paramTypeCollectionOrSub(args[0])) {
+                Collection paramCollection = (Collection) args[0];
+                Object temp = paramCollection.iterator().next();
+                if (temp instanceof Map) {
+                    return getJdbcTemplate().executeBatchByCollectionMaps(sql, paramCollection);
+                } else if (temp.getClass().equals(super.getClazz())) {
+                    return getJdbcTemplate().executeBatchByCollectionBeans(sql, paramCollection);
+                } else {
+                    throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合规范，请查看命名规则！");
+                }
             } else {
                 throw new MethodParamException("方法「" + super.getMethod().getName() + "」参数类型不符合规范，请查看命名规则！");
             }
@@ -131,8 +155,8 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
      * @param sql
      * @param args
      * @param returnType
-     * @return
      * @throws Exception
+     * @returnreturnType
      */
     private int executeWithMultiParam(String sql, Object[] args, Class returnType) throws Exception {
         if (returnType.getSimpleName().equals("int")) {
