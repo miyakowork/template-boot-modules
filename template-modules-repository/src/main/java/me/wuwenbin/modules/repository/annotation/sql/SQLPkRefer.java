@@ -19,6 +19,13 @@ public @interface SQLPkRefer {
     Class<?> targetClass();
 
     /**
+     * 目标表，即targetCLass对应表的别名
+     *
+     * @return
+     */
+    String targetTableAlias() default "";
+
+    /**
      * 目标实体的哪个属性字段对应的此属性
      *
      * @return

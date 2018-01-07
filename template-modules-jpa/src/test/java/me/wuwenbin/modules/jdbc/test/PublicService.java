@@ -36,12 +36,13 @@ public class PublicService {
         return daoFactory.dynamicDao.findListMapByArray(sql);
     }
 
-    @DynamicDataSource("tp")
+    //    @DynamicDataSource("tp")
+    @DynamicDataSource("ct")
     public List<Map<String, Object>> templateItemsOauth2() {
         System.out.println("------------- templateItemOauth2 -----------------");
-        String sql = "select * from t_oauth_user";
+        String sql = "select * from t_oauth_user where dept_id = ? and enabled = ?";
 //        return dao.findListMapByArray(sql);
-        return daoFactory.dynamicDao.findListMapByArray(sql);
+        return daoFactory.dynamicDao.findListMapByArray(sql, 4, Boolean.TRUE);
     }
 
 

@@ -7,10 +7,21 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-repository</artifactId>
-            <version>1.10.8.RELEASE</version>
+            <version>1.10.15-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 新增/修复 - 20180103
+   + 新增find方法可以返回List&lt;Map&lt;String, Object&gt;&gt;的类型的方法
+   + 修复save方法在保存无主键的表的时候的插入问题
+   ## 修复 - 20180101
+   + 修复当表不存在主键的时候，抛出的PkFieldNotExistException存在的异常处理
+   + 修复findXxxByXxx的生成sql有误的问题（驼峰转下划线出问题）
+   ## 修复 - 20171228
+   + 修复自定义的find方法的sql语句参数占位符类型错误的问题
+   + 修复注册Repository的Bean过早的问题（解决诸如DaoFactory的nullPointerException的错误）
+   + 修复find方法多个参数的时候，使用@Routers注解的时候不识别注解的情况
+   + 修复 Not unique table/alias的错误
    ## 新增 - 20171225
    + 新增查找返回类型为基础集合（如 List<String>）的判定，适用于查找集合中只有一列的情况。
        请使用使用注解 @PrimitiveCollection 在方法上标识（此处标识的原因是因为java的泛型机制导致不能直接获取到集合的泛型类型） 

@@ -8,6 +8,8 @@ import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.util.BeanUtils;
+import me.wuwenbin.modules.sql.support.Symbol;
+import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -54,10 +56,10 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
                 if (super.getMethod().isAnnotationPresent(Routers.class)) {
                     Routers routerAnnotation = super.getMethod().getAnnotation(Routers.class);
                     int[] routers = routerAnnotation.value();
-                    if (routers.length > 1) {
+                    if (SQLBuilderUtils.getFieldsByRouters(super.getClazz(), routers).size() > 1) {
                         throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」参数个数与sql语句不匹配，请参考命名规则！");
                     } else {
-                        String sql = super.sbb.deleteByRouters(routers);
+                        String sql = super.sbb.deleteByRouters(Symbol.COLON, routers);
                         List<Field> field = BeanUtils.getFieldsByRouter(super.getClazz(), routers[0]);
                         executeWithSingleField(sql, args, field.get(0).getName());
                     }
@@ -85,7 +87,7 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
                 }
                 //依据主键条件删除数据的「delete」方法
                 else if (methodName.equals(delete)) {
-                    String sql = super.sbb.deleteByPk();
+                    String sql = super.sbb.deleteByPk(Symbol.COLON);
                     executeWithSingleField(sql, args, super.pkFiledName);
                 }
                 //暂不支持的方法

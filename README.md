@@ -1,6 +1,6 @@
 template框架中的模块工程集合
 ----
-## `template-modules-initscan`
+## `template-modules-scanner`
 > 提供项目权限资源信息的收集扫描至数据库的自动操作，省去手动添加的麻烦
 ---
 ## `template-modules-jpa`

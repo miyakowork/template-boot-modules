@@ -74,7 +74,7 @@ public class BCD {
         for (int i = 0; i < (ascLength + 1) / 2; i++) {
             bcd[i] = ascToBcd(ascii[j++]);
             bcd[i] = (byte) (((j >= ascLength) ? 0x00 : ascToBcd(ascii[j++])) + (bcd[i] << 4));
-            System.out.format("%02X\n", bcd[i]);
+//            System.out.format("%02X\n", bcd[i]);
         }
         return bcd;
     }

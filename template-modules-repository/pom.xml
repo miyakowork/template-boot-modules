@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.8.RELEASE</version>
+        <version>1.10.15-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
     <description>轻松实现数据持久化的模块</description>
 
     <properties>
-        <modules.version>1.10.8.RELEASE</modules.version>
+        <modules.version>1.10.15-SNAPSHOT</modules.version>
         <spring.version>4.3.12.RELEASE</spring.version>
     </properties>
 
@@ -25,12 +25,6 @@
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>me.wuwenbin</groupId>
-            <artifactId>template-tools-util</artifactId>
-            <version>1.2.0.RELEASE</version>
         </dependency>
 
         <dependency>

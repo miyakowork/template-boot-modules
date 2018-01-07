@@ -7,10 +7,13 @@ template modules sql 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-sql</artifactId>
-            <version>1.10.8.RELEASE</version>
+            <version>1.10.15-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 新增 - 20171228
+   + 增加一个获取指定routers的Field的方法
+   + 增加sql语句占位符参数的选择（冒号/问号）
    ## 更新 - 20171217
    + 现在可以把Router.Default 和没有@SQLColumn注解的属性字段当做同一类了，即都可以选中，而不再是仅选择Router.Default字段
    ## 更新 - 20171116

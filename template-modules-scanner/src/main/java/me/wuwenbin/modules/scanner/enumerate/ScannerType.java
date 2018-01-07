@@ -1,10 +1,11 @@
-package me.wuwenbin.modules.initscan.enumerate;
+package me.wuwenbin.modules.scanner.enumerate;
 
 /**
  * 扫描资源的几种方式
  * created by Wuwenbin on 2017/9/19 at 18:11
+ * @author wuwenbin
  */
-public enum ScanType {
+public enum ScannerType {
     /**
      * 仅仅删除数据库中已存在的资源。
      */

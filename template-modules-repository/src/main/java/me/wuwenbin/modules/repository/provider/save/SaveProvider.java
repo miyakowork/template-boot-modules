@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.provider.save;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.pagination.util.StringUtils;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
 import me.wuwenbin.modules.repository.annotation.field.SQL;
 import me.wuwenbin.modules.repository.constant.Parametric;
@@ -11,6 +12,7 @@ import me.wuwenbin.modules.repository.function.BiFunction;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.provider.save.annotation.SaveSQL;
 import me.wuwenbin.modules.repository.util.BeanUtils;
+import me.wuwenbin.modules.sql.support.Symbol;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
 import java.lang.reflect.Method;
@@ -40,7 +42,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             return super.getMethod().getAnnotation(SQL.class).value();
         } else if (super.getMethod().isAnnotationPresent(Routers.class)) {
             int[] routers = super.getMethod().getAnnotation(Routers.class).value();
-            return super.isPkInsert ? super.sbb.insertRoutersWithPk(routers) : super.sbb.insertRoutersWithoutPk(routers);
+            return super.isPkInsert ? super.sbb.insertRoutersWithPk(Symbol.COLON, routers) : super.sbb.insertRoutersWithoutPk(Symbol.COLON, routers);
         } else if (super.getMethod().isAnnotationPresent(SaveSQL.class)) {
             StringBuilder inserts = new StringBuilder();
             StringBuilder values = new StringBuilder();
@@ -58,7 +60,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             String finalValues = values.substring(0, values.length() - 2);
             return "insert into ".concat(super.tableName).concat("(").concat(finalInserts).concat(")").concat(" values (").concat(finalValues).concat(")");
         } else if (super.getMethod().getName().equalsIgnoreCase(save)) {
-            return super.isPkInsert ? super.sbb.insertAllWithPk() : super.sbb.insertAllWithoutPk();
+            return super.isPkInsert ? super.sbb.insertAllWithPk(Symbol.COLON) : super.sbb.insertAllWithoutPk(Symbol.COLON);
         } else {
             throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」暂不支持！");
         }
@@ -105,11 +107,15 @@ public class SaveProvider<T> extends AbstractProvider<T> {
                 }
             } else if (BeanUtils.paramTypeCollectionOrSub(arg)) {
                 Collection<T> paramCollection = (Collection<T>) args[0];
-                List<T> result = new ArrayList<>(paramCollection.size());
-                for (T p : paramCollection) {
-                    result.add(getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, p, super.getClazz(), super.pkDbName));
+                if (StringUtils.isEmpty(super.pkDbName)) {
+                    return getJdbcTemplate().executeBatchByCollectionBeans(sql, paramCollection);
+                } else {
+                    List<T> result = new ArrayList<>(paramCollection.size());
+                    for (T p : paramCollection) {
+                        result.add(getJdbcTemplate().insertBeanAutoGenKeyReturnBean(sql, p, super.getClazz(), super.pkDbName));
+                    }
+                    return result;
                 }
-                return result;
             } else if (BeanUtils.paramTypeArray(arg)) {
                 Object[] objects = (Object[]) arg;
                 return executeByArray(sql, objects);

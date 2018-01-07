@@ -1,9 +1,16 @@
 package me.wuwenbin.modules.repository.proxy;
 
 
+import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.jpa.factory.DaoFactory;
-import me.wuwenbin.modules.repository.provider.RepositoryProvider;
+import me.wuwenbin.modules.repository.provider.crud.ICrudProvider;
+import me.wuwenbin.modules.repository.util.BeanUtils;
 import me.wuwenbin.modules.repository.util.ExceptionUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -16,23 +23,14 @@ import java.lang.reflect.Proxy;
  *
  * @author Wuwenbin
  */
-public class RepositoryProxyFactory<T> implements InvocationHandler {
+@Component
+public class RepositoryProxyFactory<T> implements InvocationHandler, InitializingBean, ApplicationContextAware {
 
-
-    private DaoFactory daoFactory;
-    private RepositoryProvider provider;
-
-    public RepositoryProxyFactory(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    public RepositoryProvider getProvider() {
-        return provider;
-    }
+    private AncestorDao jdbcTemplate;
+    private ApplicationContext applicationContext;
 
     @SuppressWarnings("unchecked")
     public T newInstance(Class<T> targetClass) {
-        this.provider = new RepositoryProvider(daoFactory);
         return (T) Proxy.newProxyInstance(targetClass.getClassLoader(), new Class[]{targetClass}, this);
     }
 
@@ -48,8 +46,20 @@ public class RepositoryProxyFactory<T> implements InvocationHandler {
         //获取当前接口所对应操作的实体泛型类
         //noinspection unchecked
         Class<T> currentClass = (Class<T>) ((ParameterizedType) ((Class<T>) proxy.getClass().getGenericInterfaces()[0]).getGenericInterfaces()[0]).getActualTypeArguments()[0];
-        return this.provider.execute(method, args, currentClass);
+        ICrudProvider provider = BeanUtils.getProvider(method, this.jdbcTemplate, currentClass);
+        return provider.execute(args);
     }
 
 
+    @Override
+    public void afterPropertiesSet() {
+        DaoFactory daoFactory = applicationContext.getBean(DaoFactory.class);
+        this.jdbcTemplate = daoFactory.dynamicDao;
+
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }

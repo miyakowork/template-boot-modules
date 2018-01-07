@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.8.RELEASE</version>
+        <version>1.10.15-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,13 +13,6 @@
     <name>template-modules-jpa</name>
     <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-jpa</url>
     <description>对jdbcTemplate数据访问层的高级封装</description>
-
-    <properties>
-        <spring.version>4.3.12.RELEASE</spring.version>
-        <slf4j.version>1.7.21</slf4j.version>
-        <druid.version>1.0.18</druid.version>
-        <mysql.version>5.1.37</mysql.version>
-    </properties>
 
     <build>
         <plugins>
@@ -46,37 +39,39 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${spring.version}</version>
+            <version>4.3.13.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <version>4.3.13.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-            <version>${spring.version}</version>
+            <version>4.3.13.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
+            <version>4.3.13.RELEASE</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>${druid.version}</version>
+            <version>1.0.18</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
+            <version>5.1.44</version>
+            <scope>provided</scope>
         </dependency>
 
 
@@ -102,7 +97,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>1.7.25</version>
         </dependency>
 
         <dependency>

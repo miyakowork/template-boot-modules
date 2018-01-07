@@ -6,6 +6,7 @@ import me.wuwenbin.modules.sql.annotation.GeneralType;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.support.PkGenType;
+import me.wuwenbin.modules.sql.exception.PkFieldNotFoundException;
 import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
 import me.wuwenbin.modules.sql.factory.SQLTextBuilder;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
@@ -22,8 +23,8 @@ import java.lang.reflect.Method;
 public abstract class AbstractProvider<T> implements ICrudProvider {
 
     private Class<T> clazz;
-    private AncestorDao jdbcTemplate;
     private Method method;
+    private AncestorDao jdbcTemplate;
 
     protected SQLBeanBuilder sbb;
     protected SQLTextBuilder stb;
@@ -31,6 +32,7 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
     protected boolean isPkInsert;
     protected String pkFiledName;
     protected String pkDbName;
+
 
     public AbstractProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
         this.method = method;
@@ -44,7 +46,7 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
     }
 
     protected AncestorDao getJdbcTemplate() {
-        return jdbcTemplate;
+        return this.jdbcTemplate;
     }
 
     protected Method getMethod() {
@@ -53,11 +55,18 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
 
     private void init() {
         SQLTable sqlTable = getClazz().getAnnotation(SQLTable.class);
-        Field pk = SQLGen.builder(getClazz()).getPkField();
+        Field pk;
+        try {
+            pk = SQLGen.builder(getClazz()).getPkField();
+            this.pkFiledName = pk.getName();
+            this.isPkInsert = pk.isAnnotationPresent(GeneralType.class) && pk.getAnnotation(GeneralType.class).value().equals(PkGenType.DEFINITION);
+            this.pkDbName = SQLDefineUtils.java2SQL(pk.getAnnotation(SQLColumn.class).value(), this.pkFiledName);
+        } catch (PkFieldNotFoundException e) {
+            this.pkFiledName = "";
+            this.isPkInsert = false;
+            this.pkDbName = "";
+        }
         this.tableName = SQLDefineUtils.java2SQL(sqlTable.value(), getClazz().getSimpleName());
-        this.pkFiledName = pk.getName();
-        this.isPkInsert = pk.isAnnotationPresent(GeneralType.class) && pk.getAnnotation(GeneralType.class).value().equals(PkGenType.DEFINITION);
-        this.pkDbName = SQLDefineUtils.java2SQL(pk.getAnnotation(SQLColumn.class).value(), this.pkFiledName);
         this.sbb = SQLGen.builder(getClazz());
         this.stb = SQLGen.builder();
     }

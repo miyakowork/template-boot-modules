@@ -30,6 +30,9 @@ public class TestCase {
         this.dao = daoFactory.dynamicDao;
     }
 
+    @Autowired
+    PublicService publicService;
+
     @Test
     public void testJDBC() {
 //        System.out.println(publicService.templateItemsOauth2());
@@ -44,5 +47,12 @@ public class TestCase {
 //        System.out.println(r1);
         List<String> r2 = dao.getNamedParameterJdbcTemplateObj().queryForList(sql, m, String.class);
         r2.forEach(System.out::println);
+    }
+
+    @Test
+    public void s() {
+
+        List<Map<String, Object>> s = publicService.templateItemsOauth2();
+        System.out.println(s);
     }
 }

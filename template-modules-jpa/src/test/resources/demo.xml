@@ -14,7 +14,7 @@ http://www.springframework.org/schema/context
         <property name="url"
                   value="jdbc:mysql://127.0.0.1:3306/templateitemsoauth2"/>
         <property name="username" value="root"/>
-        <property name="password" value="123456"/>
+        <property name="password" value="12345678"/>
     </bean>
 
     <bean id="ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
@@ -22,7 +22,7 @@ http://www.springframework.org/schema/context
         <property name="url"
                   value="jdbc:mysql://127.0.0.1:3306/campustalk"/>
         <property name="username" value="root"/>
-        <property name="password" value="123456"/>
+        <property name="password" value="12345678"/>
     </bean>
 
     <bean id="dsx1" class="me.wuwenbin.modules.jpa.factory.business.DataSourceX">

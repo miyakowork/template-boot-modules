@@ -1,6 +1,4 @@
-package me.wuwenbin.modules.initscan.annotation;
-
-import org.springframework.core.annotation.AliasFor;
+package me.wuwenbin.modules.scanner.annotation;
 
 import java.lang.annotation.*;
 
@@ -11,18 +9,14 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface TemplateScan {
-
-    @AliasFor("name")
-    String value();
+public @interface ResourceScan {
 
     /**
      * 资源名称
      *
      * @return
      */
-    @AliasFor("value")
-    String name();
+    String value();
 
     /**
      * 是否可用，默认可用

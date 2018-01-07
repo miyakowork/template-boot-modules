@@ -5,6 +5,7 @@ import me.wuwenbin.modules.sql.annotation.SQLColumn;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.support.Condition;
 import me.wuwenbin.modules.sql.exception.*;
+import me.wuwenbin.modules.sql.support.Symbol;
 import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
@@ -112,7 +113,7 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException SQLTableNotFoundException
      */
-    public String countAndByRouters(int... routers) {
+    public String countAndByRouters(Symbol symbol, int... routers) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -123,7 +124,7 @@ public final class SQLBeanBuilder {
             if (SQLBuilderUtils.routerIsNotEmpty(routers)) {
                 sb.append(WHERE).append("1=1");
                 Field[] fields = SQLBuilderUtils.getAllFieldsExceptObject(beanClass);
-                assembleCountSQL(sb, fields, AND, tableName, routers);
+                assembleCountSQL(sb, fields, AND, tableName, symbol, routers);
             }
             return SQLBuilderUtils.dealSQL(sb.toString());
         }
@@ -136,7 +137,7 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException SQLTableNotFoundException
      */
-    public String countOrByRouters(int... routers) {
+    public String countOrByRouters(Symbol symbol, int... routers) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -147,7 +148,7 @@ public final class SQLBeanBuilder {
             if (SQLBuilderUtils.routerIsNotEmpty(routers)) {
                 sb.append(WHERE).append("1<>1");
                 Field[] fields = SQLBuilderUtils.getAllFieldsExceptObject(beanClass);
-                assembleCountSQL(sb, fields, " OR ", tableName, routers);
+                assembleCountSQL(sb, fields, " OR ", tableName, symbol, routers);
             }
             return SQLBuilderUtils.dealSQL(sb.toString());
         }
@@ -161,7 +162,7 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException SQLTableNotFoundException
      */
-    public String selectPartByRoutersAnd(int[] selectColumnsRouters, int... conditionRouters) {
+    public String selectPartByRoutersAnd(Symbol symbol, int[] selectColumnsRouters, int... conditionRouters) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -173,7 +174,7 @@ public final class SQLBeanBuilder {
             sb.append(FROM).append(tableName);
             if (SQLBuilderUtils.routerIsNotEmpty(conditionRouters)) {
                 sb.append(WHERE).append("1=1");
-                assembleCountSQL(sb, fields, AND, tableName, conditionRouters);
+                assembleCountSQL(sb, fields, AND, tableName, symbol, conditionRouters);
             }
             return SQLBuilderUtils.dealSQL(sb.toString());
         }
@@ -186,8 +187,8 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    public String selectAllByRoutersAnd(int... routers) {
-        return selectPartByRoutersAnd(null, routers);
+    public String selectAllByRoutersAnd(Symbol symbol, int... routers) {
+        return selectPartByRoutersAnd(symbol, null, routers);
     }
 
     /**
@@ -197,7 +198,7 @@ public final class SQLBeanBuilder {
      * @throws SQLTableNotFoundException
      */
     public String selectAll() {
-        return selectAllByRoutersAnd();
+        return selectAllByRoutersAnd(Symbol.QUESTION_MARK);
     }
 
     /**
@@ -206,8 +207,8 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    public String selectAllByPk() {
-        return selectPartByPk();
+    public String selectAllByPk(Symbol symbol) {
+        return selectPartByPk(symbol);
     }
 
     /**
@@ -216,7 +217,7 @@ public final class SQLBeanBuilder {
      * @param routers 需要查询的字段routers
      * @return {@link String}
      */
-    public String selectPartByPk(int... routers) {
+    public String selectPartByPk(Symbol symbol, int... routers) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -232,7 +233,12 @@ public final class SQLBeanBuilder {
                     if (field.getAnnotation(sqlColumnClass).pk()) {
                         hasSetPk = true;
                         String column = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), field.getName());
-                        sb.append(WHERE).append(tableName).append(".").append(column).append(" = :").append(field.getName());
+                        sb.append(WHERE).append(tableName).append(".").append(column);
+                        if (symbol.equals(Symbol.COLON)) {
+                            sb.append(" = :").append(field.getName());
+                        } else {
+                            sb.append(" = ?");
+                        }
                     }
                 }
             }
@@ -251,7 +257,7 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    private String insertRoutersPk(boolean insertPk, int... routers) {
+    private String insertRoutersPk(boolean insertPk, Symbol symbol, int... routers) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -267,14 +273,22 @@ public final class SQLBeanBuilder {
                     if (field.isAnnotationPresent(sqlColumnClass)) {
                         if (insertPk && field.getAnnotation(sqlColumnClass).pk()) {
                             String pkColumn = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), field.getName());
-                            values.append(":").append(field.getName()).append(", ");
+                            if (symbol.equals(Symbol.COLON)) {
+                                values.append(":").append(field.getName()).append(", ");
+                            } else {
+                                values.append("?").append(", ");
+                            }
                             sb.append(pkColumn).append(", ");
                         }
                         if (SQLBuilderUtils.canBeInsert(field)) {
                             boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(SQLColumn.class);
                             if (SQLBuilderUtils.fieldRoutersInParamRouters(SQLBuilderUtils.getRouterInField(field), routers) && (!isSqlColumnAnnotationPresent || !field.getAnnotation(sqlColumnClass).pk())) {
                                 String column = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
-                                values.append(":").append(field.getName()).append(", ");
+                                if (symbol.equals(Symbol.COLON)) {
+                                    values.append(":").append(field.getName()).append(", ");
+                                } else {
+                                    values.append("?").append(", ");
+                                }
                                 sb.append(column).append(", ");
                             }
                         }
@@ -294,7 +308,11 @@ public final class SQLBeanBuilder {
                     if (SQLBuilderUtils.canBeInsert(field)) {
                         boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(SQLColumn.class);
                         String pkColumn = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
-                        values.append(":").append(field.getName()).append(", ");
+                        if (symbol.equals(Symbol.COLON)) {
+                            values.append(":").append(field.getName()).append(", ");
+                        } else {
+                            values.append("?").append(", ");
+                        }
                         sb.append(pkColumn).append(", ");
                     }
                 }
@@ -310,11 +328,10 @@ public final class SQLBeanBuilder {
      * @param insertPk 是否连同主键一起插入
      * @return {@link String}
      * @throws SQLTableNotFoundException
-     * @see {{@link #insertAll(boolean)}}
      */
     @Deprecated
-    public String insertAllPk(boolean insertPk) {
-        return insertRoutersPk(insertPk);
+    public String insertAllPk(Symbol symbol, boolean insertPk) {
+        return insertRoutersPk(insertPk, symbol);
     }
 
     /**
@@ -324,8 +341,8 @@ public final class SQLBeanBuilder {
      * @return
      */
     @Deprecated
-    public String insertAll(boolean insertPk) {
-        return insertRoutersPk(insertPk);
+    public String insertAll(Symbol symbol, boolean insertPk) {
+        return insertRoutersPk(insertPk, symbol);
     }
 
     /**
@@ -334,8 +351,8 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    public String insertAllWithPk() {
-        return insertRoutersPk(true);
+    public String insertAllWithPk(Symbol symbol) {
+        return insertRoutersPk(true, symbol);
     }
 
     /**
@@ -344,8 +361,8 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    public String insertAllWithoutPk() {
-        return insertRoutersPk(false);
+    public String insertAllWithoutPk(Symbol symbol) {
+        return insertRoutersPk(false, symbol);
     }
 
     /**
@@ -355,8 +372,8 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    public String insertRoutersWithPk(int... routers) {
-        return insertRoutersPk(true, routers);
+    public String insertRoutersWithPk(Symbol symbol, int... routers) {
+        return insertRoutersPk(true, symbol, routers);
     }
 
     /**
@@ -366,8 +383,8 @@ public final class SQLBeanBuilder {
      * @return {@link String}
      * @throws SQLTableNotFoundException
      */
-    public String insertRoutersWithoutPk(int... routers) {
-        return insertRoutersPk(false, routers);
+    public String insertRoutersWithoutPk(Symbol symbol, int... routers) {
+        return insertRoutersPk(false, symbol, routers);
     }
 
     /**
@@ -377,7 +394,7 @@ public final class SQLBeanBuilder {
      * @param conditionRouters 指定更新条件
      * @return {@link String}
      */
-    public String updateRoutersByRouterArray(int[] updateRouters, int[] conditionRouters) {
+    public String updateRoutersByRouterArray(Symbol symbol, int[] updateRouters, int[] conditionRouters) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -387,7 +404,7 @@ public final class SQLBeanBuilder {
             if (SQLBuilderUtils.routerIsNotEmpty(updateRouters)) {
                 sb.append(" SET ");
                 for (Field field : fields) {
-                    updateField(sb, field, updateRouters);
+                    updateField(sb, field, symbol, updateRouters);
                 }
             } else {
                 throw new UpdateColumnNullException();
@@ -395,7 +412,7 @@ public final class SQLBeanBuilder {
 
             if (SQLBuilderUtils.routerIsNotEmpty(conditionRouters)) {
                 sb.append(WHERE);
-                assembleWhereSQL(sb, fields, conditionRouters);
+                assembleWhereSQL(sb, fields, symbol, conditionRouters);
             }
 
             return SQLBuilderUtils.dealSQL(sb.toString());
@@ -409,8 +426,8 @@ public final class SQLBeanBuilder {
      * @param conditionRouters
      * @return {@link String}
      */
-    public String updateRoutersByRouters(int[] updateRouters, int... conditionRouters) {
-        return updateRoutersByRouterArray(updateRouters, conditionRouters);
+    public String updateRoutersByRouters(Symbol symbol, int[] updateRouters, int... conditionRouters) {
+        return updateRoutersByRouterArray(symbol, updateRouters, conditionRouters);
     }
 
     /**
@@ -419,7 +436,7 @@ public final class SQLBeanBuilder {
      * @param updateRouters 指定routers更新列
      * @return {@link String}
      */
-    public String updateRoutersByPk(int... updateRouters) {
+    public String updateRoutersByPk(Symbol symbol, int... updateRouters) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -436,7 +453,7 @@ public final class SQLBeanBuilder {
                             pkColumn = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), pkField);
                         }
                     }
-                    updateField(sb, field, updateRouters);
+                    updateField(sb, field, symbol, updateRouters);
                 }
                 sb.replace(sb.length() - 2, sb.length(), "");
             } else {
@@ -445,7 +462,11 @@ public final class SQLBeanBuilder {
             if (pkColumn == null || pkField == null) {
                 throw new UpdatePkNotExistException();
             }
-            sb.append(WHERE).append(pkColumn).append(" = :").append(pkField);
+            if (symbol.equals(Symbol.COLON)) {
+                sb.append(WHERE).append(pkColumn).append(" = :").append(pkField);
+            } else {
+                sb.append(WHERE).append(pkColumn).append(" = ?");
+            }
             return SQLBuilderUtils.dealSQL(sb.toString());
         }
     }
@@ -457,13 +478,18 @@ public final class SQLBeanBuilder {
      * @param field
      * @param updateRouters
      */
-    private void updateField(StringBuilder sb, Field field, int[] updateRouters) {
+    private void updateField(StringBuilder sb, Field field, Symbol symbol, int[] updateRouters) {
         if (SQLBuilderUtils.canBeUpdate(field)) {
             boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(sqlColumnClass);
             if (SQLBuilderUtils.fieldRoutersInParamRouters(SQLBuilderUtils.getRouterInField(field), updateRouters)) {
                 String column = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
                 String cnd = isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).condition().getCnd() : Condition.EQ.getCnd();
-                sb.append(column).append(" ").append(cnd).append(" :").append(field.getName()).append(", ");
+                sb.append(column).append(" ").append(cnd);
+                if (symbol.equals(Symbol.COLON)) {
+                    sb.append(" :").append(field.getName()).append(", ");
+                } else {
+                    sb.append(" ?, ");
+                }
             }
         }
     }
@@ -475,7 +501,7 @@ public final class SQLBeanBuilder {
      * @throws SQLTableNotFoundException
      * @throws DeletePkNotExistException
      */
-    public String deleteByPk() {
+    public String deleteByPk(Symbol symbol) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -491,7 +517,12 @@ public final class SQLBeanBuilder {
                         String pkColumn = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), field.getName());
                         boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(sqlColumnClass);
                         String cnd = isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).condition().getCnd() : Condition.EQ.getCnd();
-                        sb.append(pkColumn).append(" ").append(cnd).append(" :").append(field.getName()).append(AND);
+                        sb.append(pkColumn).append(" ").append(cnd);
+                        if (symbol.equals(Symbol.COLON)) {
+                            sb.append(" :").append(field.getName()).append(AND);
+                        } else {
+                            sb.append(" ?").append(AND);
+                        }
                     }
                 }
             }
@@ -510,7 +541,7 @@ public final class SQLBeanBuilder {
      * @throws SQLTableNotFoundException
      * @throws DeleteSQLConditionsNullException
      */
-    public String deleteByRouters(int... routers) {
+    public String deleteByRouters(Symbol symbol, int... routers) {
         if (!SQLBuilderUtils.SQLTableIsExist(beanClass)) {
             throw new SQLTableNotFoundException(beanClass);
         } else {
@@ -519,7 +550,7 @@ public final class SQLBeanBuilder {
             Field[] fields = SQLBuilderUtils.getAllFieldsExceptObject(beanClass);
             if (SQLBuilderUtils.routerIsNotEmpty(routers)) {
                 sb.append(WHERE);
-                assembleWhereSQL(sb, fields, routers);
+                assembleWhereSQL(sb, fields, symbol, routers);
             } else {
                 throw new DeleteSQLConditionsNullException();
             }
@@ -538,14 +569,19 @@ public final class SQLBeanBuilder {
      * @param andOr
      * @param routers
      */
-    private void assembleCountSQL(StringBuilder sb, Field[] fields, String andOr, String tableName, int... routers) {
+    private void assembleCountSQL(StringBuilder sb, Field[] fields, String andOr, String tableName, Symbol symbol, int... routers) {
         if (SQLBuilderUtils.routerIsNotEmpty(routers)) {
             for (Field field : fields) {
                 boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(sqlColumnClass);
                 if (SQLBuilderUtils.fieldRoutersInParamRouters(SQLBuilderUtils.getRouterInField(field), routers)) {
                     String column = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
                     String cnd = isSqlColumnAnnotationPresent ? field.getAnnotation(SQLColumn.class).condition().getCnd() : Condition.EQ.getCnd();
-                    sb.append(andOr).append(tableName).append(".").append(column).append(" ").append(cnd).append(":").append(field.getName());
+                    sb.append(andOr).append(tableName).append(".").append(column).append(" ").append(cnd);
+                    if (symbol.equals(Symbol.COLON)) {
+                        sb.append(":").append(field.getName());
+                    } else {
+                        sb.append("?");
+                    }
                 }
             }
         }
@@ -592,14 +628,19 @@ public final class SQLBeanBuilder {
      * @param fields
      * @param routers
      */
-    private void assembleWhereSQL(StringBuilder sb, Field[] fields, int[] routers) {
+    private void assembleWhereSQL(StringBuilder sb, Field[] fields, Symbol symbol, int[] routers) {
         if (SQLBuilderUtils.routerIsNotEmpty(routers)) {
             for (Field field : fields) {
                 boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(sqlColumnClass);
                 if (SQLBuilderUtils.fieldRoutersInParamRouters(SQLBuilderUtils.getRouterInField(field), routers)) {
                     String column = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
                     String cnd = isSqlColumnAnnotationPresent ? field.getAnnotation(SQLColumn.class).condition().getCnd() : Condition.EQ.getCnd();
-                    sb.append(column).append(" ").append(cnd).append(" :").append(field.getName()).append(AND);
+                    sb.append(column).append(" ").append(cnd);
+                    if (symbol.equals(Symbol.COLON)) {
+                        sb.append(" :").append(field.getName()).append(AND);
+                    } else {
+                        sb.append(" ?").append(AND);
+                    }
                 }
             }
         }

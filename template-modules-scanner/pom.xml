@@ -3,14 +3,14 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.8.RELEASE</version>
+        <version>1.10.15-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>template-modules-scanner</artifactId>
     <packaging>jar</packaging>
 
-    <name>template-modules-initscan</name>
+    <name>template-modules-scanner</name>
     <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-scanner</url>
     <description>web应用启动时，需要扫描资源的模块包</description>
 
@@ -60,7 +60,14 @@
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
-            <version>1.3.2</version>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-jpa</artifactId>
+            <version>1.10.15-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 
 /**
@@ -224,5 +225,21 @@ public class SQLBuilderUtils {
         } else {
             return new int[]{Router.DEFAULT};
         }
+    }
+
+    /**
+     * 根据router获取Field数组对象.
+     * 其实就是获取所有的Field然后根据router来过滤下
+     */
+    public static List<Field> getFieldsByRouters(Class<?> clazz, int... routers) {
+        Field[] fields = getAllFieldsExceptObject(clazz);
+        return Arrays.stream(fields).filter(f -> {
+            if (f.isAnnotationPresent(SQLColumn.class)) {
+                int[] fieldRouters = f.getAnnotation(SQLColumn.class).routers();
+                return fieldRoutersInParamRouters(fieldRouters, routers);
+            } else {
+                return fieldRoutersInParamRouters(new int[]{Router.DEFAULT}, routers);
+            }
+        }).collect(Collectors.toList());
     }
 }

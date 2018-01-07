@@ -7,11 +7,15 @@ import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
+import me.wuwenbin.modules.repository.provider.find.annotation.ListMap;
 import me.wuwenbin.modules.repository.provider.find.annotation.OrderBy;
 import me.wuwenbin.modules.repository.provider.find.annotation.Primitive;
 import me.wuwenbin.modules.repository.provider.find.annotation.PrimitiveCollection;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
 import me.wuwenbin.modules.repository.util.BeanUtils;
+import me.wuwenbin.modules.sql.support.Symbol;
+import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
+import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -51,6 +55,14 @@ public class FindProvider<T> extends AbstractProvider<T> {
                     sql = sql.concat(" order by ").concat(orderField).concat(" ").concat(order);
                 }
                 return getJdbcTemplate().findListBeanByArray(sql, super.getClazz());
+            } else if (super.getMethod().isAnnotationPresent(SQL.class)) {
+                String sql = super.getMethod().getAnnotation(SQL.class).value();
+                if (super.getMethod().isAnnotationPresent(OrderBy.class)) {
+                    String orderField = super.getMethod().getAnnotation(OrderBy.class).value();
+                    String order = super.getMethod().getAnnotation(OrderBy.class).order().name();
+                    sql = sql.concat(" order by ").concat(orderField).concat(" ").concat(order);
+                }
+                return executeWithMultiParam(sql, returnType, null);
             } else {
                 throw new MethodExecuteException("方法「" + methodName + "」为不支持的类型，请参考命名规则");
             }
@@ -72,16 +84,16 @@ public class FindProvider<T> extends AbstractProvider<T> {
             else if (super.getMethod().isAnnotationPresent(Routers.class)) {
                 Routers routerAnnotation = super.getMethod().getAnnotation(Routers.class);
                 int[] routers = routerAnnotation.value();
-                if (routers.length == 1) {
+                if (SQLBuilderUtils.getFieldsByRouters(super.getClazz(), routers).size() == 1) {
                     //count语句
                     if (methodName.startsWith(count)) {
-                        String sql = super.sbb.countAndByRouters(routers);
+                        String sql = super.sbb.countAndByRouters(Symbol.COLON, routers);
                         sql = sql.substring(0, sql.indexOf(":")).concat("?");
                         return executeWithSingleParam(sql, args, returnType);
                     }
                     //find
                     else if (methodName.startsWith(find)) {
-                        String sql = super.sbb.selectAllByRoutersAnd(routers);
+                        String sql = super.sbb.selectAllByRoutersAnd(Symbol.COLON, routers);
                         sql = sql.substring(0, sql.indexOf(":")).concat("?");
                         if (super.getMethod().isAnnotationPresent(OrderBy.class)) {
                             String orderField = super.getMethod().getAnnotation(OrderBy.class).value();
@@ -138,13 +150,23 @@ public class FindProvider<T> extends AbstractProvider<T> {
             //自定义countBy语句
             else if (methodName.startsWith(countBy)) {
                 String preSql = "select count(0) from ".concat(super.tableName).concat(" where ");
-                String sql = getSql(methodName, 7, preSql, true);
+                String sql;
+                if (methodName.substring(7).split("And|Or").length > 1) {
+                    sql = getSql(methodName, 7, preSql, true);
+                } else {
+                    sql = getSql(methodName, 7, preSql, false);
+                }
                 return executeWithSingleParam(sql, args, returnType);
             }
             //自定义findBy语句
             else if (methodName.startsWith(findBy)) {
                 String preSql = "select * from ".concat(super.tableName).concat(" where ");
-                String sql = getSql(methodName, 6, preSql, true);
+                String sql;
+                if (methodName.substring(6).split("And|Or").length > 1) {
+                    sql = getSql(methodName, 6, preSql, true);
+                } else {
+                    sql = getSql(methodName, 6, preSql, false);
+                }
                 if (super.getMethod().isAnnotationPresent(OrderBy.class)) {
                     String orderField = super.getMethod().getAnnotation(OrderBy.class).value();
                     String order = super.getMethod().getAnnotation(OrderBy.class).order().name();
@@ -156,8 +178,13 @@ public class FindProvider<T> extends AbstractProvider<T> {
             else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^find.*By$")) {
                 String field = methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"));
                 field = field.substring(0, 1).toLowerCase().concat(field.substring(1));
-                String preSql = "select ".concat(field).concat(" from ").concat(super.tableName).concat(" where ");
-                String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, false);
+                String preSql = "select ".concat(SQLDefineUtils.java2SQL("", field)).concat(" from ").concat(super.tableName).concat(" where ");
+                String sql;
+                if (methodName.substring(methodName.indexOf("By") + 2).split("And|Or").length == 1) {
+                    sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, false);
+                } else {
+                    sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, true);
+                }
                 if (super.getMethod().isAnnotationPresent(OrderBy.class)) {
                     String orderField = super.getMethod().getAnnotation(OrderBy.class).value();
                     String order = super.getMethod().getAnnotation(OrderBy.class).order().name();
@@ -180,6 +207,32 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 sql = getOrderSql(methodName, sql);
                 return executeWithMultiParam(sql, returnType, args);
             }
+            //@Routers注解情况
+            else if (super.getMethod().isAnnotationPresent(Routers.class)) {
+                Routers routerAnnotation = super.getMethod().getAnnotation(Routers.class);
+                int[] routers = routerAnnotation.value();
+                if (SQLBuilderUtils.getFieldsByRouters(super.getClazz(), routers).size() > 1) {
+                    //count语句
+                    if (methodName.startsWith(count)) {
+                        String sql = super.sbb.countAndByRouters(Symbol.QUESTION_MARK, routers);
+                        return executeWithMultiParam(sql, returnType, args);
+                    }
+                    //find
+                    else if (methodName.startsWith(find)) {
+                        String sql = super.sbb.selectAllByRoutersAnd(Symbol.QUESTION_MARK, routers);
+                        if (super.getMethod().isAnnotationPresent(OrderBy.class)) {
+                            String orderField = super.getMethod().getAnnotation(OrderBy.class).value();
+                            String order = super.getMethod().getAnnotation(OrderBy.class).order().name();
+                            sql = sql.concat(" order by ").concat(orderField).concat(" ").concat(order);
+                        }
+                        return executeWithMultiParam(sql, returnType, args);
+                    } else {
+                        throw new MethodExecuteException("方法「" + methodName + "」不支持，请参考命名规则！");
+                    }
+                } else {
+                    throw new MethodExecuteException("方法「" + methodName + "」有误。检测到一个router条件，但有多个参数，请参考命名规则！");
+                }
+            }
             //自定义countBy语句
             else if (methodName.startsWith(countBy)) {
                 String preSql = "select count(0) from ".concat(super.tableName).concat(" where ");
@@ -201,7 +254,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^find.*By$")) {
                 String field = methodName.substring(methodName.indexOf("find") + 4, methodName.indexOf("By"));
                 field = field.substring(0, 1).toLowerCase().concat(field.substring(1));
-                String preSql = "select ".concat(field).concat(" from ").concat(super.tableName).concat(" where ");
+                String preSql = "select ".concat(SQLDefineUtils.java2SQL("", field)).concat(" from ").concat(super.tableName).concat(" where ");
                 String sql = getSql(methodName, methodName.indexOf("By") + 2, preSql, false);
                 if (super.getMethod().isAnnotationPresent(OrderBy.class)) {
                     String orderField = super.getMethod().getAnnotation(OrderBy.class).value();
@@ -217,6 +270,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
         }
 
     }
+
 
     private String getOrderSql(String methodName, String sql) {
         if (methodName.startsWith("find")) {
@@ -261,7 +315,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, mapArg);
-            } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(args)) {
+            } else if (returnType.isPrimitive() || returnType.equals(String.class)) {
                 if (super.getMethod().isAnnotationPresent(Primitive.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
                     return getJdbcTemplate().findPrimitiveByMap(sql, genericClass, mapArg);
@@ -316,7 +370,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap()) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
-            } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(args)) {
+            } else if (returnType.isPrimitive() || returnType.equals(String.class)) {
                 if (super.getMethod().isAnnotationPresent(Primitive.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
                     return getJdbcTemplate().findPrimitiveByMap(sql, genericClass, selectQuery.getParamMap());
@@ -350,6 +404,8 @@ public class FindProvider<T> extends AbstractProvider<T> {
             if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
                 Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
                 return getJdbcTemplate().findListPrimitiveByArray(sql, genericClass, objArg);
+            } else if (super.getMethod().isAnnotationPresent(ListMap.class)) {
+                return getJdbcTemplate().findListMapByArray(sql, objArg);
             } else {
                 return getJdbcTemplate().findListBeanByArray(sql, super.getClazz(), objArg);
             }
@@ -361,7 +417,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             return getJdbcTemplate().queryNumberByArray(sql, Long.class, objArg) > 0;
         } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
             return getJdbcTemplate().findMapByArray(sql, objArg);
-        } else if (returnType.isPrimitive() || BeanUtils.isPrimitive(objArg)) {
+        } else if (returnType.isPrimitive() || returnType.equals(String.class)) {
             if (super.getMethod().isAnnotationPresent(Primitive.class)) {
                 Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
                 return getJdbcTemplate().findPrimitiveByArray(sql, genericClass, objArg);

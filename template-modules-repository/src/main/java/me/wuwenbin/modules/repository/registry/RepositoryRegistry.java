@@ -14,6 +14,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.*;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.Set;
  *
  * @author Wuwenbin
  */
+@Component
 public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(RepositoryRegistry.class);
@@ -34,11 +36,8 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
     private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
     private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
 
-    private RepositoryProxyFactory repositoryProxyFactory;
+    private RepositoryProxyFactory repositoryProxyFactory = new RepositoryProxyFactory();
 
-    public RepositoryRegistry(RepositoryProxyFactory repositoryProxyFactory) {
-        this.repositoryProxyFactory = repositoryProxyFactory;
-    }
 
     /**
      * spring开始启动将扫描好的bean的潜开始注入到容器中的前置操作处理，在此可以动态注入我们生成的class
@@ -60,7 +59,7 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
             for (Class repository : repositories) {
                 Repository repositoryClass = (Repository) repository.getAnnotation(Repository.class);
                 String beanName = repositoryClass.value();
-                String simpleBeanName = StringUtils.isEmpty(beanName) ? repository.getSimpleName().substring(0, 1).toLowerCase().concat(repository.getSimpleName().substring(1)) : beanName;
+                String simpleBeanName = StringUtils.isEmpty(beanName) ? repository.getName().substring(0, 1).toLowerCase().concat(repository.getName().substring(1)) : beanName;
                 //noinspection unchecked
                 Class clazz = repositoryProxyFactory.newInstance(repository).getClass();
 

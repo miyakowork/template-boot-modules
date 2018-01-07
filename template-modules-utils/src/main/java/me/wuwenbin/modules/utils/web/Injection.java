@@ -1,4 +1,4 @@
-package me.wuwenbin.modules.utils.http;
+package me.wuwenbin.modules.utils.web;
 
 import java.util.regex.Pattern;
 
@@ -16,7 +16,7 @@ public final class Injection {
      * @return
      * @Description 过滤XSS脚本内容
      */
-    public String stripXSS(String value) {
+    public static String stripXSS(String value) {
         String rlt = null;
 
         if (null != value) {
@@ -81,7 +81,7 @@ public final class Injection {
      * @return
      * @Description 过滤SQL注入内容
      */
-    public String stripSqlInjection(String value) {
+    public static String stripSqlInjection(String value) {
         //value.replaceAll("('.+--)|(--)|(\\|)|(%7C)", "");
         return (null == value) ? null : value.replaceAll("('.+--)|(--)|(%7C)", "");
     }
@@ -91,7 +91,7 @@ public final class Injection {
      * @return
      * @Description 过滤SQL/XSS注入内容
      */
-    public String stripSqlXSS(String value) {
+    public static String stripSqlXSS(String value) {
         return stripXSS(stripSqlInjection(value));
     }
 

@@ -375,7 +375,7 @@ public class AsymmetricEncryption {
                 }
                 return this.privateKey;
             case PublicKey:
-                if (null == this.privateKey) {
+                if (null == this.publicKey) {
                     throw new NullPointerException("Public key must not null when use it !");
                 }
                 return this.publicKey;

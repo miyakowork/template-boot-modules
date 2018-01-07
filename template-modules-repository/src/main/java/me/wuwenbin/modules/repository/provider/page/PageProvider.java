@@ -4,6 +4,7 @@ import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.jpa.support.Page;
 import me.wuwenbin.modules.pagination.Pagination;
 import me.wuwenbin.modules.pagination.query.TableQuery;
+import me.wuwenbin.modules.pagination.util.StringUtils;
 import me.wuwenbin.modules.repository.annotation.sql.SQLPkRefer;
 import me.wuwenbin.modules.repository.annotation.sql.SQLRefer;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
@@ -44,21 +45,21 @@ public class PageProvider<T> extends AbstractProvider<T> {
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 if (field.isAnnotationPresent(SQLPkRefer.class)) {
+                    String targetTableAliasName = field.getAnnotation(SQLPkRefer.class).targetTableAlias();
                     String minorTableName = getTableName(field.getAnnotation(SQLPkRefer.class).targetClass());
                     SQLBeanBuilder tempSbb = SQLGen.builder(field.getAnnotation(SQLPkRefer.class).targetClass());
                     String minorPkName = SQLDefineUtils.java2SQL(tempSbb.getPkField().getAnnotation(SQLColumn.class).value(), tempSbb.getPkField().getName());
                     String selfJoinColumn = field.getAnnotation(SQLPkRefer.class).joinColumn();
                     String minorSelectColumn = field.getAnnotation(SQLPkRefer.class).targetColumn();
-                    sqlBuilder.append(",").append(minorTableName).append(".").append(minorSelectColumn).append(" as ").append(field.getName());
-                    joinSqlBuilder.append(" left join").append(" ").append(minorTableName).append(" on ").append(minorTableName).append(".").append(minorPkName).append(" = ").append(mainTableName).append(".").append(selfJoinColumn);
+                    handlerBuilderByAliasIsEmpty(sqlBuilder, joinSqlBuilder, mainTableName, field, targetTableAliasName, minorTableName, minorPkName, selfJoinColumn, minorSelectColumn);
                 }
                 if (field.isAnnotationPresent(SQLRefer.class)) {
+                    String targetTableAliasName = field.getAnnotation(SQLRefer.class).targetTableAlias();
                     String minorTableName = getTableName(field.getAnnotation(SQLRefer.class).targetClass());
                     String minorPkName = field.getAnnotation(SQLRefer.class).referColumn();
                     String selfJoinColumn = field.getAnnotation(SQLRefer.class).joinColumn();
                     String minorSelectColumn = field.getAnnotation(SQLRefer.class).targetColumn();
-                    sqlBuilder.append(",").append(minorTableName).append(".").append(minorSelectColumn).append(" as ").append(field.getName());
-                    joinSqlBuilder.append(" left join").append(" ").append(minorTableName).append(" on ").append(minorTableName).append(".").append(minorPkName).append(" = ").append(mainTableName).append(".").append(selfJoinColumn);
+                    handlerBuilderByAliasIsEmpty(sqlBuilder, joinSqlBuilder, mainTableName, field, targetTableAliasName, minorTableName, minorPkName, selfJoinColumn, minorSelectColumn);
                 }
             }
             sqlBuilder.append(" from ").append(mainTableName).append(joinSqlBuilder);
@@ -72,6 +73,16 @@ public class PageProvider<T> extends AbstractProvider<T> {
             return execute(page, clazz, tableQuery, mainSql);
         } else {
             throw new MethodExecuteException("方法:「" + super.getMethod().getName() + "」方法命名有误，请参考命名规则！");
+        }
+    }
+
+    private void handlerBuilderByAliasIsEmpty(StringBuilder sqlBuilder, StringBuilder joinSqlBuilder, String mainTableName, Field field, String targetTableAliasName, String minorTableName, String minorPkName, String selfJoinColumn, String minorSelectColumn) {
+        if (StringUtils.isEmpty(targetTableAliasName)) {
+            sqlBuilder.append(",").append(minorTableName).append(".").append(minorSelectColumn).append(" as ").append(field.getName());
+            joinSqlBuilder.append(" left join").append(" ").append(minorTableName).append(" on ").append(minorTableName).append(".").append(minorPkName).append(" = ").append(mainTableName).append(".").append(selfJoinColumn);
+        } else {
+            sqlBuilder.append(",").append(targetTableAliasName).append(".").append(minorSelectColumn).append(" as ").append(field.getName());
+            joinSqlBuilder.append(" left join").append(" ").append(minorTableName).append(" ").append(targetTableAliasName).append(" on ").append(targetTableAliasName).append(".").append(minorPkName).append(" = ").append(mainTableName).append(".").append(selfJoinColumn);
         }
     }
 

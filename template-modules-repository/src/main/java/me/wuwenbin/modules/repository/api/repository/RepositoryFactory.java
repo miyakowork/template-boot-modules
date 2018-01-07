@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 /**
  * 可以以工厂方式获取所有已注册的Repository，配置此Bean即可
  * created by Wuwenbin on 2017/11/18 at 22:29
+ * @author wuwenbin
  */
 public final class RepositoryFactory implements ApplicationContextAware {
 
@@ -30,9 +31,9 @@ public final class RepositoryFactory implements ApplicationContextAware {
     public static <T extends IRepository> T get(Class<T> repository) {
         Repository repo = repository.getAnnotation(Repository.class);
         String name = repo.value();
-        String simpleName = repository.getSimpleName();
-        simpleName = simpleName.substring(0, 1).toLowerCase().concat(simpleName.substring(1, simpleName.length()));
-        String beanName = StringUtils.isEmpty(name) ? simpleName : name;
+        String repositoryBeanName = repository.getName();
+        repositoryBeanName = repositoryBeanName.substring(0, 1).toLowerCase().concat(repositoryBeanName.substring(1, repositoryBeanName.length()));
+        String beanName = StringUtils.isEmpty(name) ? repositoryBeanName : name;
         return applicationContext.getBean(beanName, repository);
     }
 
