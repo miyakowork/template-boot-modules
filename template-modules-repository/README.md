@@ -1,5 +1,5 @@
 ## Template Modules Repository
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-repository/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-repository%7C1.10.5.RELEASE%7Cjar)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.wuwenbin/template-modules-repository/badge.svg)](http://search.maven.org/#artifactdetails%7Cme.wuwenbin%7Ctemplate-modules-repository%7C1.10.16.RELEASE%7Cjar)
 ---
 template modules repository 轻松实现大部分的sql操作，省去了写大量sql的代码以及大量service实现类的代码，只需定义接口即可完成所需的大部分操作。
 ## 当前版本：
