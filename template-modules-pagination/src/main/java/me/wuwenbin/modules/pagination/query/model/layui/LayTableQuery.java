@@ -12,11 +12,22 @@ import java.util.List;
  * created by Wuwenbin on 2017/8/30 at 12:09
  */
 public class LayTableQuery extends TableQuery {
-
-    private int page;//当前页码
-    private int limit;//页面大小
-    private String order;//排序顺序 desc asc
-    private String sort;//排序字段
+    /**
+     * 当前页码
+     */
+    private int page;
+    /**
+     * 页面大小
+     */
+    private int limit;
+    /**
+     * 排序顺序 desc asc
+     */
+    private String order;
+    /**
+     * 排序字段
+     */
+    private String sort;
 
     public int getPage() {
         return page;
@@ -81,7 +92,6 @@ public class LayTableQuery extends TableQuery {
     public boolean isSupportServerSort() {
         return true;
     }
-
 
 
     /**

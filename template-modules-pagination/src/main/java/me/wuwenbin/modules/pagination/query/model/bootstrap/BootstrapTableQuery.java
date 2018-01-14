@@ -10,14 +10,30 @@ import java.util.List;
 
 /**
  * created by Wuwenbin on 2017/8/30 at 11:51
+ * @author wuwenbin
  */
 public abstract class BootstrapTableQuery extends TableQuery {
 
-    private int limit;//当前的页面大小，即每页显示多少条数据
-    private int offset;//当前页的最后一条数据的序号
-    private String order;//排序顺序 desc asc
-    private String sort;//排序字段
-    private List<Sorting> multiSorts;//多列排序
+    /**
+     * 当前的页面大小，即每页显示多少条数据
+     */
+    private int limit;
+    /**
+     * 当前页的最后一条数据的序号
+     */
+    private int offset;
+    /**
+     * 排序顺序 desc asc
+     */
+    private String order;
+    /**
+     * 排序字段
+     */
+    private String sort;
+    /**
+     * 多列排序
+     */
+    private List<Sorting> multiSorts;
 
     public int getLimit() {
         return limit;

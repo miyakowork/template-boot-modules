@@ -1,14 +1,13 @@
 ## 更新日志
-> 1.0.0.RELEASE
->>·初始版本发布，支持BootstrapTable和LayTable，同时支持第三方dataTable扩展
->
-> 1.1.0.RELEASE
->>·配合官方layui2.1.0的升级，laytable支持表格排序监听
->>
->>·官方更新支持自定义返回格式和请求参数名的自定义，此处我们还是使用默认的。不适用自定义。
->
-> 1.1.1.RELEASE
->>.增加了Sorting的量静态快速生成方法
+### 新增 - 20180113
++ 新增 LayuiTable 类来匹配最新版本的Layui的dataTable的json数据接口
+### 1.1.1.RELEASE
++ 增加了Sorting的量静态快速生成方法
+### 1.1.0.RELEASE
++ 配合官方layui2.1.0的升级，laytable支持表格排序监听
++ 官方更新支持自定义返回格式和请求参数名的自定义，此处我们还是使用默认的。不适用自定义。
+### 1.0.0.RELEASE
++ 初始版本发布，支持BootstrapTable和LayTable，同时支持第三方dataTable扩展
 
 ## 基本使用文档
 > 基本使用方法步骤如下：

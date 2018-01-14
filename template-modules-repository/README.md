@@ -7,10 +7,12 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-repository</artifactId>
-            <version>1.10.16.RELEASE</version>
+            <version>1.10.17-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 新增 - 20170114
+   + 给@Repository注解增加了@Component，现在IDEA可以正确的识别@Autowired注入了
    ## 新增/修复 - 20180103
    + 新增find方法可以返回List&lt;Map&lt;String, Object&gt;&gt;的类型的方法
    + 修复save方法在保存无主键的表的时候的插入问题
@@ -28,7 +30,7 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
    + 修改返回类型为基础类型的方法逻辑为  map/iterator -> findPrimitiveByXxx();/findListPrimitiveByXxx();
    ## 新增 - 20171224
    + 新增批量更新的方法
-   + 新增 in[] 返回值的判定，可实现批量更新的方法
+   + 新增 int[] 返回值的判定，可实现批量更新的方法
    ## 修复 - 20171223
    + 修复一个查询方法的BUG （array -> map）。
    ## 更新 - 20171217

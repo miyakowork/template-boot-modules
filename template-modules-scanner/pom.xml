@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.16.RELEASE</version>
+        <version>1.10.17-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>1.10.16.RELEASE</version>
+            <version>1.10.17-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

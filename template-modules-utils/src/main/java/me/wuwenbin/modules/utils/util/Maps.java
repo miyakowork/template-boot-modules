@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class Maps {
     enum MapType {
         /**
-         * M生成Map的类型
+         * 生成Map的类型
          */
         ConcurrentHashMap,
         HashMap,

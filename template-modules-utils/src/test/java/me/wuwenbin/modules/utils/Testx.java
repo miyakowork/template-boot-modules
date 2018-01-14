@@ -86,5 +86,7 @@ public class Testx {
         System.out.println(miwen);
         String mingwen = rsa.decryptStr(miwen, KeyType.PrivateKey);
         System.out.println(mingwen);
+
     }
+
 }

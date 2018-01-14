@@ -10,6 +10,8 @@ import me.wuwenbin.modules.utils.security.factory.UrlFactory;
 /**
  * 对称和非对称加密请使用SecurityUtils或者单独的AsymmetricEncryption和SymmetricEncryption
  * created by Wuwenbin on 2017/8/20 at 20:17
+ *
+ * @author wuwenbin
  */
 public interface Encrypt {
 

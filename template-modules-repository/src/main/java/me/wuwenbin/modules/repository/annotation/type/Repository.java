@@ -1,5 +1,7 @@
 package me.wuwenbin.modules.repository.annotation.type;
 
+import org.springframework.stereotype.Component;
+
 import java.lang.annotation.*;
 
 /**
@@ -9,6 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@Component
 public @interface Repository {
 
     /**
