@@ -37,7 +37,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
     }
 
     private String getSql() throws Exception {
-        String save = "save";
+        String save = "save", savePk = "savePk";
         if (super.getMethod().isAnnotationPresent(SQL.class)) {
             return super.getMethod().getAnnotation(SQL.class).value();
         } else if (super.getMethod().isAnnotationPresent(Routers.class)) {
@@ -59,7 +59,7 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             String finalInserts = inserts.substring(0, inserts.length() - 2);
             String finalValues = values.substring(0, values.length() - 2);
             return "insert into ".concat(super.tableName).concat("(").concat(finalInserts).concat(")").concat(" values (").concat(finalValues).concat(")");
-        } else if (super.getMethod().getName().equalsIgnoreCase(save)) {
+        } else if (super.getMethod().getName().equalsIgnoreCase(save) || super.getMethod().getName().equalsIgnoreCase(savePk)) {
             return super.isPkInsert ? super.sbb.insertAllWithPk(Symbol.COLON) : super.sbb.insertAllWithoutPk(Symbol.COLON);
         } else {
             throw new MethodExecuteException("方法「" + super.getMethod().getName() + "」暂不支持！");

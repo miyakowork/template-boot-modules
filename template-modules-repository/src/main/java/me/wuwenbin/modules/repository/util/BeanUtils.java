@@ -19,6 +19,10 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -121,7 +125,33 @@ public class BeanUtils {
     }
 
     /**
-     * 判断是不是基础类型
+     * 判断类型是不是基础类型
+     *
+     * @param clazz
+     * @return
+     */
+    public static boolean isPrimitive(Class clazz) {
+        return (
+                clazz.equals(String.class) ||
+                        clazz.equals(Integer.class) ||
+                        clazz.equals(Byte.class) ||
+                        clazz.equals(Long.class) ||
+                        clazz.equals(Double.class) ||
+                        clazz.equals(Float.class) ||
+                        clazz.equals(Character.class) ||
+                        clazz.equals(Short.class) ||
+                        clazz.equals(BigDecimal.class) ||
+                        clazz.equals(BigInteger.class) ||
+                        clazz.equals(Boolean.class) ||
+                        clazz.equals(Date.class) ||
+                        clazz.equals(LocalDate.class) ||
+                        clazz.equals(LocalDateTime.class) ||
+                        clazz.isPrimitive()
+        );
+    }
+
+    /**
+     * 判断对象数据是不是基础类型
      *
      * @param param
      * @return

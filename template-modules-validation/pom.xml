@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>template-boot-modules</artifactId>
@@ -7,51 +9,43 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>template-modules-repository</artifactId>
+    <artifactId>template-modules-validation</artifactId>
     <packaging>jar</packaging>
 
-    <name>template-modules-repository</name>
-    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-repository</url>
-    <description>轻松实现数据持久化的模块</description>
+    <name>template-modules-validation</name>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-validator</url>
+    <description>简单易用而又不失功能的强大验证集合</description>
+
 
     <properties>
-        <modules.version>1.10.18-SNAPSHOT</modules.version>
-        <spring.version>4.3.12.RELEASE</spring.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
         <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.0.7.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <artifactId>spring-webmvc</artifactId>
+            <version>4.3.12.RELEASE</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>me.wuwenbin</groupId>
-            <artifactId>template-modules-sql</artifactId>
-            <version>${modules.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>me.wuwenbin</groupId>
-            <artifactId>template-modules-jpa</artifactId>
-            <version>${modules.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>me.wuwenbin</groupId>
-            <artifactId>template-modules-pagination</artifactId>
-            <version>${modules.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-utils</artifactId>
-            <version>${modules.version}</version>
+            <version>1.10.18-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -74,4 +68,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

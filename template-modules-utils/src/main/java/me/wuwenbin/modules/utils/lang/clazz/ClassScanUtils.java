@@ -1,9 +1,8 @@
-package me.wuwenbin.modules.repository.util;
+package me.wuwenbin.modules.utils.lang.clazz;
 
-import org.springframework.util.StringUtils;
+import me.wuwenbin.modules.utils.lang.LangUtils;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.JarURLConnection;
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
 /**
  * created by Wuwenbin on 2017/10/30 at 12:01
  *
- * @author Wuwenbin
+ * @author Hutool.cn
  */
 public class ClassScanUtils {
 
@@ -31,7 +30,7 @@ public class ClassScanUtils {
      * @param includeAnnotations 要包含的注解，默认为全部
      * @param includeNames       要包含的class名称（支持正则），默认为全部
      * @return 符合条件的class类集合
-     * @throws java.io.IOException    IOException
+     * @throws IOException            IOException
      * @throws ClassNotFoundException ClassNotFoundException
      */
     public static Set<Class<?>> scan(String basePackage, Set<Class<? extends Annotation>> includeAnnotations, Set<String> includeNames) throws IOException, ClassNotFoundException {
@@ -57,19 +56,14 @@ public class ClassScanUtils {
     private static Set<Class<?>> findAndAddClassesByFile(String currentPackage, File currentFile, Set<Class<? extends Annotation>> annotations, Set<String> classNames) throws ClassNotFoundException {
         Set<Class<?>> result = new HashSet<>();
         if (currentFile.exists() && currentFile.isDirectory()) {
-            File[] files = currentFile.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return file.isDirectory() || file.getName().endsWith(".class");
-                }
-            });
+            File[] files = currentFile.listFiles(file -> file.isDirectory() || file.getName().endsWith(".class"));
             assert files != null;
             for (File file : files) {
                 if (file.isDirectory()) {
-                    result.addAll(findAndAddClassesByFile((StringUtils.isEmpty(currentPackage) ? "" : currentPackage + ".") + file.getName(), file, annotations, classNames));
+                    result.addAll(findAndAddClassesByFile((LangUtils.string.isEmpty(currentPackage) ? "" : currentPackage + ".") + file.getName(), file, annotations, classNames));
                 } else {
                     String className = file.getName().substring(0, file.getName().length() - 6);
-                    Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass((StringUtils.isEmpty(currentPackage) ? "" : currentPackage + ".") + className);
+                    Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass((LangUtils.string.isEmpty(currentPackage) ? "" : currentPackage + ".") + className);
                     if (isMatch(clazz, annotations, classNames)) {
                         result.add(clazz);
                     }

@@ -306,6 +306,53 @@ public final class Controllers {
         }
     }
 
+    /**
+     * 在删除之前需要做if操作判断的
+     *
+     * @param ifCondition
+     * @param t
+     * @param tryOperate
+     * @param <T>
+     * @return
+     */
+    public <T> R execLight(TemplateSupplier<Boolean> ifCondition, T t, TemplateConsumer<T> tryOperate) {
+        try {
+            boolean flag = ifCondition.get();
+            if (flag) {
+                return execLight(t, tryOperate);
+            } else {
+                String msg = operationName == null ? errorMsg : operationName.concat("失败！");
+                return R.error(msg);
+            }
+        } catch (Exception e) {
+            String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
+            return R.error(msg);
+        }
+    }
+
+    /**
+     * 在删除之前需要做if操作判断的，并且else失败条件自定义
+     *
+     * @param ifCondition
+     * @param t
+     * @param tryOperate
+     * @param <T>
+     * @return
+     */
+    public <T> R execLight(TemplateSupplier<Boolean> ifCondition, T t, TemplateConsumer<T> tryOperate, String message) {
+        try {
+            boolean flag = ifCondition.get();
+            if (flag) {
+                return execLight(t, tryOperate);
+            } else {
+                String msg = message == null ? errorMsg : message;
+                return R.error(msg);
+            }
+        } catch (Exception e) {
+            String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
+            return R.error(msg);
+        }
+    }
 
     /**
      * 无需要判断的，仅需要try catch即可

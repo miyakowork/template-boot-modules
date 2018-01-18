@@ -39,8 +39,7 @@ public class PageProvider<T> extends AbstractProvider<T> {
             TableQuery tableQuery = (TableQuery) args[2];
             StringBuilder sqlBuilder = new StringBuilder("select");
             StringBuilder joinSqlBuilder = new StringBuilder();
-            Class<?> mainClass = clazz.getSuperclass();
-            String mainTableName = getTableName(mainClass);
+            String mainTableName = getTableName(clazz);
             sqlBuilder.append(" ").append(mainTableName).append(".*");
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {

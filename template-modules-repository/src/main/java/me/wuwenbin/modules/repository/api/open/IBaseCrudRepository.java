@@ -29,6 +29,15 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
     T save(Map<String, Object> entityMap) throws Exception;
 
     /**
+     * 主键不是自增长的时候，范湖插入影响条目
+     *
+     * @param entityMap
+     * @return
+     * @throws Exception
+     */
+    int savePk(Map<String, Object> entityMap) throws Exception;
+
+    /**
      * 插入一条实体记录，主键插不插入一局@GeneralType的value属性值而定
      *
      * @param entity
@@ -36,6 +45,15 @@ public interface IBaseCrudRepository<T, PK> extends IRepository<T, PK> {
      * @throws Exception
      */
     T save(T entity) throws Exception;
+
+    /**
+     * 主键不是自增长的时候，返回插入影响条目
+     *
+     * @param entity
+     * @return
+     * @throws Exception
+     */
+    int savePk(T entity) throws Exception;
 
 
     /**

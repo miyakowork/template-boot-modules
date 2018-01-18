@@ -298,7 +298,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
     private Object executeWithSingleParam(String sql, Object[] args, Class returnType) throws MethodTypeMismatchException, MethodParamException, MethodExecuteException {
         if (BeanUtils.paramTypeMapOrSub(args[0])) {
             Map<String, Object> mapArg = (Map<String, Object>) args[0];
-            if (returnType.equals(super.getClazz())) {
+            if (returnType.equals(super.getClazz()) || "findOne".equals(super.getMethod().getName())) {
                 return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), mapArg);
             } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
                 if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
@@ -315,7 +315,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, mapArg) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, mapArg);
-            } else if (returnType.isPrimitive() || returnType.equals(String.class)) {
+            } else if (BeanUtils.isPrimitive(returnType)) {
                 if (super.getMethod().isAnnotationPresent(Primitive.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
                     return getJdbcTemplate().findPrimitiveByMap(sql, genericClass, mapArg);
@@ -333,7 +333,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             Object[] objArg = collectionArg.toArray();
             return executeWithSingleParam(sql, new Object[]{objArg}, returnType);
         } else if (BeanUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
-            if (returnType.equals(super.getClazz())) {
+            if (returnType.equals(super.getClazz()) || "findOne".equals(super.getMethod().getName())) {
                 return getJdbcTemplate().findBeanByBean(sql, super.getClazz(), args[0]);
             } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
                 if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
@@ -353,7 +353,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             }
         } else if (args[0].getClass().equals(SelectQuery.class)) {
             SelectQuery selectQuery = (SelectQuery) args[0];
-            if (returnType.equals(super.getClazz())) {
+            if (returnType.equals(super.getClazz()) || "findOne".equals(super.getMethod().getName())) {
                 return getJdbcTemplate().findBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
             } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
                 if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
@@ -370,7 +370,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 return getJdbcTemplate().queryNumberByMap(sql, Long.class, selectQuery.getParamMap()) > 0;
             } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
                 return getJdbcTemplate().findMapByMap(sql, selectQuery.getParamMap());
-            } else if (returnType.isPrimitive() || returnType.equals(String.class)) {
+            } else if (BeanUtils.isPrimitive(returnType)) {
                 if (super.getMethod().isAnnotationPresent(Primitive.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
                     return getJdbcTemplate().findPrimitiveByMap(sql, genericClass, selectQuery.getParamMap());
@@ -398,7 +398,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
      * @throws MethodTypeMismatchException
      */
     private Object executeWithMultiParam(String sql, Class returnType, Object[] objArg) throws MethodTypeMismatchException, MethodExecuteException {
-        if (returnType.equals(super.getClazz())) {
+        if (returnType.equals(super.getClazz()) || "findOne".equals(super.getMethod().getName())) {
             return getJdbcTemplate().findBeanByArray(sql, super.getClazz(), objArg);
         } else if (returnType.equals(List.class) || List.class.isAssignableFrom(returnType)) {
             if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
@@ -417,7 +417,7 @@ public class FindProvider<T> extends AbstractProvider<T> {
             return getJdbcTemplate().queryNumberByArray(sql, Long.class, objArg) > 0;
         } else if (returnType.equals(Map.class) || Map.class.isAssignableFrom(returnType)) {
             return getJdbcTemplate().findMapByArray(sql, objArg);
-        } else if (returnType.isPrimitive() || returnType.equals(String.class)) {
+        } else if (BeanUtils.isPrimitive(returnType)) {
             if (super.getMethod().isAnnotationPresent(Primitive.class)) {
                 Class<?> genericClass = super.getMethod().getAnnotation(Primitive.class).value();
                 return getJdbcTemplate().findPrimitiveByArray(sql, genericClass, objArg);

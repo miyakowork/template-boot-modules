@@ -2,7 +2,7 @@ package me.wuwenbin.modules.repository.registry;
 
 import me.wuwenbin.modules.repository.annotation.type.Repository;
 import me.wuwenbin.modules.repository.proxy.RepositoryProxyFactory;
-import me.wuwenbin.modules.repository.util.ClassScanUtils;
+import me.wuwenbin.modules.utils.lang.clazz.ClassScanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -63,9 +63,9 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
                 //noinspection unchecked
                 Class clazz = repositoryProxyFactory.newInstance(repository).getClass();
 
-                logger.info("---------- 开始注册 [Repository，BeanClass : {} ，BeanName：{}] ----------", repository, simpleBeanName);
+                logger.info("-- 开始注册 [BeanClass : {} ，BeanName：{}] --", repository, simpleBeanName);
                 registerBean(beanDefinitionRegistry, simpleBeanName, clazz);
-                logger.info("---------- 注册结束 [Repository，BeanClass : {} ，BeanName：{}] ----------", repository, simpleBeanName);
+                logger.info("-- 注册 [BeanClass : {}] 结束--", repository);
 
                 cnt++;
             }

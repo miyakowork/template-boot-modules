@@ -6,7 +6,7 @@
 
     <groupId>me.wuwenbin</groupId>
     <artifactId>template-boot-modules</artifactId>
-    <version>1.10.17-SNAPSHOT</version>
+    <version>1.10.18-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -17,6 +17,7 @@
         <module>template-modules-repository</module>
         <module>template-modules-sql</module>
         <module>template-modules-utils</module>
+        <module>template-modules-validation</module>
     </modules>
 
     <properties>
