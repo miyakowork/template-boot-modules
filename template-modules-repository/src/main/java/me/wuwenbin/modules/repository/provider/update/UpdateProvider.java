@@ -53,7 +53,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
                     String sql = (getSql(methodName, 8, finalSql, true));
                     return executeWithSingleParam(sql, args, returnType);
                 } else {
-                    throw new MethodExecuteException("方法「" + methodName + "」命名不规范，请参考命名规则！");
+                    throw new MethodExecuteException("方法「" + methodName + "」命名不规范（此处应为updateByXxx），请参考命名规则！");
                 }
             }
             //如果使用@Routers注解，则无关方法命名，更新的字段为routers，条件为主键 = ？
@@ -62,7 +62,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
                 String sql = super.sbb.updateRoutersByPk(Symbol.COLON, updateRouters);
                 return executeWithSingleParam(sql, args, returnType);
             } else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^update.*By$")) {
-                String fields = methodName.substring(methodName.indexOf("update") + 4, methodName.indexOf("By"));
+                String fields = methodName.substring(methodName.indexOf("update") + 6, methodName.indexOf("By"));
                 String sql = "update ".concat(super.tableName).concat(" set");
                 if (!StringUtils.isEmpty(fields)) {
                     String[] fieldArray = fields.split("And");
@@ -84,7 +84,7 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
             if (super.getMethod().isAnnotationPresent(Modify.class)) {
                 if (methodName.startsWith(updateBy)) {
                     int[] updateRouters = super.getMethod().getAnnotation(Modify.class).value();
-                    String preSql = super.sbb.updateRoutersByPk(Symbol.COLON, updateRouters);
+                    String preSql = super.sbb.updateRoutersByPk(Symbol.QUESTION_MARK, updateRouters);
                     preSql = preSql.substring(0, preSql.toLowerCase().indexOf("where"));
                     String finalSql = preSql.concat(" where ");
                     String sql = getSql(methodName, 8, finalSql, false);

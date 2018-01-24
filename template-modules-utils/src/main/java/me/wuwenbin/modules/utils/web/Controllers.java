@@ -206,6 +206,7 @@ public final class Controllers {
                 return R.error(msg);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
             return R.error(msg);
         }
@@ -300,6 +301,7 @@ public final class Controllers {
                 return failureOperate.apply(r);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
             R r = R.error(msg);
             return exceptionOperate.apply(r);
@@ -325,6 +327,7 @@ public final class Controllers {
                 return R.error(msg);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
             return R.error(msg);
         }
@@ -349,6 +352,7 @@ public final class Controllers {
                 return R.error(msg);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
             return R.error(msg);
         }
@@ -381,6 +385,7 @@ public final class Controllers {
             R r = R.ok(msg);
             return tryResultOperate.apply(r);
         } catch (Exception e) {
+            e.printStackTrace();
             String msg = operationName == null ? exceptionMsg : operationName.concat("异常，原因：").concat(e.getMessage());
             R r = R.error(msg);
             return exceptionOperate.apply(r);
