@@ -23,31 +23,34 @@ public enum Operator {
     NLT("!<"),
     NGT("!>"),
     LIKE("LIKE"),
+    LEFT_LIKE("LIKE"),
+    RIGHT_LIKE("LIKE"),
     BETWEEN_AND("BETWEEN", "AND");
 
-    private String operation;
+    private String operator;
     private String subOperation;
 
-    Operator(String operation) {
-        this.operation = operation;
+    Operator(String operator) {
+        this.operator = operator;
     }
 
     Operator(String prefix, String suffix) {
-        this.operation = prefix;
+        this.operator = prefix;
         this.subOperation = suffix;
 
     }
 
     public boolean isDoubleOperator() {
-        return !Objects.equals(operation, "") && !Objects.equals(subOperation, "");
+        return !Objects.equals(operator, "") && !Objects.equals(subOperation, "");
     }
 
-    public String getOperation() {
-        return this.operation;
+    public String getOperator() {
+        return this.operator;
     }
 
     public String[] getOperations() {
-        return new String[]{this.operation, this.subOperation};
+        return new String[]{this.operator, this.subOperation};
     }
+
 
 }

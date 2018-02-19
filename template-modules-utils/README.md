@@ -1,3 +1,7 @@
+## 新增 - 20180212
++ RepositoryRegistry 增加属性 scanBasePackage。现在可以指定扫描的根目录了
+## 新增 - 20180202
++ 新增多个String工具方法（来源：Hutool）
 ## 新增 - 20180115
 + 新增扫描class的工具方法（来自Hutool）
 ## 新增 - 20180107

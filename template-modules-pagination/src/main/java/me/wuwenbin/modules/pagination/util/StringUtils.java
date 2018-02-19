@@ -1,8 +1,6 @@
 package me.wuwenbin.modules.pagination.util;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -102,53 +100,51 @@ public class StringUtils {
      * @return 字符串
      */
     private static String utf8Str(Object obj) {
-        return str(obj, StandardCharsets.UTF_8);
+        return str(obj);
     }
 
     /**
      * 将对象转为字符串<br>
      * 1、Byte数组和ByteBuffer会被转换为对应字符串的数组 2、对象数组会调用Arrays.toString方法
      *
-     * @param obj     对象
-     * @param charset 字符集
+     * @param obj 对象
      * @return 字符串
      */
-    private static String str(Object obj, Charset charset) {
+    private static String str(Object obj) {
         if (null == obj) {
             return null;
         }
         if (obj instanceof String) {
             return (String) obj;
         } else if (obj instanceof byte[]) {
-            return str(obj, charset);
+            return str(obj);
         } else if (obj instanceof Byte[]) {
-            return str(obj, charset);
+            return str(obj);
         } else if (obj instanceof ByteBuffer) {
-            return str(obj, charset);
+            return str(obj);
         } else if (obj.getClass().isArray()) {
             try {
                 return Arrays.deepToString((Object[]) obj);
             } catch (Exception e) {
                 final String className = obj.getClass().getComponentType().getName();
-                switch (className) {
-                    case "long":
-                        return Arrays.toString((long[]) obj);
-                    case "int":
-                        return Arrays.toString((int[]) obj);
-                    case "short":
-                        return Arrays.toString((short[]) obj);
-                    case "char":
-                        return Arrays.toString((char[]) obj);
-                    case "byte":
-                        return Arrays.toString((byte[]) obj);
-                    case "boolean":
-                        return Arrays.toString((boolean[]) obj);
-                    case "float":
-                        return Arrays.toString((float[]) obj);
-                    case "double":
-                        return Arrays.toString((double[]) obj);
-                    default:
-                        throw new RuntimeException(e);
+                if ("long".equals(className)) {
+                    return Arrays.toString((long[]) obj);
+                } else if ("int".equals(className)) {
+                    return Arrays.toString((int[]) obj);
+                } else if ("short".equals(className)) {
+                    return Arrays.toString((short[]) obj);
+                } else if ("char".equals(className)) {
+                    return Arrays.toString((char[]) obj);
+                } else if ("byte".equals(className)) {
+                    return Arrays.toString((byte[]) obj);
+                } else if ("boolean".equals(className)) {
+                    return Arrays.toString((boolean[]) obj);
+                } else if ("float".equals(className)) {
+                    return Arrays.toString((float[]) obj);
+                } else if ("double".equals(className)) {
+                    return Arrays.toString((double[]) obj);
+                } else {
+                    throw new RuntimeException(e);
                 }
             }
         }

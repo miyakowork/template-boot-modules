@@ -20,7 +20,7 @@ public final class Url {
      * @param input
      * @return
      */
-    public String urlDecode(String input) {
+    public static String urlDecode(String input) {
         return urlDecode(input, Charset.defaultCharset().displayName());
     }
 
@@ -31,7 +31,7 @@ public final class Url {
      * @param encoding
      * @return
      */
-    public String urlDecode(String input, String encoding) {
+    public static String urlDecode(String input, String encoding) {
         try {
             return URLDecoder.decode(input, encoding);
         } catch (UnsupportedEncodingException e) {
@@ -45,7 +45,7 @@ public final class Url {
      * @param input
      * @return
      */
-    public String urlEncode(String input) {
+    public static String urlEncode(String input) {
         return urlEncode(input, Charset.defaultCharset().displayName());
     }
 
@@ -56,7 +56,7 @@ public final class Url {
      * @param encoding
      * @return
      */
-    public String urlEncode(String input, String encoding) {
+    public static String urlEncode(String input, String encoding) {
         try {
             return URLEncoder.encode(input, encoding);
         } catch (UnsupportedEncodingException e) {

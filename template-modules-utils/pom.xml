@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.18-SNAPSHOT</version>
+        <version>1.10.20-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,11 +14,22 @@
     <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-utils</url>
     <description>常用工具类超实用的集合</description>
 
+    <properties>
+        <hutool.version>4.0.5</hutool.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-json</artifactId>
-            <version>3.9.1</version>
+            <version>4.1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>${hutool.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.18-SNAPSHOT</version>
+        <version>1.10.20-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,21 +39,21 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>4.3.10.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>4.3.10.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.10.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>1.10.18-SNAPSHOT</version>
+            <version>${modules.version}</version>
             <scope>provided</scope>
         </dependency>
 

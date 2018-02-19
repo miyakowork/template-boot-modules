@@ -54,7 +54,12 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
     }
 
     private void init() {
-        SQLTable sqlTable = getClazz().getAnnotation(SQLTable.class);
+        SQLTable sqlTable;
+        try {
+            sqlTable = getClazz().getAnnotation(SQLTable.class);
+        } catch (NullPointerException e) {
+            throw new RuntimeException("未指定@SQLTable", e);
+        }
         Field pk;
         try {
             pk = SQLGen.builder(getClazz()).getPkField();

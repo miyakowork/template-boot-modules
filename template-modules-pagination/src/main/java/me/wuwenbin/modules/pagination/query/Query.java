@@ -1,16 +1,15 @@
 package me.wuwenbin.modules.pagination.query;
 
-import me.wuwenbin.modules.pagination.query.support.params.QueryParams;
 import me.wuwenbin.modules.pagination.sort.Sorting;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * 统一的分页查询对象
  * created by Wuwenbin on 2017/8/29 at 21:51
  */
-public interface Query {
+public interface Query extends Serializable {
 
     /**
      * 当前的页码

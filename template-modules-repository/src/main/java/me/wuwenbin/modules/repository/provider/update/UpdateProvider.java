@@ -105,6 +105,9 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
                 String finalSql = sql.concat(" where ");
                 finalSql = getSql(methodName, methodName.indexOf("By") + 2, finalSql, false);
                 return executeWithMultiParam(finalSql, args, returnType);
+            } else if (super.getMethod().isAnnotationPresent(SQL.class)) {
+                String sql = super.getMethod().getAnnotation(SQL.class).value();
+                return executeWithMultiParam(sql, args, returnType);
             } else {
                 throw new MethodExecuteException("方法「" + methodName + "」为不支持的类型，请参考命名规则！");
             }

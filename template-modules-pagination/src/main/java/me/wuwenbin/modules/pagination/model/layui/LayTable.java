@@ -7,8 +7,10 @@ import java.util.List;
 /**
  * layui2.x版本推出的dataTable插件
  * created by Wuwenbin on 2017/8/30 at 11:41
+ *
  * @author wuwenbin
  */
+@Deprecated
 public class LayTable<T> implements Table<T> {
 
     /**

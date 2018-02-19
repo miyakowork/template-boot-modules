@@ -69,8 +69,8 @@ public class Pagination {
                             split = field.getAnnotation(QueryColumn.class).split();
                         }
                         String[] fieldValues = field.get(tableQuery).toString().split(split);
-                        String startKey = fieldName.concat("Start");
-                        String endKey = fieldName.concat("End");
+                        String startKey = fieldName.concat("$Start");
+                        String endKey = fieldName.concat("$End");
                         String startFieldValue = StringUtils.trimEnd(fieldValues[0]);
                         String endFieldValue = StringUtils.trimStart(fieldValues[1]);
                         paramsMap.put(startKey, startFieldValue);
@@ -82,8 +82,12 @@ public class Pagination {
                         //like逻辑
                         if (operator.equals(Operator.LIKE)) {
                             fieldValue = StringUtils.format("%{}%", field.get(tableQuery));
+                        } else if (operator.equals(Operator.LEFT_LIKE)) {
+                            fieldValue = StringUtils.format("%{}", field.get(tableQuery));
+                        } else if (operator.equals(Operator.RIGHT_LIKE)) {
+                            fieldValue = StringUtils.format("{}%", field.get(tableQuery));
                         }
-                        //非like逻辑的存入参数Map中的值则不需要%%包裹起来
+                        //非like、非自定义逻辑的存入参数Map中的值则不需要%%包裹起来
                         else {
                             fieldValue = field.get(tableQuery);
                         }
@@ -137,20 +141,22 @@ public class Pagination {
                     String columnNameInDb = fieldName;
                     //默认比较逻辑为like
                     Operator operator = Operator.LIKE;
+                    String constraint = "AND";
                     if (field.isAnnotationPresent(QueryColumn.class)) {
                         columnNameInDb = StringUtils.java2SQL(field.getAnnotation(QueryColumn.class).column(), field.getName());
                         operator = field.getAnnotation(QueryColumn.class).operator();
+                        constraint = field.getAnnotation(QueryColumn.class).constraint();
                     }
 
                     //between and逻辑，常用于时间查询
                     if (operator.equals(Operator.BETWEEN_AND)) {
-                        String startKey = fieldName.concat("Start");
-                        String endKey = fieldName.concat("End");
+                        String startKey = fieldName.concat("$Start");
+                        String endKey = fieldName.concat("$End");
                         String temp;
                         if (StringUtils.isNotEmpty(tableName)) {
-                            temp = StringUtils.format(" AND ({}.`{}` BETWEEN  :{} AND :{})", tableName, columnNameInDb, startKey, endKey);
+                            temp = StringUtils.format(" {} ({}.`{}` BETWEEN  :{} AND :{})", constraint, tableName, columnNameInDb, startKey, endKey);
                         } else {
-                            temp = StringUtils.format(" AND (`{}` BETWEEN :{} AND :{})", columnNameInDb, startKey, endKey);
+                            temp = StringUtils.format(" {} (`{}` BETWEEN :{} AND :{})", constraint, columnNameInDb, startKey, endKey);
                         }
                         sql.append(temp);
                     }
@@ -158,9 +164,9 @@ public class Pagination {
                     else {
                         String temp;
                         if (StringUtils.isNotEmpty(tableName)) {
-                            temp = StringUtils.format(" AND {}.`{}` {} :{}", tableName, columnNameInDb, operator.getOperation(), fieldName);
+                            temp = StringUtils.format(" {} {}.`{}` {} :{}", constraint, tableName, columnNameInDb, operator.getOperator(), fieldName);
                         } else {
-                            temp = StringUtils.format(" AND `{}` {} :{}", columnNameInDb, operator.getOperation(), fieldName);
+                            temp = StringUtils.format(" {} `{}` {} :{}", constraint, columnNameInDb, operator.getOperator(), fieldName);
                         }
                         sql.append(temp);
                     }

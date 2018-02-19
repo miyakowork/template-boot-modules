@@ -1,7 +1,9 @@
 package me.wuwenbin.modules.repository.test.proxy;
 
+import me.wuwenbin.modules.repository.provider.save.annotation.SaveSQL;
 import me.wuwenbin.modules.repository.test.Person;
 import me.wuwenbin.modules.repository.test.User;
+import me.wuwenbin.modules.sql.constant.Router;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,4 +42,7 @@ public interface UserService<S> extends PublicService<S> {
     List<Person> findList2();
 
     S name(String username, String password, int age);
+
+    @SaveSQL(columns = {"username", "password"}, routers = Router.C)
+    int saveTestUser(User user);
 }

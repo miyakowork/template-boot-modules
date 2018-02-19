@@ -15,11 +15,18 @@ public @interface SaveSQL {
 
     /**
      * 插入的列名
+     *此属性和下面的routers将会叠加在一起作为insert语句的插入字段
+     * @return
+     */
+    String[] columns() default {};
+
+    /**
+     * 插入的列名所在的router
+     * 此属性和上面的columns将会叠加在一起作为insert语句的插入字段
      *
      * @return
      */
-    String[] columns();
-
+    int[] routers() default {};
     /**
      * @return
      */

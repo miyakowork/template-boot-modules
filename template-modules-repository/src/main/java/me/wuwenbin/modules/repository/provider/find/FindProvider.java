@@ -7,10 +7,7 @@ import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodParamException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
-import me.wuwenbin.modules.repository.provider.find.annotation.ListMap;
-import me.wuwenbin.modules.repository.provider.find.annotation.OrderBy;
-import me.wuwenbin.modules.repository.provider.find.annotation.Primitive;
-import me.wuwenbin.modules.repository.provider.find.annotation.PrimitiveCollection;
+import me.wuwenbin.modules.repository.provider.find.annotation.*;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
 import me.wuwenbin.modules.repository.util.BeanUtils;
 import me.wuwenbin.modules.sql.support.Symbol;
@@ -18,6 +15,7 @@ import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -279,6 +277,18 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 String order = super.getMethod().getAnnotation(OrderBy.class).order().name();
                 sql = sql.concat(" order by ").concat(orderField).concat(" ").concat(order);
             }
+            if (super.getMethod().isAnnotationPresent(OrderBys.class)) {
+                String[] orderFields = super.getMethod().getAnnotation(OrderBys.class).value();
+                String[] order = Arrays.stream(super.getMethod().getAnnotation(OrderBys.class).order()).map(Enum::name).toArray(String[]::new);
+                if (orderFields.length == order.length && orderFields.length > 0) {
+                    StringBuilder temp = new StringBuilder();
+                    for (int i = 0; i < orderFields.length; i++) {
+                        temp.append(orderFields[i].concat(" ").concat(order[i]).concat(","));
+                    }
+                    temp = new StringBuilder(temp.substring(0, temp.length() - 1));
+                    sql = sql.concat(" order by ").concat(temp.toString());
+                }
+            }
         }
         return sql;
     }
@@ -304,6 +314,8 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
                     return getJdbcTemplate().findListPrimitiveByMap(sql, genericClass, mapArg);
+                } else if (super.getMethod().isAnnotationPresent(ListMap.class)) {
+                    return getJdbcTemplate().findListMapByMap(sql, mapArg);
                 } else {
                     return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), mapArg);
                 }
@@ -339,6 +351,8 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
                     return getJdbcTemplate().findListPrimitiveByBean(sql, genericClass, args[0]);
+                } else if (super.getMethod().isAnnotationPresent(ListMap.class)) {
+                    return getJdbcTemplate().findListMapByBean(sql, args[0]);
                 } else {
                     return getJdbcTemplate().findListBeanByBean(sql, super.getClazz(), args[0]);
                 }
@@ -359,6 +373,8 @@ public class FindProvider<T> extends AbstractProvider<T> {
                 if (super.getMethod().isAnnotationPresent(PrimitiveCollection.class)) {
                     Class<?> genericClass = super.getMethod().getAnnotation(PrimitiveCollection.class).value();
                     return getJdbcTemplate().findListPrimitiveByMap(sql, genericClass, selectQuery.getParamMap());
+                } else if (super.getMethod().isAnnotationPresent(ListMap.class)) {
+                    return getJdbcTemplate().findListMapByMap(sql, selectQuery.getParamMap());
                 } else {
                     return getJdbcTemplate().findListBeanByMap(sql, super.getClazz(), selectQuery.getParamMap());
                 }

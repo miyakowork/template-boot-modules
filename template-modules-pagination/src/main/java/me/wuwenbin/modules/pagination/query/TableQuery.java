@@ -10,6 +10,7 @@ import java.util.List;
  */
 public abstract class TableQuery implements Query {
 
+
     /**
      * 当前的页码
      *

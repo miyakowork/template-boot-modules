@@ -1,7 +1,9 @@
 package me.wuwenbin.modules.sql;
 
 
+import me.wuwenbin.modules.sql.constant.Router;
 import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
+import me.wuwenbin.modules.sql.support.Symbol;
 import org.junit.Test;
 
 /**
@@ -17,10 +19,12 @@ public class UserTest {
 //        String sql = sbb.selectPartByRoutersAnd(Symbol.COLON, new int[]{Router.DEFAULT}, Router.B);
 //        System.out.println(sql);
 //        Field[] fields = sbb.getAllFieldExceptObject();
-        System.out.println(sbb.getPkField());
+//        System.out.println(sbb.getPkField());
 //        for (Field field : fields) {
 //            System.out.println(field.getName());
 //        }
+        System.out.println(sbb.updateRoutersByPk(Symbol.QUESTION_MARK, Router.DEFAULT));
+        System.out.println(sbb.insertAllWithoutPk(Symbol.QUESTION_MARK));
     }
 
 }

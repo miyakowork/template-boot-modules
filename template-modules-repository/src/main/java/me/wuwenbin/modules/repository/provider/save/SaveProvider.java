@@ -13,10 +13,13 @@ import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.provider.save.annotation.SaveSQL;
 import me.wuwenbin.modules.repository.util.BeanUtils;
 import me.wuwenbin.modules.sql.support.Symbol;
+import me.wuwenbin.modules.sql.util.SQLBuilderUtils;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * insert/save方法的执行提供者
@@ -47,7 +50,13 @@ public class SaveProvider<T> extends AbstractProvider<T> {
             StringBuilder inserts = new StringBuilder();
             StringBuilder values = new StringBuilder();
             String[] insertFields = super.getMethod().getAnnotation(SaveSQL.class).columns();
-            for (String insertField : insertFields) {
+            int[] insertRouters = super.getMethod().getAnnotation(SaveSQL.class).routers();
+            List<String> insertFieldList = Arrays.stream(insertFields).collect(Collectors.toList());
+            List<Field> routersList = SQLBuilderUtils.getFieldsByRouters(super.getClazz(), insertRouters);
+            List<String> nameInRouters = routersList.stream().map(field -> SQLDefineUtils.java2SQL("", field.getName())).collect(Collectors.toList());
+            insertFieldList.addAll(nameInRouters);
+            insertFieldList = insertFieldList.stream().distinct().collect(Collectors.toList());
+            for (String insertField : insertFieldList) {
                 inserts.append(insertField).append(", ");
                 if (super.getMethod().getAnnotation(SaveSQL.class).type().equals(Parametric.Colon)) {
                     values.append(":").append(SQLDefineUtils.underline2Camel(insertField)).append(", ");

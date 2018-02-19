@@ -7,10 +7,12 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>1.10.18-SNAPSHOT</version>
+            <version>1.10.20-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 更新 - 20180212
+   + 增加参数log记录日志功能
    ## 更新 - 20171215
    + 更新insertXxxAutoGenKeyReturnXxx带tableName的方法，改为由方法自己从插入语句中计算出tableName，取代用户自己传入tableName参数
    ## 更新 - 20171213

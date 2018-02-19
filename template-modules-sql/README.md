@@ -7,10 +7,12 @@ template modules sql 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-sql</artifactId>
-            <version>1.10.18-SNAPSHOT</version>
+            <version>1.10.20-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 新增 - 20180218
+   + 新增一个注解@SQLPk，现在主键可以使用@SQLColumn(pk=true)或者直接@SQLPk注解即可
    ## 新增 - 20171228
    + 增加一个获取指定routers的Field的方法
    + 增加sql语句占位符参数的选择（冒号/问号）

@@ -2,6 +2,7 @@ package me.wuwenbin.modules.utils;
 
 
 import me.wuwenbin.modules.utils.http.R;
+import me.wuwenbin.modules.utils.lang.LangUtils;
 import me.wuwenbin.modules.utils.security.Encrypt;
 import me.wuwenbin.modules.utils.security.asymmetric.KeyType;
 import me.wuwenbin.modules.utils.security.asymmetric.RSA;
@@ -89,4 +90,16 @@ public class Testx {
 
     }
 
+    @Test
+    public void testPlaceholder() {
+        String s = "select {} from {} where id = ?";
+        System.out.println(LangUtils.string.placeholder(s, "*", "t_user"));
+    }
+
+    @Test
+    public void testChinese() {
+        String ss = " …先安利一波：JetBrains家族系列的IDE是真的好用。还没开搞的赶紧吧。。。。 首先感谢lanyu大神。 先列出我搭建的License Server服务器：http://jetbrains.wuwenbin.me:1609 ,启动IDE的时候选择";
+        System.out.println(LangUtils.string.chineseWords(ss));
+        System.out.println(LangUtils.string.fullAngelWords(ss));
+    }
 }

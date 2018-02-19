@@ -98,8 +98,7 @@ public class SQLTextBuilder {
         } else {
             StringBuilder sb = new StringBuilder(selectPre);
             if (selectColumns != null && selectColumns.length > 0) {
-                for (int i = 0; i < selectColumns.length; i++) {
-                    String selectColumn = selectColumns[i];
+                for (String selectColumn : selectColumns) {
                     sb.append(tableName).append(".").append(selectColumn).append(", ");
                 }
             } else {

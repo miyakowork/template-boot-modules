@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.10.18-SNAPSHOT</version>
+        <version>1.10.20-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,12 +14,9 @@
     <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-repository</url>
     <description>轻松实现数据持久化的模块</description>
 
-    <properties>
-        <modules.version>1.10.18-SNAPSHOT</modules.version>
-        <spring.version>4.3.12.RELEASE</spring.version>
-    </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -28,24 +25,27 @@
         </dependency>
 
         <dependency>
-            <groupId>me.wuwenbin</groupId>
-            <artifactId>template-modules-sql</artifactId>
-            <version>${modules.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>me.wuwenbin</groupId>
-            <artifactId>template-modules-jpa</artifactId>
-            <version>${modules.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-sql</artifactId>
+            <version>${modules.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
+            <artifactId>template-modules-jpa</artifactId>
+            <version>${modules.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-pagination</artifactId>
             <version>${modules.version}</version>
         </dependency>
-
         <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-utils</artifactId>

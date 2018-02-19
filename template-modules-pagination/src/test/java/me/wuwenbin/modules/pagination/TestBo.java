@@ -1,14 +1,9 @@
 package me.wuwenbin.modules.pagination;
 
-import me.wuwenbin.modules.pagination.query.TableQuery;
 import me.wuwenbin.modules.pagination.query.model.bootstrap.BootstrapTableQuery;
 import me.wuwenbin.modules.pagination.query.support.annotation.QueryColumn;
 import me.wuwenbin.modules.pagination.query.support.annotation.QueryTable;
 import me.wuwenbin.modules.pagination.query.support.operator.Operator;
-import me.wuwenbin.modules.pagination.query.support.params.QueryParams;
-
-import java.util.List;
-import java.util.TreeMap;
 
 /**
  * created by Wuwenbin on 2017/8/30 at 15:46
@@ -18,7 +13,7 @@ public class TestBo extends BootstrapTableQuery {
 
     private String username;
 
-    @QueryColumn(operator = Operator.EQ,column = "l_d")
+    @QueryColumn(operator = Operator.EQ, column = "l_d")
     private String loginDate;
 
     @QueryColumn(operator = Operator.BETWEEN_AND)

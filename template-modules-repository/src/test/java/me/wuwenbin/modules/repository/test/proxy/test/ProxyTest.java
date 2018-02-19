@@ -1,5 +1,8 @@
 package me.wuwenbin.modules.repository.test.proxy.test;
 
+import me.wuwenbin.modules.repository.provider.select.page.support.PageExtraFactory;
+import me.wuwenbin.modules.repository.provider.select.page.support.fake.column.FakeColPageExtra;
+import me.wuwenbin.modules.repository.test.User;
 import me.wuwenbin.modules.repository.test.proxy.PublicService;
 import me.wuwenbin.modules.repository.test.proxy.ServiceProxyFactory;
 import me.wuwenbin.modules.repository.test.proxy.UserService;
@@ -43,12 +46,21 @@ public class ProxyTest {
 //        userService.test();
 //        userService.saveTest("1", "2");
 
-        userService.testPoint3("1", "2", "3");
+//        userService.testPoint3("1", "2", "3");
+        userService.saveTestUser(new User());
     }
 
     @Test
     public void test3() throws IOException, ClassNotFoundException {
 //        HashSet targetClass = new HashSet();
 //        System.out.println(targetClass instanceof Set);
+    }
+
+    @Test
+    public void testPageExtra() {
+        String sql = "select title from table";
+        FakeColPageExtra fakeColPageExtra = PageExtraFactory.getPageExtra(FakeColPageExtra.class, "rownum");
+        String finalSql = PageExtraFactory.finalSql(fakeColPageExtra, sql);
+        System.out.println(finalSql);
     }
 }

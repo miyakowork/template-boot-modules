@@ -2,6 +2,7 @@ package me.wuwenbin.modules.sql.factory;
 
 
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLPk;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.support.Condition;
 import me.wuwenbin.modules.sql.exception.*;
@@ -24,6 +25,7 @@ public final class SQLBeanBuilder {
 
     private Class<SQLTable> sqlTableClass = SQLTable.class;
     private Class<SQLColumn> sqlColumnClass = SQLColumn.class;
+    private Class<SQLPk> sqlPkClass = SQLPk.class;
 
     private final String SPACE = " ";
     private final String FROM = SPACE + "FROM" + SPACE;
@@ -73,6 +75,9 @@ public final class SQLBeanBuilder {
                     sum++;
                     pkField = field;
                 }
+            } else if (field.isAnnotationPresent(sqlPkClass)) {
+                sum++;
+                pkField = field;
             }
         }
         if (sum > 0) {
@@ -229,16 +234,16 @@ public final class SQLBeanBuilder {
 
             boolean hasSetPk = false;
             for (Field field : fields) {
-                if (field.isAnnotationPresent(sqlColumnClass)) {
-                    if (field.getAnnotation(sqlColumnClass).pk()) {
-                        hasSetPk = true;
-                        String column = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), field.getName());
-                        sb.append(WHERE).append(tableName).append(".").append(column);
-                        if (symbol.equals(Symbol.COLON)) {
-                            sb.append(" = :").append(field.getName());
-                        } else {
-                            sb.append(" = ?");
-                        }
+                boolean isSQLColumnAndPk = field.isAnnotationPresent(sqlColumnClass) && field.getAnnotation(sqlColumnClass).pk();
+                boolean isSQLPk = field.isAnnotationPresent(sqlPkClass);
+                if (isSQLColumnAndPk || isSQLPk) {
+                    hasSetPk = true;
+                    String column = SQLDefineUtils.java2SQL(isSQLColumnAndPk ? field.getAnnotation(sqlColumnClass).value() : field.getAnnotation(sqlPkClass).value(), field.getName());
+                    sb.append(WHERE).append(tableName).append(".").append(column);
+                    if (symbol.equals(Symbol.COLON)) {
+                        sb.append(" = :").append(field.getName());
+                    } else {
+                        sb.append(" = ?");
                     }
                 }
             }
@@ -270,9 +275,11 @@ public final class SQLBeanBuilder {
             if (SQLBuilderUtils.routerIsNotEmpty(routers)) {
                 sb.append("(");
                 for (Field field : fields) {
-                    if (field.isAnnotationPresent(sqlColumnClass)) {
-                        if (insertPk && field.getAnnotation(sqlColumnClass).pk()) {
-                            String pkColumn = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), field.getName());
+                    boolean isSQLColumnAndPk = field.isAnnotationPresent(sqlColumnClass) && field.getAnnotation(sqlColumnClass).pk();
+                    boolean isSQLPk = field.isAnnotationPresent(sqlPkClass);
+                    if (isSQLColumnAndPk || isSQLPk) {
+                        if (insertPk) {
+                            String pkColumn = SQLDefineUtils.java2SQL(isSQLColumnAndPk ? field.getAnnotation(sqlColumnClass).value() : field.getAnnotation(sqlPkClass).value(), field.getName());
                             if (symbol.equals(Symbol.COLON)) {
                                 values.append(":").append(field.getName()).append(", ");
                             } else {
@@ -298,11 +305,11 @@ public final class SQLBeanBuilder {
             } else {
                 sb.append("(");
                 for (Field field : fields) {
-                    if (field.isAnnotationPresent(sqlColumnClass)) {
-                        if (field.getAnnotation(sqlColumnClass).pk()) {
-                            if (!insertPk) {
-                                continue;
-                            }
+                    boolean isSQLColumnAndPk = field.isAnnotationPresent(sqlColumnClass) && field.getAnnotation(sqlColumnClass).pk();
+                    boolean isSQLPk = field.isAnnotationPresent(sqlPkClass);
+                    if (isSQLColumnAndPk || isSQLPk) {
+                        if (!insertPk) {
+                            continue;
                         }
                     }
                     if (SQLBuilderUtils.canBeInsert(field)) {
@@ -447,11 +454,11 @@ public final class SQLBeanBuilder {
             if (SQLBuilderUtils.routerIsNotEmpty(updateRouters)) {
                 sb.append(" SET ");
                 for (Field field : fields) {
-                    if (field.isAnnotationPresent(sqlColumnClass)) {
-                        if (field.getAnnotation(sqlColumnClass).pk()) {
-                            pkField = field.getName();
-                            pkColumn = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), pkField);
-                        }
+                    boolean isSQLColumnAndPk = field.isAnnotationPresent(sqlColumnClass) && field.getAnnotation(sqlColumnClass).pk();
+                    boolean isSQLPk = field.isAnnotationPresent(sqlPkClass);
+                    if (isSQLColumnAndPk || isSQLPk) {
+                        pkField = field.getName();
+                        pkColumn = SQLDefineUtils.java2SQL(isSQLColumnAndPk ? field.getAnnotation(sqlColumnClass).value() : field.getAnnotation(sqlPkClass).value(), pkField);
                     }
                     updateField(sb, field, symbol, updateRouters);
                 }
@@ -511,18 +518,18 @@ public final class SQLBeanBuilder {
             boolean hasPk = false;
             sb.append(WHERE);
             for (Field field : fields) {
-                if (field.isAnnotationPresent(sqlColumnClass)) {
-                    if (field.getAnnotation(sqlColumnClass).pk()) {
-                        hasPk = true;
-                        String pkColumn = SQLDefineUtils.java2SQL(field.getAnnotation(sqlColumnClass).value(), field.getName());
-                        boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(sqlColumnClass);
-                        String cnd = isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).condition().getCnd() : Condition.EQ.getCnd();
-                        sb.append(pkColumn).append(" ").append(cnd);
-                        if (symbol.equals(Symbol.COLON)) {
-                            sb.append(" :").append(field.getName()).append(AND);
-                        } else {
-                            sb.append(" ?").append(AND);
-                        }
+                boolean isSQLColumnAndPk = field.isAnnotationPresent(sqlColumnClass) && field.getAnnotation(sqlColumnClass).pk();
+                boolean isSQLPk = field.isAnnotationPresent(sqlPkClass);
+                if (isSQLColumnAndPk || isSQLPk) {
+                    hasPk = true;
+                    String pkColumn = SQLDefineUtils.java2SQL(isSQLColumnAndPk ? field.getAnnotation(sqlColumnClass).value() : field.getAnnotation(sqlPkClass).value(), field.getName());
+                    boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(sqlColumnClass);
+                    String cnd = isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).condition().getCnd() : Condition.EQ.getCnd();
+                    sb.append(pkColumn).append(" ").append(cnd);
+                    if (symbol.equals(Symbol.COLON)) {
+                        sb.append(" :").append(field.getName()).append(AND);
+                    } else {
+                        sb.append(" ?").append(AND);
                     }
                 }
             }

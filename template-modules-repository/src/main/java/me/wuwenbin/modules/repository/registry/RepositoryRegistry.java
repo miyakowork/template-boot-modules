@@ -37,7 +37,19 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
     private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
 
     private RepositoryProxyFactory repositoryProxyFactory = new RepositoryProxyFactory();
+    /**
+     * 某些条件下不能扫描搜索的，因为有些jar不需要依赖，所以会报ClassNotFound等错误
+     * 这时候就需要指定扫描的scanBasePackage了，指定根包名即可
+     */
+    private String scanBasePackage;
 
+    public RepositoryRegistry() {
+        this.scanBasePackage = "";
+    }
+
+    public RepositoryRegistry(String scanBasePackage) {
+        this.scanBasePackage = scanBasePackage;
+    }
 
     /**
      * spring开始启动将扫描好的bean的潜开始注入到容器中的前置操作处理，在此可以动态注入我们生成的class
@@ -111,7 +123,7 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
     private Set<Class<?>> scanBootServiceInterfaces() throws IOException, ClassNotFoundException {
         Set<Class<? extends Annotation>> classSet = new HashSet<>();
         classSet.add(Repository.class);
-        return ClassScanUtils.scan("", classSet, null);
+        return ClassScanUtils.scan(this.scanBasePackage, classSet, null);
     }
 
 }

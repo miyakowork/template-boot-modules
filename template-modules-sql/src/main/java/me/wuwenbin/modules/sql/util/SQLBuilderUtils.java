@@ -3,6 +3,7 @@ package me.wuwenbin.modules.sql.util;
 
 import me.wuwenbin.modules.sql.annotation.MappedSuper;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLPk;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.not.NotInsert;
 import me.wuwenbin.modules.sql.annotation.not.NotSelect;
@@ -188,7 +189,10 @@ public class SQLBuilderUtils {
      * @return
      */
     public static boolean canBeSelect(Field field) {
-        return !field.isAnnotationPresent(NotSelect.class) && (!field.isAnnotationPresent(SQLColumn.class) || field.getAnnotation(SQLColumn.class).select());
+        boolean s1 = !field.isAnnotationPresent(NotSelect.class);
+        boolean s2 = !field.isAnnotationPresent(SQLColumn.class) || field.getAnnotation(SQLColumn.class).select();
+        boolean s3 = !field.isAnnotationPresent(SQLPk.class) || field.getAnnotation(SQLPk.class).select();
+        return s1 && s2 && s3;
     }
 
     /**
@@ -198,7 +202,10 @@ public class SQLBuilderUtils {
      * @return
      */
     public static boolean canBeInsert(Field field) {
-        return !field.isAnnotationPresent(NotInsert.class) && (!field.isAnnotationPresent(SQLColumn.class) || field.getAnnotation(SQLColumn.class).insert());
+        boolean s1 = !field.isAnnotationPresent(NotInsert.class);
+        boolean s2 = !field.isAnnotationPresent(SQLColumn.class) || field.getAnnotation(SQLColumn.class).insert();
+        boolean s3 = !field.isAnnotationPresent(SQLPk.class) || field.getAnnotation(SQLPk.class).insert();
+        return s1 && s2 && s3;
     }
 
     /**
@@ -208,7 +215,10 @@ public class SQLBuilderUtils {
      * @return
      */
     public static boolean canBeUpdate(Field field) {
-        return !field.isAnnotationPresent(NotUpdate.class) && (!field.isAnnotationPresent(SQLColumn.class) || field.getAnnotation(SQLColumn.class).update());
+        boolean s1 = !field.isAnnotationPresent(NotUpdate.class);
+        boolean s2 = !field.isAnnotationPresent(SQLColumn.class) || field.getAnnotation(SQLColumn.class).update();
+        boolean s3 = !field.isAnnotationPresent(SQLPk.class) || field.getAnnotation(SQLPk.class).update();
+        return s1 && s2 && s3;
     }
 
 
@@ -222,6 +232,8 @@ public class SQLBuilderUtils {
     public static int[] getRouterInField(Field field) {
         if (field.isAnnotationPresent(SQLColumn.class)) {
             return field.getAnnotation(SQLColumn.class).routers();
+        } else if (field.isAnnotationPresent(SQLPk.class)) {
+            return field.getAnnotation(SQLPk.class).routers();
         } else {
             return new int[]{Router.DEFAULT};
         }
@@ -237,6 +249,9 @@ public class SQLBuilderUtils {
             if (f.isAnnotationPresent(SQLColumn.class)) {
                 int[] fieldRouters = f.getAnnotation(SQLColumn.class).routers();
                 return fieldRoutersInParamRouters(fieldRouters, routers);
+            } else if (f.isAnnotationPresent(SQLPk.class)) {
+                int[] filedRouters = f.getAnnotation(SQLPk.class).routers();
+                return fieldRoutersInParamRouters(filedRouters, routers);
             } else {
                 return fieldRoutersInParamRouters(new int[]{Router.DEFAULT}, routers);
             }

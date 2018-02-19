@@ -2,6 +2,7 @@ package me.wuwenbin.modules.sql;
 
 
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLPk;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.not.NotInsert;
 import me.wuwenbin.modules.sql.annotation.not.NotSelect;
@@ -13,7 +14,7 @@ import me.wuwenbin.modules.sql.constant.Router;
 @SQLTable
 public class User extends Person {
 
-    @SQLColumn(pk = true)
+    @SQLPk
     private Long id;
 
     @SQLColumn(routers = Router.B, update = false)

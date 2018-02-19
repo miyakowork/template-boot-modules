@@ -44,10 +44,18 @@ public @interface QueryColumn {
      */
     Operator operator() default Operator.LIKE;
 
+
     /**
      * 如果当operator为between and的时候，需要指明2个搜索之间的分隔符是什么，默认~
      *
      * @return
      */
     String split() default "~";
+
+    /**
+     * 连接此列的约束条件，默认为AND
+     *
+     * @return
+     */
+    String constraint() default "AND";
 }

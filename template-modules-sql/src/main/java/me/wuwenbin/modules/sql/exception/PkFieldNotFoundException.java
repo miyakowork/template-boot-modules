@@ -6,7 +6,7 @@ package me.wuwenbin.modules.sql.exception;
  */
 public class PkFieldNotFoundException extends RuntimeException {
     public PkFieldNotFoundException() {
-        super("没有设置主键的Annotation标识，即@SQLColumn(pk=true)");
+        super("没有设置主键的Annotation标识，即@SQLColumn(pk=true)或@SQLPk");
     }
 
 }

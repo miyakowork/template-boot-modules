@@ -35,7 +35,12 @@ public enum MethodType {
     /**
      * update方法
      */
-    UPDATE("update");
+    UPDATE("update"),
+
+    /**
+     * 随机查询
+     */
+    RAND("randQuery");
 
     private String name;
 
