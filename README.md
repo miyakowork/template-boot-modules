@@ -14,4 +14,10 @@ template框架中的模块工程集合
 > 入口类：`me.wuwenbin.modules.pagination.Pagination`
 ---
 ## `template-modules-repository`
-> 提供类似 `spring-data-jpa`项目接口访问式的快速数据访问层的封装
+> 提供基于 `template-modules-jpa`项目接口访问式的快速数据访问层的封装
+---
+## `template-modules-utils`
+> 工具包
+---
+## `template-modules-sql`
+> sql生成快速工具
