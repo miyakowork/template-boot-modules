@@ -1,15 +1,15 @@
 package me.wuwenbin.modules.echarts4.option;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 /**
  * created by Wuwenbin on 2018/2/28 at 14:57
  */
-@Data
-@Builder
+@Getter
+@Setter
 public class EchartsEntity implements Serializable {
 
     /**
