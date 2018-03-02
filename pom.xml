@@ -18,6 +18,7 @@
         <module>template-modules-sql</module>
         <module>template-modules-utils</module>
         <module>template-modules-validation</module>
+        <module>template-modules-echarts4</module>
     </modules>
 
     <properties>

@@ -4,6 +4,7 @@ import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.sql.SQLGen;
 import me.wuwenbin.modules.sql.annotation.GeneralType;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLPk;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.annotation.support.PkGenType;
 import me.wuwenbin.modules.sql.exception.PkFieldNotFoundException;
@@ -65,7 +66,11 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
             pk = SQLGen.builder(getClazz()).getPkField();
             this.pkFiledName = pk.getName();
             this.isPkInsert = pk.isAnnotationPresent(GeneralType.class) && pk.getAnnotation(GeneralType.class).value().equals(PkGenType.DEFINITION);
-            this.pkDbName = SQLDefineUtils.java2SQL(pk.getAnnotation(SQLColumn.class).value(), this.pkFiledName);
+            if (pk.isAnnotationPresent(SQLColumn.class)) {
+                this.pkDbName = SQLDefineUtils.java2SQL(pk.getAnnotation(SQLColumn.class).value(), this.pkFiledName);
+            } else {
+                this.pkDbName = SQLDefineUtils.java2SQL(pk.getAnnotation(SQLPk.class).value(), this.pkFiledName);
+            }
         } catch (PkFieldNotFoundException e) {
             this.pkFiledName = "";
             this.isPkInsert = false;

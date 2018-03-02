@@ -25,9 +25,9 @@ import java.util.Map;
  *
  * @author Wuwenbin
  */
-public class FindProvider<T> extends AbstractProvider<T> {
+public class ReadProvider<T> extends AbstractProvider<T> {
 
-    public FindProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
+    public ReadProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
         super(method, jdbcTemplate, clazz);
     }
 

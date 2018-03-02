@@ -5,4 +5,5 @@ package me.wuwenbin.modules.repository.api.base;
  * created by Wuwenbin on 2017/10/28 at 10:49
  */
 public interface IRepository<T, PK> {
+
 }

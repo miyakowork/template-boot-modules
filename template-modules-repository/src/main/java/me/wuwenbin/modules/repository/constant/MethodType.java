@@ -40,7 +40,7 @@ public enum MethodType {
     /**
      * 随机查询
      */
-    RAND("randQuery");
+    RAND("rand");
 
     private String name;
 

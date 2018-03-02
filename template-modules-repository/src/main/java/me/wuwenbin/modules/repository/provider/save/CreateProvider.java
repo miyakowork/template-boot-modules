@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
  * @author Wuwenbin
  */
 @SuppressWarnings("unchecked")
-public class SaveProvider<T> extends AbstractProvider<T> {
+public class CreateProvider<T> extends AbstractProvider<T> {
 
-    public SaveProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
+    public CreateProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
         super(method, jdbcTemplate, clazz);
     }
 

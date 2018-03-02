@@ -6,10 +6,11 @@ import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.ICrudProvider;
 import me.wuwenbin.modules.repository.provider.delete.DeleteProvider;
-import me.wuwenbin.modules.repository.provider.find.FindProvider;
+import me.wuwenbin.modules.repository.provider.find.ReadProvider;
 import me.wuwenbin.modules.repository.provider.find.support.Constraint;
-import me.wuwenbin.modules.repository.provider.save.SaveProvider;
+import me.wuwenbin.modules.repository.provider.save.CreateProvider;
 import me.wuwenbin.modules.repository.provider.select.page.PageProvider;
+import me.wuwenbin.modules.repository.provider.select.random.RandProvider;
 import me.wuwenbin.modules.repository.provider.update.UpdateProvider;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
 import me.wuwenbin.modules.sql.constant.Router;
@@ -47,13 +48,15 @@ public class BeanUtils {
             if (methodName.equalsIgnoreCase(MethodType.PAGE.getName())) {
                 return new PageProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.SAVE.getName())) {
-                return new SaveProvider<>(method, jdbcTemplate, clazz);
+                return new CreateProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.DELETE.getName())) {
                 return new DeleteProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.COUNT.getName()) || methodName.startsWith(MethodType.FIND.getName())) {
-                return new FindProvider<>(method, jdbcTemplate, clazz);
+                return new ReadProvider<>(method, jdbcTemplate, clazz);
             } else if (methodName.startsWith(MethodType.UPDATE.getName())) {
                 return new UpdateProvider<>(method, jdbcTemplate, clazz);
+            } else if (methodName.startsWith(MethodType.RAND.getName())) {
+                return new RandProvider<>(method, jdbcTemplate, clazz);
             } else {
                 throw new MethodTypeMismatchException();
             }

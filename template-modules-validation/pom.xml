@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <name>template-modules-validation</name>
-    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-validator</url>
+    <url>https://github.com/miyakowork/template-boot-modules/tree/master/template-modules-validation</url>
     <description>简单易用而又不失功能的强大验证集合</description>
 
 

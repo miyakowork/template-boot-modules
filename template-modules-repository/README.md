@@ -11,6 +11,10 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
         </dependency>
    ```
    ---
+   ## 新增 - 20180226
+   + 针对 sql 模块做出的新增 @SQLPk 注解做相关代码优化    
+   ## 改进 - 20180220
+   + 将 IBaseCrudRepository 划分为更细的4个层面，分别作为单独的接口
    ## 新增 - 20180207
    + 增加 PageRepository 额外查询列的功能（当前仅支持伪列的功能，其它功能后续跟进）
    ## 新增 - 20180201
