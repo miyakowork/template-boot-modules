@@ -7,7 +7,7 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-repository</artifactId>
-            <version>1.10.20-SNAPSHOT</version>
+            <version>1.11.0-SNAPSHOT</version>
         </dependency>
    ```
    ---
