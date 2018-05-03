@@ -1,10 +1,13 @@
 package me.wuwenbin.modules.repository.api.open.crud;
 
+import me.wuwenbin.modules.pagination.query.NonePageQuery;
 import me.wuwenbin.modules.repository.annotation.type.Repository;
 import me.wuwenbin.modules.repository.api.base.IRepository;
+import me.wuwenbin.modules.repository.provider.find.annotation.ListMap;
 import me.wuwenbin.modules.repository.provider.find.param.SelectQuery;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * created by Wuwenbin on 2018/2/20 at 13:53
@@ -75,6 +78,26 @@ public interface IReadRepository<T, PK> extends IRepository<T, PK> {
      */
     List<T> findAll(SelectQuery selectQuery);
 
+
+    /**
+     * 通过Query条件查询记录
+     *
+     * @param mainSql    主sql
+     * @param clazz
+     * @param tableQuery
+     * @return
+     */
+    List<T> findByQuery(String mainSql, Class<T> clazz, NonePageQuery tableQuery);
+
+    /**
+     * 通过Query条件查询记录
+     *
+     * @param mainSql
+     * @param nonePageQuery
+     * @return
+     */
+    @ListMap
+    List<Map<String, Object>> findByQuery(String mainSql, NonePageQuery nonePageQuery);
 
     //==============================查询操作  结束==============================//
 }

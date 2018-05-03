@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.jpa.posterity;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.factory.business.DataSourceX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -43,6 +44,25 @@ public abstract class PosterityDao implements AncestorDao {
     private SimpleJdbcInsert jdbcInsert;
 
     public PosterityDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource);
+        this.jdbcCall = new SimpleJdbcCall(dataSource);
+    }
+
+    @Override
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource);
+        this.jdbcCall = new SimpleJdbcCall(dataSource);
+    }
+
+    @Override
+    public void setDataSource(DataSourceX dataSourceX) {
+        DataSource dataSource = dataSourceX.getDataSource();
         this.dataSource = dataSource;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);

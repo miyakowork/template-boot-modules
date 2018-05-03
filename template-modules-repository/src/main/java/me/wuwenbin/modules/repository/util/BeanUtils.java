@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.util;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.repository.constant.MethodType;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
@@ -40,23 +41,23 @@ public class BeanUtils {
      * @return
      * @throws MethodTypeMismatchException
      */
-    public static ICrudProvider getProvider(Method method, AncestorDao jdbcTemplate, Class<?> clazz) throws MethodTypeMismatchException {
+    public static ICrudProvider getProvider(Method method, DaoFactory daoFactory, Class<?> clazz, String dataSourceKey) throws MethodTypeMismatchException, DataSourceKeyNotExistException {
         String methodName = method.getName();
         if (StringUtils.isEmpty(methodName)) {
             throw new RuntimeException("方法名为空！？");
         } else {
             if (methodName.equalsIgnoreCase(MethodType.PAGE.getName())) {
-                return new PageProvider<>(method, jdbcTemplate, clazz);
+                return new PageProvider<>(method, daoFactory, clazz, dataSourceKey);
             } else if (methodName.startsWith(MethodType.SAVE.getName())) {
-                return new CreateProvider<>(method, jdbcTemplate, clazz);
+                return new CreateProvider<>(method, daoFactory, clazz, dataSourceKey);
             } else if (methodName.startsWith(MethodType.DELETE.getName())) {
-                return new DeleteProvider<>(method, jdbcTemplate, clazz);
+                return new DeleteProvider<>(method, daoFactory, clazz, dataSourceKey);
             } else if (methodName.startsWith(MethodType.COUNT.getName()) || methodName.startsWith(MethodType.FIND.getName())) {
-                return new ReadProvider<>(method, jdbcTemplate, clazz);
+                return new ReadProvider<>(method, daoFactory, clazz, dataSourceKey);
             } else if (methodName.startsWith(MethodType.UPDATE.getName())) {
-                return new UpdateProvider<>(method, jdbcTemplate, clazz);
+                return new UpdateProvider<>(method, daoFactory, clazz, dataSourceKey);
             } else if (methodName.startsWith(MethodType.RAND.getName())) {
-                return new RandProvider<>(method, jdbcTemplate, clazz);
+                return new RandProvider<>(method, daoFactory, clazz, dataSourceKey);
             } else {
                 throw new MethodTypeMismatchException();
             }

@@ -7,7 +7,7 @@ template modules sql 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-sql</artifactId>
-            <version>1.11.0-SNAPSHOT</version>
+            <version>1.11.4-SNAPSHOT</version>
         </dependency>
    ```
    ---

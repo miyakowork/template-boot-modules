@@ -1,8 +1,8 @@
 package me.wuwenbin.modules.repository.proxy;
 
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.jpa.factory.DaoFactory;
+import me.wuwenbin.modules.repository.annotation.type.Repository;
 import me.wuwenbin.modules.repository.provider.crud.ICrudProvider;
 import me.wuwenbin.modules.repository.util.BeanUtils;
 import me.wuwenbin.modules.repository.util.ExceptionUtils;
@@ -26,7 +26,7 @@ import java.lang.reflect.Proxy;
 @Component
 public class RepositoryProxyFactory<T> implements InvocationHandler, InitializingBean, ApplicationContextAware {
 
-    private AncestorDao jdbcTemplate;
+    private DaoFactory daoFactory;
     private ApplicationContext applicationContext;
 
     @SuppressWarnings("unchecked")
@@ -46,15 +46,16 @@ public class RepositoryProxyFactory<T> implements InvocationHandler, Initializin
         //获取当前接口所对应操作的实体泛型类
         //noinspection unchecked
         Class<T> currentClass = (Class<T>) ((ParameterizedType) ((Class<T>) proxy.getClass().getGenericInterfaces()[0]).getGenericInterfaces()[0]).getActualTypeArguments()[0];
-        ICrudProvider provider = BeanUtils.getProvider(method, this.jdbcTemplate, currentClass);
+        //noinspection unchecked
+        String dataSourceKey = ((Class<T>) proxy.getClass().getGenericInterfaces()[0]).getAnnotation(Repository.class).key();
+        ICrudProvider provider = BeanUtils.getProvider(method, this.daoFactory, currentClass, dataSourceKey);
         return provider.execute(args);
     }
 
 
     @Override
     public void afterPropertiesSet() {
-        DaoFactory daoFactory = applicationContext.getBean(DaoFactory.class);
-        this.jdbcTemplate = daoFactory.dynamicDao;
+        this.daoFactory = applicationContext.getBean(DaoFactory.class);
 
     }
 

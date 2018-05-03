@@ -16,5 +16,4 @@ public interface ICrudProvider {
      */
     Object execute(Object[] args) throws Exception;
 
-
 }

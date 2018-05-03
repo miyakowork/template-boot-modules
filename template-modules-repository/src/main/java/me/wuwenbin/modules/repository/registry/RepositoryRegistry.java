@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -41,14 +42,36 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
      * 某些条件下不能扫描搜索的，因为有些jar不需要依赖，所以会报ClassNotFound等错误
      * 这时候就需要指定扫描的scanBasePackage了，指定根包名即可
      */
-    private String scanBasePackage;
+    private String[] scanBasePackage;
+
+    /**
+     * 某些方法需要写sql，可以写到方法上的@SQL注解中也可写到指定的xml文件中
+     * 默认的mapper位置为当前工程目录的resources文件夹下的repository文件夹下
+     * 每个repository对应一个xml，xml的名字为repository的bean的名字
+     */
+    private String mapper;
 
     public RepositoryRegistry() {
-        this.scanBasePackage = "";
+        this.scanBasePackage = new String[]{};
+        this.mapper = Objects.requireNonNull(this.getClass().getClassLoader().getResource("")).getPath() + "repository/";
     }
 
-    public RepositoryRegistry(String scanBasePackage) {
+    public RepositoryRegistry(String... scanBasePackage) {
         this.scanBasePackage = scanBasePackage;
+        this.mapper = Objects.requireNonNull(this.getClass().getClassLoader().getResource("")).getPath() + "repository/";
+    }
+
+    public RepositoryRegistry(String mapper, String... scanBasePackage) {
+        this.scanBasePackage = scanBasePackage;
+        this.mapper = mapper;
+    }
+
+    public String getMapper() {
+        return mapper;
+    }
+
+    public String[] getScanBasePackage() {
+        return scanBasePackage;
     }
 
     /**
@@ -123,7 +146,11 @@ public class RepositoryRegistry implements BeanDefinitionRegistryPostProcessor {
     private Set<Class<?>> scanBootServiceInterfaces() throws IOException, ClassNotFoundException {
         Set<Class<? extends Annotation>> classSet = new HashSet<>();
         classSet.add(Repository.class);
-        return ClassScanUtils.scan(this.scanBasePackage, classSet, null);
+        Set<Class<?>> sets = new HashSet<>();
+        for (String s : this.scanBasePackage) {
+            sets.addAll(ClassScanUtils.scan(s, classSet, null));
+        }
+        return sets;
     }
 
 }

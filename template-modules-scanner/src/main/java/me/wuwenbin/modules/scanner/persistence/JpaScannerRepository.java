@@ -3,6 +3,7 @@ package me.wuwenbin.modules.scanner.persistence;
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
 import me.wuwenbin.modules.jpa.factory.DaoFactory;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,8 @@ public class JpaScannerRepository implements ScannerRepository {
         paramMap.put("orderIndex", orderIndex);
         paramMap.put("systemCode", systemCode);
         paramMap.put("remark", remark);
-        String sql = "insert into t_oauth_resource(url,permission_mark,enabled,order_index,system_code,remark) values (:url,:permissionMark,:enabled,:orderIndex,:systemCode,:remark)";
+        paramMap.put("createDate", LocalDateTime.now());
+        String sql = "insert into t_oauth_resource(url,name,permission_mark,enabled,order_index,system_code,remark,create_date) values (:url,:name,:permissionMark,:enabled,:orderIndex,:systemCode,:remark,:createDate)";
         return jdbcTemplate.insertMapAutoGenKeyReturnKey(sql, paramMap);
     }
 
@@ -63,5 +65,16 @@ public class JpaScannerRepository implements ScannerRepository {
     public void insertRoleResource(long roleId, long resourceId) throws Exception {
         String sql = "insert into t_oauth_role_resource(role_id,resource_id,enabled) values(?,?,1)";
         jdbcTemplate.executeArray(sql, roleId, resourceId);
+    }
+
+    @Override
+    public int isUrlExistButNeedUpdateResNameAndPermissionMark(String resourceName, String permissionMark, String url, String systemCode) throws Exception {
+        String sql1 = "select count(0) from t_oauth_resource where `name`= ? and permission_mark = ? and url = ? and system_code = ?";
+        int n = jdbcTemplate.queryNumberByArray(sql1, Integer.class, resourceName, permissionMark, url, systemCode);
+        if (n == 0) {
+            String sql = "update t_oauth_resource set `name` = ? , permission_mark = ? where url = ? and system_code = ?";
+            return jdbcTemplate.executeArray(sql, resourceName, permissionMark, url, systemCode);
+        }
+        return 0;
     }
 }

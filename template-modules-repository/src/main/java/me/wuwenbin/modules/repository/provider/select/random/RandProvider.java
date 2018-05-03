@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.provider.select.random;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.utils.lang.LangUtils;
@@ -14,8 +15,8 @@ import java.util.List;
  */
 public class RandProvider<T> extends AbstractProvider<T> {
 
-    public RandProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
-        super(method, jdbcTemplate, clazz);
+    public RandProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
+        super(method, daoFactory, clazz, dataSourceKey);
     }
 
     @Override

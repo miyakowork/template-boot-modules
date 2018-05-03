@@ -1,5 +1,6 @@
 package me.wuwenbin.modules.jpa.ancestor;
 
+import me.wuwenbin.modules.jpa.factory.business.DataSourceX;
 import me.wuwenbin.modules.jpa.support.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -30,6 +31,20 @@ public interface AncestorDao {
      * @return {@link DataSource}
      */
     DataSource getCurrentDataSource();
+
+    /**
+     * 重新设置当前数据源
+     *
+     * @param dataSource
+     */
+    void setDataSource(DataSource dataSource);
+
+    /**
+     * 重新设置当前数据源
+     *
+     * @param dataSource
+     */
+    void setDataSource(DataSourceX dataSource);
 
     /**
      * transfer object of current JdbcTemplate

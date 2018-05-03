@@ -1,6 +1,9 @@
 package me.wuwenbin.modules.repository.provider.find;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
+import me.wuwenbin.modules.pagination.Pagination;
+import me.wuwenbin.modules.pagination.query.NonePageQuery;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
 import me.wuwenbin.modules.repository.annotation.field.SQL;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
@@ -27,8 +30,8 @@ import java.util.Map;
  */
 public class ReadProvider<T> extends AbstractProvider<T> {
 
-    public ReadProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
-        super(method, jdbcTemplate, clazz);
+    public ReadProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
+        super(method, daoFactory, clazz, dataSourceKey);
     }
 
     @Override
@@ -37,7 +40,7 @@ public class ReadProvider<T> extends AbstractProvider<T> {
         Class returnType = super.getMethod().getReturnType();
         int argsLength = args == null ? 0 : args.length;
         String count = "count", exist = "exists", find = "find", findOne = "findOne", findAll = "findAll";
-        String countBy = "countBy", findBy = "findBy";
+        String countBy = "countBy", findBy = "findBy", findByQuery = "findByQuery";
 
         //无参数的情况
         //支持count()统计所有数据、findAll()查询数据库中所有数据， 其他情况暂时不支持
@@ -190,6 +193,7 @@ public class ReadProvider<T> extends AbstractProvider<T> {
                 }
                 return executeWithSingleParam(sql, args, returnType);
             }
+
             //不支持的方法
             else {
                 throw new MethodExecuteException("方法「" + methodName + "」不支持，请参考命名规则！");
@@ -198,8 +202,36 @@ public class ReadProvider<T> extends AbstractProvider<T> {
 
         //其他情况为多种参数的情况
         else {
+
+            //findByQuery
+            if (methodName.equalsIgnoreCase(findByQuery)) {
+                if (argsLength == 2) {
+                    if (BeanUtils.paramTypeJavaBeanOrSub(args[1], NonePageQuery.class)) {
+                        String mainSql = (String) args[0];
+                        NonePageQuery query = (NonePageQuery) args[1];
+                        String sql = Pagination.getSql(mainSql, query);
+                        //noinspection unchecked
+                        return getJdbcTemplate().findListMapByMap(sql, Pagination.getParamsMap(query));
+                    } else {
+                        throw new MethodParamException("方法「" + methodName + "」参数类型不支持，请参考命名规则！");
+                    }
+                } else if (argsLength == 3) {
+                    if (BeanUtils.paramTypeJavaBeanOrSub(args[2], NonePageQuery.class)) {
+                        String mainSql = (String) args[0];
+                        NonePageQuery query = (NonePageQuery) args[2];
+                        String sql = Pagination.getSql(mainSql, query);
+                        //noinspection unchecked
+                        return getJdbcTemplate().findListBeanByMap(sql, (Class<T>) args[1], Pagination.getParamsMap(query));
+                    } else {
+                        throw new MethodParamException("方法「" + methodName + "」参数类型不支持，请参考命名规则！");
+                    }
+                } else {
+                    throw new MethodParamException("方法「" + methodName + "」参数类型不支持，请参考命名规则！");
+                }
+            }
+
             //注解@SQL
-            if (super.getMethod().isAnnotationPresent(SQL.class)) {
+            else if (super.getMethod().isAnnotationPresent(SQL.class)) {
                 SQL sqlAnnotation = super.getMethod().getAnnotation(SQL.class);
                 String sql = sqlAnnotation.value();
                 sql = getOrderSql(methodName, sql);

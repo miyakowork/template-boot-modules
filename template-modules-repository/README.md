@@ -7,10 +7,18 @@ template modules repository 轻松实现大部分的sql操作，省去了写大�
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-repository</artifactId>
-            <version>1.11.0-SNAPSHOT</version>
+            <version>1.11.4-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 新增 - 20180426
+   + 增加repository扫描的包为多个
+   ## 新增 - 20180424
+   + 增加对update方法返回类型为int[]类型的方法参数的额外一种判断，基础类型对象的数组（包括String）
+   ## 修复 - 20180411
+   + 对删除方法的参数个数判断做了进一步改进，现在可以为空了
+   + 更新操作可以使用原生接口update方法快速操作了
+   + 支持多数据源操作了
    ## 新增 - 20180226
    + 针对 sql 模块做出的新增 @SQLPk 注解做相关代码优化    
    ## 改进 - 20180220

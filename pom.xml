@@ -6,7 +6,7 @@
 
     <groupId>me.wuwenbin</groupId>
     <artifactId>template-boot-modules</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -18,7 +18,6 @@
         <module>template-modules-sql</module>
         <module>template-modules-utils</module>
         <module>template-modules-validation</module>
-        <module>template-modules-echarts4</module>
     </modules>
 
     <properties>
@@ -28,7 +27,7 @@
         <spring.version>4.3.14.RELEASE</spring.version>
         <springboot.version>1.5.10.RELEASE</springboot.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <modules.version>1.11.0-SNAPSHOT</modules.version>
+        <modules.version>1.11.4-SNAPSHOT</modules.version>
     </properties>
 
     <name>template-boot-modules</name>

@@ -74,4 +74,44 @@ public abstract class TableQuery implements Query {
     @Override
     public abstract List<Sorting> getSortingInformation();
 
+
+    /**
+     * 默认是没有group by 语句部分的
+     *
+     * @return
+     */
+    @Override
+    public boolean isGroupBy() {
+        return false;
+    }
+
+    /**
+     * 默认是诶呦having子语句的
+     *
+     * @return
+     */
+    @Override
+    public boolean isHaving() {
+        return false;
+    }
+
+    /**
+     * group by 语句部分表达式
+     *
+     * @return
+     */
+    @Override
+    public String groupByExpression() {
+        return "";
+    }
+
+    /**
+     * having 字句
+     *
+     * @return
+     */
+    @Override
+    public String havingSearchCondition() {
+        return "";
+    }
 }

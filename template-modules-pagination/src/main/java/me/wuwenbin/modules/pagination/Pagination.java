@@ -1,5 +1,6 @@
 package me.wuwenbin.modules.pagination;
 
+import me.wuwenbin.modules.pagination.query.Query;
 import me.wuwenbin.modules.pagination.query.TableQuery;
 import me.wuwenbin.modules.pagination.query.support.annotation.QueryColumn;
 import me.wuwenbin.modules.pagination.query.support.annotation.QueryTable;
@@ -43,19 +44,19 @@ public class Pagination {
     /**
      * 获取查询的参数Map集合
      *
-     * @param tableQuery
+     * @param query
      * @return
      */
-    public static Map<String, Object> getParamsMap(TableQuery tableQuery) {
+    public static Map<String, Object> getParamsMap(Query query) {
         Map<String, Object> paramsMap = new TreeMap<>();
 
         //通过Java的反射机制，获取QueryBO中的属性，同时把属性中不为空的值放到查询的param中
-        Field[] fields = tableQuery.getClass().getDeclaredFields();
+        Field[] fields = query.getClass().getDeclaredFields();
         for (Field field : fields) {
             //设置为true以获取属性的值
             field.setAccessible(true);
             try {
-                if (StringUtils.isNotEmpty(field.get(tableQuery))) {
+                if (StringUtils.isNotEmpty(field.get(query))) {
                     String fieldName = field.getName();
                     //默认比较逻辑为like
                     Operator operator = Operator.LIKE;
@@ -68,7 +69,7 @@ public class Pagination {
                         if (field.isAnnotationPresent(QueryColumn.class)) {
                             split = field.getAnnotation(QueryColumn.class).split();
                         }
-                        String[] fieldValues = field.get(tableQuery).toString().split(split);
+                        String[] fieldValues = field.get(query).toString().split(split);
                         String startKey = fieldName.concat("$Start");
                         String endKey = fieldName.concat("$End");
                         String startFieldValue = StringUtils.trimEnd(fieldValues[0]);
@@ -81,15 +82,15 @@ public class Pagination {
                         Object fieldValue;
                         //like逻辑
                         if (operator.equals(Operator.LIKE)) {
-                            fieldValue = StringUtils.format("%{}%", field.get(tableQuery));
+                            fieldValue = StringUtils.format("%{}%", field.get(query));
                         } else if (operator.equals(Operator.LEFT_LIKE)) {
-                            fieldValue = StringUtils.format("%{}", field.get(tableQuery));
+                            fieldValue = StringUtils.format("%{}", field.get(query));
                         } else if (operator.equals(Operator.RIGHT_LIKE)) {
-                            fieldValue = StringUtils.format("{}%", field.get(tableQuery));
+                            fieldValue = StringUtils.format("{}%", field.get(query));
                         }
                         //非like、非自定义逻辑的存入参数Map中的值则不需要%%包裹起来
                         else {
-                            fieldValue = field.get(tableQuery);
+                            fieldValue = field.get(query);
                         }
                         paramsMap.put(fieldName, fieldValue);
                     }
@@ -105,23 +106,23 @@ public class Pagination {
      * 获取查询部分的sql
      *
      * @param mainSql
-     * @param tableQuery
+     * @param query
      * @return
      */
-    public static String getSql(String mainSql, TableQuery tableQuery) {
+    public static String getSql(String mainSql, Query query) {
         StringBuilder sql = new StringBuilder(mainSql);
         if (!mainSql.contains("WHERE") && !mainSql.contains("where")) {
             sql = sql.append(" WHERE 1=1");
         }
         String tableName = "";
-        if (tableQuery.getClass().isAnnotationPresent(QueryTable.class)) {
-            String tableNameInClass = tableQuery.getClass().getAnnotation(QueryTable.class).name();
-            String tableAliasNameInClass = tableQuery.getClass().getAnnotation(QueryTable.class).aliasName();
+        if (query.getClass().isAnnotationPresent(QueryTable.class)) {
+            String tableNameInClass = query.getClass().getAnnotation(QueryTable.class).name();
+            String tableAliasNameInClass = query.getClass().getAnnotation(QueryTable.class).aliasName();
             //获取表名，原则是：类上的表别名>类上的表名>""
             tableName = StringUtils.isNotEmpty(tableAliasNameInClass) ? tableAliasNameInClass : StringUtils.isNotEmpty(tableNameInClass) ? tableNameInClass : "";
         }
         //通过Java的反射机制，获取QueryBO中的属性，同时把属性中不为空的值放到查询的param中
-        Field[] fields = tableQuery.getClass().getDeclaredFields();
+        Field[] fields = query.getClass().getDeclaredFields();
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(QueryColumn.class)) {
@@ -135,7 +136,7 @@ public class Pagination {
 
             //开始拼装SQL语句，以及生成语句中的参数对应的参数map
             try {
-                if (StringUtils.isNotEmpty(field.get(tableQuery))) {
+                if (StringUtils.isNotEmpty(field.get(query))) {
                     String fieldName = field.getName();
                     //默认属性和字段是一致的
                     String columnNameInDb = fieldName;
@@ -175,27 +176,40 @@ public class Pagination {
                 e.printStackTrace();
             }
         }
+
+        //组装 group by 和 having 部分
+        if (query.isGroupBy()) {
+            sql.append(" GROUP BY ").append(query.groupByExpression()).append(" ");
+            if (query.isHaving()) {
+                sql.append(" HAVING ").append(query.havingSearchCondition()).append(" ");
+            }
+        }
+
         //组装order部分
         String orderSql = " ORDER BY";
-        //  先检查下多列的一起排序的是否有，有就按照这个来
-        if (tableQuery.getSortingInformation() != null) {
-            for (Sorting sort : tableQuery.getSortingInformation()) {
+        if (query.isSupportServerSort()) {
+            //  先检查下多列的一起排序的是否有，有就按照这个来
+            if (query.getSortingInformation() != null && query.isSupportMultiSort()) {
+                for (Sorting sort : query.getSortingInformation()) {
+                    String sortName = sort.getSortName();
+                    String sortDirection = sort.getSortDirection().getDirectionString();
+                    orderSql = orderSql.concat(StringUtils.format(" `{}` {}", sortName, sortDirection)).concat(",");
+                }
+                //处理一下sql，去除多余的符号
+                orderSql = orderSql.substring(0, orderSql.length() - 1);
+            }
+            //然后查下只有单列排序的是否存在，没有多列的话就按照单列的排序来
+            else if (query.getSortingInfo() != null) {
+                Sorting sort = query.getSortingInfo();
                 String sortName = sort.getSortName();
                 String sortDirection = sort.getSortDirection().getDirectionString();
-                orderSql = orderSql.concat(StringUtils.format(" `{}` {}", sortName, sortDirection)).concat(",");
+                orderSql = orderSql.concat(StringUtils.format(" `{}` {}", sortName, sortDirection));
             }
-            //处理一下sql，去除多余的符号
-            orderSql = orderSql.substring(0, orderSql.length() - 1);
-        }
-        //然后查下只有单列排序的是否存在，没有多列的话就按照单列的排序来
-        else if (tableQuery.getSortingInfo() != null) {
-            Sorting sort = tableQuery.getSortingInfo();
-            String sortName = sort.getSortName();
-            String sortDirection = sort.getSortDirection().getDirectionString();
-            orderSql = orderSql.concat(StringUtils.format(" `{}` {}", sortName, sortDirection));
-        }
-        //然后就是都没有，则不需要排序
-        else {
+            //然后就是都没有，则不需要排序
+            else {
+                orderSql = EMPTY;
+            }
+        } else {
             orderSql = EMPTY;
         }
         sql.append(orderSql);

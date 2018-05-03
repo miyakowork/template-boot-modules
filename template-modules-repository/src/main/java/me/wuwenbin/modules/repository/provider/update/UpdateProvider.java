@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.provider.update;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
 import me.wuwenbin.modules.repository.annotation.field.SQL;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
@@ -9,6 +10,7 @@ import me.wuwenbin.modules.repository.exception.MethodTypeMismatchException;
 import me.wuwenbin.modules.repository.provider.crud.AbstractProvider;
 import me.wuwenbin.modules.repository.provider.update.annotation.Modify;
 import me.wuwenbin.modules.repository.util.BeanUtils;
+import me.wuwenbin.modules.sql.constant.Router;
 import me.wuwenbin.modules.sql.support.Symbol;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
 import org.springframework.util.StringUtils;
@@ -24,8 +26,8 @@ import java.util.Map;
  */
 public class UpdateProvider<T> extends AbstractProvider<T> {
 
-    public UpdateProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
-        super(method, jdbcTemplate, clazz);
+    public UpdateProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
+        super(method, daoFactory, clazz, dataSourceKey);
     }
 
     @Override
@@ -61,6 +63,16 @@ public class UpdateProvider<T> extends AbstractProvider<T> {
                 int[] updateRouters = super.getMethod().getAnnotation(Routers.class).value();
                 String sql = super.sbb.updateRoutersByPk(Symbol.COLON, updateRouters);
                 return executeWithSingleParam(sql, args, returnType);
+            } else if ("update".equals(methodName)) {
+                String sql = super.sbb.updateRoutersByPk(Symbol.COLON, Router.DEFAULT);
+                if (BeanUtils.paramTypeJavaBeanOrSub(args[0], super.getClazz())) {
+                    return super.getJdbcTemplate().executeBean(sql, args[0]);
+                } else if (BeanUtils.paramTypeMapOrSub(args[0])) {
+                    //noinspection unchecked
+                    return super.getJdbcTemplate().executeMap(sql, (Map<String, Object>) args[0]);
+                } else {
+                    throw new MethodExecuteException("方法「" + methodName + "」不符合规范，请参考命名规则！");
+                }
             } else if (methodName.substring(0, methodName.indexOf("By") + 2).matches("^update.*By$")) {
                 String fields = methodName.substring(methodName.indexOf("update") + 6, methodName.indexOf("By"));
                 String sql = "update ".concat(super.tableName).concat(" set");

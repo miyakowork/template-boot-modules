@@ -57,4 +57,12 @@ public interface ScannerRepository {
      * @throws Exception
      */
     void insertRoleResource(long roleId, long resourceId) throws Exception;
+
+    /**
+     * 存在相同的url但是更新的资源名称描述
+     *
+     * @param resourceName
+     * @return
+     */
+    int isUrlExistButNeedUpdateResNameAndPermissionMark(String resourceName, String permissionMark, String url, String systemCode) throws Exception;
 }

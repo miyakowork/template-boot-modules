@@ -62,4 +62,32 @@ public interface Query extends Serializable {
      */
     List<Sorting> getSortingInformation();
 
+    /**
+     * 是否需要group by 部分语句
+     *
+     * @return
+     */
+    boolean isGroupBy();
+
+    /**
+     * 是否需要having 子语句
+     *
+     * @return
+     */
+    boolean isHaving();
+
+    /**
+     * 查询sql的group by 部分的表达式
+     *
+     * @return
+     */
+    String groupByExpression();
+
+    /**
+     * having 子查询语句
+     *
+     * @return
+     */
+    String havingSearchCondition();
+
 }

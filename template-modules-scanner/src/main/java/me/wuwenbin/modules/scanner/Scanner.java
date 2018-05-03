@@ -39,7 +39,7 @@ public final class Scanner {
                 scannerRepository.deleteResources(config.getSystemModuleCode());
             }
             if (config.getScannerType() != ScannerType.DROP) {
-                if (event.getApplicationContext().getParent() != null) {
+                if (event.getApplicationContext().getParent() == null) {
                     Map<String, Object> beans = event.getApplicationContext().getBeansWithAnnotation(Controller.class);
                     beans.putAll(event.getApplicationContext().getBeansWithAnnotation(RestController.class));
                     int cnt = 0;
@@ -53,18 +53,20 @@ public final class Scanner {
                                     for (String last : lasts) {
                                         String url = getCompleteUrl(prefix, last);
                                         if (method.isAnnotationPresent(ResourceScan.class)) {
-                                            LOG.info("资源 url：[{}] 扫描到@ResourceScan，准备插入数据库", url);
-                                            deleteRoleResource(config, scannerRepository, url);
+                                            LOG.info("资源 url：[{}] 扫描到@ResourceScan，准备处理", url);
+                                            if (config.getScannerType() == ScannerType.DROP || config.getScannerType() == ScannerType.CREATE) {
+                                                deleteRoleResource(config, scannerRepository, url);
+                                            }
                                             cnt = insertResourceAndRoleResource(method, config, scannerRepository, url, cnt);
                                         } else {
-                                            LOG.info("资源 url：[{}] 未扫描到@ResourceScan，略过插入数据库步骤", url);
+                                            LOG.info("资源 url：[{}] 未扫描到@ResourceScan，略过处理数据库步骤", url);
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                    LOG.info("扫描资源完毕，共计插入资源数目：[{}]", cnt);
+                    LOG.info("扫描资源完毕，共计处理资源数目：[{}]", cnt);
                 }
             }
         } else {
@@ -73,7 +75,7 @@ public final class Scanner {
     }
 
 
-    private static boolean isEmpty(Object str) {
+    private static boolean isNotEmpty(Object str) {
         return str != null && !"".equals(str);
     }
 
@@ -129,7 +131,7 @@ public final class Scanner {
      */
     private static String getCompleteUrl(String prefix, String last) {
         last = last.startsWith("/") ? last : "/".concat(last);
-        return (prefix.startsWith("/") ? prefix : "/".concat(prefix)).concat("/".equals(last) ? "" : last);
+        return (prefix.startsWith("/") ? prefix : "/".concat(prefix)).concat("/".equals(last) ? "" : last).replaceAll("//", "/");
     }
 
     /**
@@ -174,7 +176,7 @@ public final class Scanner {
         boolean enabled = method.getAnnotation(ResourceScan.class).enabled();
         int orderIndex = method.getAnnotation(ResourceScan.class).orderIndex();
         String systemCode = config.getSystemModuleCode();
-        if (isEmpty(systemCode)) {
+        if (!isNotEmpty(systemCode)) {
             throw new RuntimeException("系统模块代码为空！");
         }
         String remark = method.getAnnotation(ResourceScan.class).remark();
@@ -183,10 +185,12 @@ public final class Scanner {
             for (String permissionMark : permissionMarks) {
                 //可做修改，前提是url不能修改否则会当做是个全新的资源插入
                 if (config.getScannerType() == ScannerType.UPDATE) {
-                    if (scannerRepository.isResourceExist(url, systemCode)) {
+                    if (!scannerRepository.isResourceExist(url, systemCode)) {
                         cnt++;
                         long resId = scannerRepository.insertResources(name, url, permissionMark, enabled, orderIndex, systemCode, remark);
                         insertRoleResource(config, scannerRepository, resId);
+                    } else {
+                        cnt += scannerRepository.isUrlExistButNeedUpdateResNameAndPermissionMark(name, permissionMark, url, systemCode);
                     }
                 } else {
                     cnt++;

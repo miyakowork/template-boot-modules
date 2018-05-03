@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.provider.save;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.pagination.util.StringUtils;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
 import me.wuwenbin.modules.repository.annotation.field.SQL;
@@ -30,8 +31,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class CreateProvider<T> extends AbstractProvider<T> {
 
-    public CreateProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
-        super(method, jdbcTemplate, clazz);
+    public CreateProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
+        super(method, daoFactory, clazz, dataSourceKey);
     }
 
     @Override

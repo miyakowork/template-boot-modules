@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.provider.select.page;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.jpa.support.Page;
 import me.wuwenbin.modules.pagination.Pagination;
 import me.wuwenbin.modules.pagination.query.TableQuery;
@@ -13,6 +14,7 @@ import me.wuwenbin.modules.repository.provider.select.page.support.IPageExtra;
 import me.wuwenbin.modules.repository.provider.select.page.support.PageExtraFactory;
 import me.wuwenbin.modules.sql.SQLGen;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
+import me.wuwenbin.modules.sql.annotation.SQLPk;
 import me.wuwenbin.modules.sql.annotation.SQLTable;
 import me.wuwenbin.modules.sql.factory.SQLBeanBuilder;
 import me.wuwenbin.modules.sql.util.SQLDefineUtils;
@@ -28,8 +30,8 @@ import java.util.Map;
  */
 public class PageProvider<T> extends AbstractProvider<T> {
 
-    public PageProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
-        super(method, jdbcTemplate, clazz);
+    public PageProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
+        super(method, daoFactory, clazz, dataSourceKey);
     }
 
     @Override
@@ -83,7 +85,10 @@ public class PageProvider<T> extends AbstractProvider<T> {
                 String targetTableAliasName = field.getAnnotation(SQLPkRefer.class).targetTableAlias();
                 String minorTableName = getTableName(field.getAnnotation(SQLPkRefer.class).targetClass());
                 SQLBeanBuilder tempSbb = SQLGen.builder(field.getAnnotation(SQLPkRefer.class).targetClass());
-                String minorPkName = SQLDefineUtils.java2SQL(tempSbb.getPkField().getAnnotation(SQLColumn.class).value(), tempSbb.getPkField().getName());
+                Field pkFiled = tempSbb.getPkField();
+                boolean isSQLColumnPresent = pkFiled.isAnnotationPresent(SQLColumn.class);
+                String pk = isSQLColumnPresent ? pkFiled.getAnnotation(SQLColumn.class).value() : pkFiled.getAnnotation(SQLPk.class).value();
+                String minorPkName = SQLDefineUtils.java2SQL(pk, tempSbb.getPkField().getName());
                 String selfJoinColumn = field.getAnnotation(SQLPkRefer.class).joinColumn();
                 String minorSelectColumn = field.getAnnotation(SQLPkRefer.class).targetColumn();
                 handlerBuilderByAliasIsEmpty(sqlBuilder, joinSqlBuilder, mainTableName, field, targetTableAliasName, minorTableName, minorPkName, selfJoinColumn, minorSelectColumn);

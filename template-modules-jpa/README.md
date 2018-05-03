@@ -7,10 +7,12 @@ template modules jpa 帮你轻松完成对数据的操作，无需额外编写da
        <dependency>
             <groupId>me.wuwenbin</groupId>
             <artifactId>template-modules-jpa</artifactId>
-            <version>1.11.0-SNAPSHOT</version>
+            <version>1.11.4-SNAPSHOT</version>
         </dependency>
    ```
    ---
+   ## 更新 - 20180412
+   + 新增初始化后可更改数据源的两种操作方法
    ## 更新 - 20180212
    + 增加参数log记录日志功能
    ## 更新 - 20171215

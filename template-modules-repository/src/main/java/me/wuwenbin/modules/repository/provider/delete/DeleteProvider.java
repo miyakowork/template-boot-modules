@@ -1,6 +1,7 @@
 package me.wuwenbin.modules.repository.provider.delete;
 
-import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
 import me.wuwenbin.modules.repository.annotation.field.Routers;
 import me.wuwenbin.modules.repository.annotation.field.SQL;
 import me.wuwenbin.modules.repository.exception.MethodExecuteException;
@@ -22,8 +23,8 @@ import java.util.*;
  */
 public class DeleteProvider<T> extends AbstractProvider<T> {
 
-    public DeleteProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
-        super(method, jdbcTemplate, clazz);
+    public DeleteProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
+        super(method, daoFactory, clazz, dataSourceKey);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class DeleteProvider<T> extends AbstractProvider<T> {
             //并且仅支持参数个数为一种类型或一个数量
             String delete = "delete";
             String deleteBy = "deleteBy";
-            if (args.length == 0) {
+            if (args == null || args.length == 0) {
                 if (methodName.equals(delete)) {
                     String sql = "delete from ".concat(super.tableName);
                     getJdbcTemplate().executeArray(sql);

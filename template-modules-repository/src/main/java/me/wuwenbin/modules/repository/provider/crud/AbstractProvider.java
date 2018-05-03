@@ -1,6 +1,9 @@
 package me.wuwenbin.modules.repository.provider.crud;
 
 import me.wuwenbin.modules.jpa.ancestor.AncestorDao;
+import me.wuwenbin.modules.jpa.exception.DataSourceKeyNotExistException;
+import me.wuwenbin.modules.jpa.factory.DaoFactory;
+import me.wuwenbin.modules.pagination.util.StringUtils;
 import me.wuwenbin.modules.sql.SQLGen;
 import me.wuwenbin.modules.sql.annotation.GeneralType;
 import me.wuwenbin.modules.sql.annotation.SQLColumn;
@@ -35,12 +38,17 @@ public abstract class AbstractProvider<T> implements ICrudProvider {
     protected String pkDbName;
 
 
-    public AbstractProvider(Method method, AncestorDao jdbcTemplate, Class<T> clazz) {
+    public AbstractProvider(Method method, DaoFactory daoFactory, Class<T> clazz, String dataSourceKey) throws DataSourceKeyNotExistException {
         this.method = method;
         this.clazz = clazz;
-        this.jdbcTemplate = jdbcTemplate;
+        if (StringUtils.isNotEmpty(dataSourceKey)) {
+            this.jdbcTemplate = daoFactory.getAncestorDaoByKey(dataSourceKey);
+        } else {
+            this.jdbcTemplate = daoFactory.defaultDao;
+        }
         init();
     }
+
 
     protected Class<T> getClazz() {
         return clazz;

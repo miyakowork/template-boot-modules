@@ -12,7 +12,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  */
 public class ResourceScanListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    private Logger LOG = LoggerFactory.getLogger(ResourceScanListener.class);
+    private Logger log = LoggerFactory.getLogger(ResourceScanListener.class);
 
     private ScannerConfig scannerConfig;
     private ScannerRepository scannerRepository;
@@ -27,7 +27,7 @@ public class ResourceScanListener implements ApplicationListener<ContextRefreshe
         try {
             Scanner.scan(scannerRepository, scannerConfig, contextRefreshedEvent);
         } catch (Exception e) {
-            LOG.error("初始化扫描失败！", e);
+            log.error("初始化扫描失败！", e);
         }
     }
 }

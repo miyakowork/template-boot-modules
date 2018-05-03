@@ -20,4 +20,11 @@ public @interface Repository {
      * @return
      */
     String value() default "";
+
+    /**
+     * 数据源的key，默认为空，即是默认数据源
+     *
+     * @return
+     */
+    String key() default "";
 }
