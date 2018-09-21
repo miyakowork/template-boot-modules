@@ -93,10 +93,6 @@ public class ClassScanUtils {
                         && !jarEntry.isDirectory()) {
                     String className = jarName.substring(jarName.lastIndexOf('/') + 1,
                             jarName.length() - 6);
-                    System.out.println("jarName:" + jarName.substring(0, idx));
-                    System.out.println("jarName.substring(0, idx):" + jarName.substring(0, idx));
-                    System.out.println("jarName.substring(0, idx).replace('/', '.') :" + jarName.substring(0, idx).replace('/', '.'));
-                    System.out.println("jarName.substring(0, idx).replace('/', '.') + '.' + className :" + jarName.substring(0, idx).replace('/', '.') + '.' + className);
                     Class<?> clazz = Class.forName(jarName.substring(0, idx).replace('/', '.') + '.' + className);
                     if (isMatch(clazz, annotations, classNames)) {
                         result.add(clazz);
