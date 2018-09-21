@@ -1,10 +1,7 @@
 package me.wuwenbin.modules.sql.util;
 
 
-import me.wuwenbin.modules.sql.annotation.MappedSuper;
-import me.wuwenbin.modules.sql.annotation.SQLColumn;
-import me.wuwenbin.modules.sql.annotation.SQLPk;
-import me.wuwenbin.modules.sql.annotation.SQLTable;
+import me.wuwenbin.modules.sql.annotation.*;
 import me.wuwenbin.modules.sql.annotation.not.NotInsert;
 import me.wuwenbin.modules.sql.annotation.not.NotSelect;
 import me.wuwenbin.modules.sql.annotation.not.NotUpdate;
@@ -97,16 +94,12 @@ public class SQLBuilderUtils {
      * @return
      */
     public static Field[] getAllFieldsExceptObject(Class<?> clazz) {
-        List<Field> fields = new Vector<>();
         Class tempClass = clazz;
+        List<Field> fields = new Vector<>(Arrays.asList(tempClass.getDeclaredFields()));
         while (tempClass != Object.class) {
-            fields.addAll(Arrays.asList(tempClass.getDeclaredFields()));
             tempClass = tempClass.getSuperclass();
-            while (!isMappedSuperClass(tempClass)) {
-                if (tempClass == Object.class) {
-                    break;
-                }
-                tempClass = tempClass.getSuperclass();
+            if (isMappedSuperClass(tempClass)) {
+                fields.addAll(Arrays.asList(tempClass.getDeclaredFields()));
             }
         }
         Field[] newField = new Field[fields.size()];
@@ -134,7 +127,9 @@ public class SQLBuilderUtils {
      * @return
      */
     private static boolean isMappedSuperClass(Class<?> clazz) {
-        return clazz.isAnnotationPresent(MappedSuper.class) && clazz.getAnnotation(MappedSuper.class).value();
+        boolean c1 = clazz.isAnnotationPresent(MappedSuper.class) && clazz.getAnnotation(MappedSuper.class).value();
+        boolean c2 = clazz.isAnnotationPresent(SQLMappedSuper.class) && clazz.getAnnotation(SQLMappedSuper.class).value();
+        return c1 || c2;
     }
 
     /**

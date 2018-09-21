@@ -287,17 +287,19 @@ public final class SQLBeanBuilder {
                             }
                             sb.append(pkColumn).append(", ");
                         }
-                        if (SQLBuilderUtils.canBeInsert(field)) {
-                            boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(SQLColumn.class);
-                            if (SQLBuilderUtils.fieldRoutersInParamRouters(SQLBuilderUtils.getRouterInField(field), routers) && (!isSqlColumnAnnotationPresent || !field.getAnnotation(sqlColumnClass).pk())) {
-                                String column = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
-                                if (symbol.equals(Symbol.COLON)) {
-                                    values.append(":").append(field.getName()).append(", ");
-                                } else {
-                                    values.append("?").append(", ");
-                                }
-                                sb.append(column).append(", ");
+                    }
+                    if (SQLBuilderUtils.canBeInsert(field)) {
+                        boolean isSqlColumnAnnotationPresent = field.isAnnotationPresent(SQLColumn.class);
+                        boolean c1 = SQLBuilderUtils.fieldRoutersInParamRouters(SQLBuilderUtils.getRouterInField(field), routers);
+                        boolean c2 = (!isSqlColumnAnnotationPresent || !field.getAnnotation(sqlColumnClass).pk());
+                        if (c1 && c2) {
+                            String column = SQLDefineUtils.java2SQL(isSqlColumnAnnotationPresent ? field.getAnnotation(sqlColumnClass).value() : "", field.getName());
+                            if (symbol.equals(Symbol.COLON)) {
+                                values.append(":").append(field.getName()).append(", ");
+                            } else {
+                                values.append("?").append(", ");
                             }
+                            sb.append(column).append(", ");
                         }
                     }
                 }

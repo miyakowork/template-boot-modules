@@ -44,6 +44,9 @@ public class ClassScanUtils {
                     result.addAll(findAndAddClassesByFile(basePackage, new File(URLDecoder.decode(url.getFile(), "UTF-8")), includeAnnotations, includeNames));
                     break;
                 case "jar":
+                    System.out.println("packageDir:" + packageDir);
+                    System.out.println("includeAnnotations:" + includeAnnotations);
+                    System.out.println("includeNames:" + includeNames);
                     result.addAll(findAndAddClassesByJar(((JarURLConnection) url.openConnection()).getJarFile(), packageDir, includeAnnotations, includeNames));
                     break;
                 default:
@@ -90,6 +93,10 @@ public class ClassScanUtils {
                         && !jarEntry.isDirectory()) {
                     String className = jarName.substring(jarName.lastIndexOf('/') + 1,
                             jarName.length() - 6);
+                    System.out.println("jarName:" + jarName.substring(0, idx));
+                    System.out.println("jarName.substring(0, idx):" + jarName.substring(0, idx));
+                    System.out.println("jarName.substring(0, idx).replace('/', '.') :" + jarName.substring(0, idx).replace('/', '.'));
+                    System.out.println("jarName.substring(0, idx).replace('/', '.') + '.' + className :" + jarName.substring(0, idx).replace('/', '.') + '.' + className);
                     Class<?> clazz = Class.forName(jarName.substring(0, idx).replace('/', '.') + '.' + className);
                     if (isMatch(clazz, annotations, classNames)) {
                         result.add(clazz);

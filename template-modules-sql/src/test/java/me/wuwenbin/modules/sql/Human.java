@@ -1,11 +1,12 @@
 package me.wuwenbin.modules.sql;
 
 import me.wuwenbin.modules.sql.annotation.MappedSuper;
+import me.wuwenbin.modules.sql.annotation.SQLMappedSuper;
 
 /**
  * created by Wuwenbin on 2017/12/12 at 12:01
  */
-@MappedSuper
+@SQLMappedSuper
 public class Human {
     private String type;
 

@@ -3,7 +3,7 @@
     <parent>
         <artifactId>template-boot-modules</artifactId>
         <groupId>me.wuwenbin</groupId>
-        <version>1.11.5-SNAPSHOT</version>
+        <version>1.12.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
     <description>提供对mongo数据源的高级操作，针对多数据源mongo和集群mongo</description>
 
     <properties>
-        <springdatamongo.version>1.10.10.RELEASE</springdatamongo.version>
+        <springdatamongo.version>1.10.12.RELEASE</springdatamongo.version>
     </properties>
 
     <build>

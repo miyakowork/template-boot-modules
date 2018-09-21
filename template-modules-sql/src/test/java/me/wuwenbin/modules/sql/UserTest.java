@@ -23,8 +23,9 @@ public class UserTest {
 //        for (Field field : fields) {
 //            System.out.println(field.getName());
 //        }
-        System.out.println(sbb.updateRoutersByPk(Symbol.QUESTION_MARK, Router.DEFAULT));
-        System.out.println(sbb.insertAllWithoutPk(Symbol.QUESTION_MARK));
+//        System.out.println(sbb.updateRoutersByPk(Symbol.QUESTION_MARK, Router.DEFAULT));
+//        System.out.println(sbb.insertAllWithoutPk(Symbol.QUESTION_MARK));
+        System.out.println(sbb.insertRoutersWithoutPk(Symbol.COLON,Router.DEFAULT));
     }
 
 }
